@@ -137,13 +137,14 @@ class ApiController extends Controller
             "xyx11xuser_mailxxyy" => $request->ddEmailmm,
             "xynumbphonexyyy" => $request->ddPhonemm
         ];
-
+        // dd(env('XCUSTOMBLHDRS'));
         $responseCore = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->post(env('DOMAIN') . '/users', $dataCore);
 
         $responseCore = $responseCore->json();
+
         if ($responseCore["status"] === "success") {
             $data = [
                 "Username" => $request->Username,
@@ -160,6 +161,7 @@ class ApiController extends Controller
             ])->post($url, $data);
 
             $responseData = $response->json();
+            ($responseData);
             if ($responseData["error"]["id"] === 0) {
 
                 try {

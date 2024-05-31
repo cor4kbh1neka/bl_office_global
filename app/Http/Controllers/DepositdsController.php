@@ -112,6 +112,7 @@ class DepositdsController extends Controller
         $response = $response->json();
 
         if ($response['status'] == 'success') {
+
             $response = $response['data'];
         } else {
             $response = [];

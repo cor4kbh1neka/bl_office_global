@@ -7,11 +7,9 @@ use App\Models\Transactions;
 use App\Models\TransactionStatus;
 use App\Models\TransactionSaldo;
 use App\Models\Member;
-use App\Models\Xreferral;
 use App\Models\MemberAktif;
 use App\Models\Xdpwd;
 use App\Models\DepoWd;
-use App\Models\Groupbank;
 use App\Models\HistoryTransaksi;
 use App\Models\Outstanding;
 use App\Models\Balance;
@@ -214,29 +212,6 @@ class ApiController extends Controller
                         'keterangan' => '-'
                     ]);
                 }
-
-                /* Create Xreferral */
-                // $dataXreferral = Xreferral::where('upline', $request->Referral)
-                //     ->whereDate('created_at', now())->first();
-                // if ($dataXreferral) {
-                //     $dataXreferral->increment('total_downline');
-                // } else {
-                //     Xreferral::create([
-                //         'upline' => $request->Referral,
-                //         'total_downline' => 1,
-                //         'downline_deposit' => 0,
-                //         'downline_aktif' => 0,
-                //         'total_bonus' => 0
-                //     ]);
-                // }
-
-
-                // $dataXreferral = Xreferral::where('username', $request->Referral)->first();
-                // if ($dataXreferral) {
-                //     $dataXreferral->update([
-                //         'count_referral' => $dataXreferral->count_referral + 1
-                //     ]);
-                // }
 
                 return $responseCore;
             } else {

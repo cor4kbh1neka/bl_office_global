@@ -1219,7 +1219,7 @@ class ApiBolaController extends Controller
 
     function requestApi($endpoint, $data)
     {
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/player/' . $endpoint . '.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/player/' . $endpoint . '.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
@@ -1293,7 +1293,7 @@ class ApiBolaController extends Controller
     //         'language' => 'en',
     //         'serverId' => env('SERVERID')
     //     ];
-    //     $apiUrl = 'https://ex-api-demo-yy.568win.com/web-root/restricted/report/get-bet-list-by-refnos.aspx';
+    //     $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-refnos.aspx';
 
     //     $response = Http::post($apiUrl, $data);
     //     return $response->json();

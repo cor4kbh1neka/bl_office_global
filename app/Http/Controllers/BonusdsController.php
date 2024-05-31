@@ -196,7 +196,7 @@ class BonusdsController extends Controller
             "language" => "en",
             "serverId" => env('SERVERID')
         ];
-        $apiUrl = 'https://ex-api-demo-yy.568win.com/web-root/restricted/report/get-bet-list-by-modify-date.aspx';
+        $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx';
         $response = Http::post($apiUrl, $data);
 
         return $response->json();
@@ -322,7 +322,7 @@ class BonusdsController extends Controller
             'serverId' => env('SERVERID')
         ];
 
-        $apiUrl = 'https://ex-api-demo-yy.568win.com/web-root/restricted/player/deposit.aspx';
+        $apiUrl = env('BODOMAIN') . '/web-root/restricted/player/deposit.aspx';
 
         $response = Http::post($apiUrl, $data);
         return $response->json();

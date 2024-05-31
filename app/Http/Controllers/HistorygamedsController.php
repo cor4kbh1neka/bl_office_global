@@ -138,7 +138,7 @@ class HistorygamedsController extends Controller
 
     private function requestApi($endpoint, $data)
     {
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/report/' . $endpoint . '.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/report/' . $endpoint . '.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
@@ -160,7 +160,7 @@ class HistorygamedsController extends Controller
         $query = collect($data);
         $parameter = [
             'username'
-        ]; 
+        ];
 
         foreach ($parameter as $isiSearch) {
             if (request($isiSearch)) {

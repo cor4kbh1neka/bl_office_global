@@ -86,7 +86,7 @@ class AgentsController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-        ])->post('https://ex-api-demo-yy.568win.com/web-root/restricted/agent/register-agent.aspx', $req);
+        ])->post(env('BODOMAIN') . '/web-root/restricted/agent/register-agent.aspx', $req);
 
         if ($response->successful()) {
             $responseData = $response->json();

@@ -79,7 +79,7 @@ class ApiController extends Controller
 
     function requestApiLogin($data)
     {
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/player/login.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/player/login.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
@@ -153,7 +153,7 @@ class ApiController extends Controller
                 "ServerId" => "YY-TEST"
             ];
 
-            $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/player/register-player.aspx';
+            $url = env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx';
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json; charset=UTF-8'
@@ -253,7 +253,7 @@ class ApiController extends Controller
             "serverId" =>  env('SERVERID')
         ];
 
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/information/get-recommend-matches.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/information/get-recommend-matches.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8'
@@ -713,7 +713,7 @@ class ApiController extends Controller
             'serverId' => env('SERVERID')
 
         ];
-        $apiUrl = 'https://ex-api-demo-yy.568win.com/web-root/restricted/report/get-bet-list-by-modify-date.aspx';
+        $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx';
 
         $response = Http::post($apiUrl, $data);
         $results = $response->json();
@@ -750,7 +750,7 @@ class ApiController extends Controller
             'language' => 'en',
             'serverId' => env('SERVERID')
         ];
-        $apiUrl = 'https://ex-api-demo-yy.568win.com/web-root/restricted/report/get-bet-list-by-refnos.aspx';
+        $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-refnos.aspx';
 
         $response = Http::post($apiUrl, $data);
         return $response->json();
@@ -782,7 +782,7 @@ class ApiController extends Controller
 
     private function requestApi($endpoint, $data)
     {
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/player/' . $endpoint . '.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/player/' . $endpoint . '.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
@@ -798,23 +798,6 @@ class ApiController extends Controller
 
         return $responseData;
     }
-
-    // public function getApiBro(Request $request)
-    // {
-    //     $data = [
-    //         "username" => $request->username,
-    //         "iswap" => $request->iswap,
-    //         "device" => $$request->device
-    //     ];
-
-    //     $apiUrl = 'https://back-staging.bosraka.com/prx/checkBalance';
-    //     $response = Http::withHeaders([
-    //         'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
-    //         'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlckxPQi02d2dzY2wwMFVXU2hRWkxFbCIsImV4cCI6MTcxNTYwMDIyNSwiaWF0IjoxNzE1NTk5OTI1fQ.SAPnq1hdn4Cfzq9y_j664SgnFAT4cy5mqqAn_CRX_Lg',
-
-    //     ])->post($apiUrl, $data);
-    //     return $response->json();
-    // }
 
     public function getApiBro(Request $request)
     {

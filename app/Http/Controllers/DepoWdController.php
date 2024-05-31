@@ -504,7 +504,7 @@ class DepoWdController extends Controller
 
     private function requestApi($endpoint, $data)
     {
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/player/' . $endpoint . '.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/player/' . $endpoint . '.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',

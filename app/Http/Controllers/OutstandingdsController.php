@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+
 class OutstandingdsController extends Controller
 {
     public function index(Request $request, $userid = "")
@@ -51,7 +52,7 @@ class OutstandingdsController extends Controller
 
     private function requestApi($endpoint, $data)
     {
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/report/' . $endpoint . '.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/report/' . $endpoint . '.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
@@ -105,5 +106,4 @@ class OutstandingdsController extends Controller
 
         return $paginatedItems;
     }
-
 }

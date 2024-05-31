@@ -125,7 +125,7 @@ class ApiController extends Controller
         if ($validasiBearer !== true) {
             return $validasiBearer;
         }
-        dd(env('XCUSTOMBLHDRS'));
+
         $ipaddress = $request->ipadress;
 
         $dataCore = [

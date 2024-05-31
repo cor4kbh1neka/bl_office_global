@@ -1,0 +1,1496 @@
+{
+	"info": {
+		"_postman_id": "dbf86ae3-250d-415b-afd2-7dad39ac06e4",
+		"name": "API_SEPAK",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "25801287"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xyusernamexxy\": \"abangpoorgas2\",\r\n    \"password\": \"sandi123\",\r\n    \"xybanknamexyy\": \"dfwadfs\",\r\n    \"xybankuserxy\": \"fake naamdd\",\r\n    \"xxybanknumberxy\": \"1234567199\",\r\n    \"xyx11xuser_mailxxyy\": \"us2w0e2r@gmail.com\",\r\n    \"xynumbphonexyyy\": \"12115151\"    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/users"
+					},
+					"response": []
+				},
+				{
+					"name": "GetData",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/users/abangpoorgas"
+					},
+					"response": []
+				},
+				{
+					"name": "Updata data User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xybanknamexyy\": \"dfwadfxxxxs\",\r\n    \"xybankuserxy\": \"fake naamdd\",\r\n    \"group\": \"groupbank2\",\r\n    \"groupwd\": \"groupbankwd2\",        \r\n    \"xxybanknumberxy\": \"1234567127\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/users/poorgas321"
+					},
+					"response": []
+				},
+				{
+					"name": "update vip member",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"is_verified\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/users/vip/poorgas321"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"baru12567\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/users/pswdy/poorgas324"
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"abangpoorgas\",\r\n    \"password\": \"sandi123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/authentications"
+					},
+					"response": []
+				},
+				{
+					"name": "refreshToken",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTUwNTc2MiwiaWF0IjoxNzE1NTAzOTYyfQ.UinEooAElAeQCTpE4Z9zsFUNgFNRDEZmg73HbOzyVZM"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTUwNTc2MiwiaWF0IjoxNzE1NTAzOTYyfQ.zHsEGRtb9vUOcqH_uSNGORnmFI6x1mcaoWJg2e9FntI\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/authentications"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteToken",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTQ5MjA4NiwiaWF0IjoxNzE1NDkyMDI2fQ.SVXqEEVsvSZNUucuMHsDt95vgPa9h-OI4n3OJM_mo3g\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/authentications"
+					},
+					"response": []
+				},
+				{
+					"name": "getuser and IAT",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlckxPQi02d2dzY2wwMFVXU2hRWkxFbCIsImV4cCI6MTcxNTY4Mzk5MSwiaWF0IjoxNzE1NjgzNjkxfQ.hQ79OV-ut3m89n9hh6w_buMmhasTGuAl4qOk0SrtT0E"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlckxPQi02d2dzY2wwMFVXU2hRWkxFbCIsImV4cCI6MTcxNTY4MDQ2OCwiaWF0IjoxNzE1NjgwMTY4fQ.F2N7J4IZWKS5E1WHbsOLtmPElVqr8W66mU7i5BbjInc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/authentications/datauser"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "BankGroup",
+			"item": [
+				{
+					"name": "add group bank",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"namegroupxyzt\": \"groupbank3\",\r\n    \"grouptype\": 2,\r\n    \"min_dp\": 10,\r\n    \"max_dp\": 25000,\r\n    \"min_wd\": 30,\r\n    \"max_wd\": 500000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/group"
+					},
+					"response": []
+				},
+				{
+					"name": "edit group bank",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"namegroupxyzt\": \"groupbankwd1\",\r\n    \"grouptype\": 2,\r\n    \"min_dp\": 10,\r\n    \"max_dp\": 25000,\r\n    \"min_wd\": 30,\r\n    \"max_wd\": 500000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/group/groupbank99"
+					},
+					"response": []
+				},
+				{
+					"name": "get group bank",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/group"
+					},
+					"response": []
+				},
+				{
+					"name": "delete group bank",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/banks/group/5"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "BankMaster",
+			"item": [
+				{
+					"name": "Add Master Bank",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"bnkmstrxyxyx\": \"jago\",\r\n    \"urllogoxxyx\": \"https://i.ibb.co/n671yNG/Screenshot-44.png\",\r\n    \"statusxyxyy\": 1,\r\n    \"wdstatusxyxyy\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/master"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Master Bank",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"bnkmstrxyxyx\": \"cimbniaga2\",\r\n    \"urllogoxxyx\": \"https://i.ibb.co/n671yNG/Screenshot-44.png\",\r\n    \"statusxyxyy\": 2,\r\n    \"wdstatusxyxyy\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/master/cimbniaga"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Master Bank",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/master"
+					},
+					"response": []
+				},
+				{
+					"name": "detele masterbank",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/master/16"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bank",
+			"item": [
+				{
+					"name": "addBank",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"namegroupxyzt\": [\"groupbank1\"],\r\n    \"masterbnkxyxt\": \"bca\",\r\n    \"namebankxxyy\": \"bca2\",\r\n    \"yyxxmethod\": \"bank\",\r\n    \"xynamarekx\": \"samsul\",\r\n    \"norekxyxy\": \"0355912222\",\r\n    \"barcodexrxr\": \"https://i.ibb.co/n671yNG/Screenshot-44.png\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/v2/add"
+					},
+					"response": []
+				},
+				{
+					"name": "edit bank",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"masterbnkxyxt\": \"ovo\",\r\n    \"namebankxxyy\": \"ovo99\",\r\n    \"yyxxmethod\": \"bank\",\r\n    \"xynamarekx\": \"samsulid\",\r\n    \"norekxyxy\": \"0355917811\",\r\n    \"barcodexrxr\": \"https://i.postimg.cc/GmqLwfN4/image.png\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/v2/3/ovo99"
+					},
+					"response": []
+				},
+				{
+					"name": "edit change groupbank",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"namegroupxyzt\": \"groupbankwd1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/banks/v3/5"
+					},
+					"response": []
+				},
+				{
+					"name": "get bank by group",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/v2/groupbank1"
+					},
+					"response": []
+				},
+				{
+					"name": "get bank except group",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/banks/exc/groupbank3"
+					},
+					"response": []
+				},
+				{
+					"name": "delete bank",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/banks/16/bca25"
+					},
+					"response": []
+				},
+				{
+					"name": "delete bank array",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/banks/arr/21/groupbank1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "APK",
+			"item": [
+				{
+					"name": "apk master",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"version\": \"1.0.1\",\r\n    \"home\": \"https://front-staging.bosraka.com\",\r\n    \"deposit\": \"http://deposit.home\",\r\n    \"server1\": \"https://front-staging.bosraka.com\",\r\n    \"server2\": \"https://front-staging.bosraka.com\",\r\n    \"server3\": \"https://front-staging.bosraka.com\",\r\n    \"update\": \"https://l21apk.com/arwana/app-release.apk\",\r\n    \"peraturan\": \"http://peraturan.home\",\r\n    \"klasemen\": \"http://klasemen.home\",\r\n    \"promosi\": \"http://promosi.home\",\r\n    \"livescore\": \"http://livescore.home\",\r\n    \"livechat\": \"http://livechat.home\",\r\n    \"whatsapp1\": \"http://whatsapp1.home\",\r\n    \"whatsapp2\": \"http://whatsapp2.home\",\r\n    \"facebook\": \"http://facebook.home\",\r\n    \"telegram\": \"http://telegram.home\",\r\n    \"instagram\": \"http://instagram.home\",\r\n    \"prediksi\": \"https://example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/apks/settings"
+					},
+					"response": []
+				},
+				{
+					"name": "apk notice",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"apkid\": \"apkIN0NpvmBzEHtzQhz5IVIl\",\r\n    \"title\": \"fake title23\",\r\n    \"content\": \"ini ada content pemberitahuanontent\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/apks/settings/notice"
+					},
+					"response": []
+				},
+				{
+					"name": "apk event",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"apkid\": \"apkIN0NpvmBzEHtzQhz5IVIl\",\r\n    \"prediksi\": \"http://prediksi.home\",\r\n    \"icongif\": \"http://icongif.home\",\r\n    \"posisi\": \"1\",\r\n    \"switchs\": true,\r\n    \"bannerurl\": \"http://update.home\",\r\n    \"linkevent\": \"http://peraturan.home\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/apks/settings/event"
+					},
+					"response": []
+				},
+				{
+					"name": "apk get data",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"version\": \"1.0.1\",\r\n    \"home\": \"http://home.home\",\r\n    \"deposit\": \"http://deposit.home\",\r\n    \"server1\": \"http://server1.home\",\r\n    \"server2\": \"http://server2.home\",\r\n    \"server3\": \"http://server3.home\",\r\n    \"update\": \"http://update.home\",\r\n    \"peraturan\": \"http://peraturan.home\",\r\n    \"klasemen\": \"http://klasemen.home\",\r\n    \"promosi\": \"http://promosi.home\",\r\n    \"livescore\": \"http://livescore.home\",\r\n    \"livechat\": \"http://livechat.home\",\r\n    \"whatsapp1\": \"http://whatsapp1.home\",\r\n    \"whatsapp2\": \"http://whatsapp2.home\",\r\n    \"facebook\": \"http://facebook.home\",\r\n    \"telegram\": \"http://telegram.home\",\r\n    \"instagram\": \"http://instagram.home\",\r\n    \"prediksi\": \"http://prediksi.home\",\r\n    \"icongif\": \"http://icongif.home\",\r\n    \"posisi\": \"1\",\r\n    \"switchs\": true,\r\n    \"bannerurl\": \"http://update.home\",\r\n    \"linkevent\": \"http://peraturan.home\",\r\n    \"title\": \"fake title\",\r\n    \"content\": \"ini ada content pemberitahuanontent\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/apks/settings/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Memo",
+			"item": [
+				{
+					"name": "add memo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statustype\": 2,\r\n    \"statuspriority\": 2,\r\n    \"subject\": \"ini ada content pemberitahuanontent\",\r\n    \"memo\": \"ini ada content pemberitahuanontent\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/memo"
+					},
+					"response": []
+				},
+				{
+					"name": "get memo for vip",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statustype\": 1,\r\n    \"statuspriority\": 1,\r\n    \"subject\": \"ini ada content pemberitahuanontent\",\r\n    \"memo\": \"ini ada content pemberitahuanontent\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/memo"
+					},
+					"response": []
+				},
+				{
+					"name": "get memo bystatus",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statustype\": 1,\r\n    \"statuspriority\": 1,\r\n    \"subject\": \"ini ada content pemberitahuanontent\",\r\n    \"memo\": \"ini ada content pemberitahuanontent\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/memo/1"
+					},
+					"response": []
+				},
+				{
+					"name": "delete memo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statustype\": 1,\r\n    \"statuspriority\": 1,\r\n    \"subject\": \"ini ada content pemberitahuanontent\",\r\n    \"memo\": \"ini ada content pemberitahuanontent\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/memo/34"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "proxy",
+			"item": [
+				{
+					"name": "proxy depo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlckxPQi02d2dzY2wwMFVXU2hRWkxFbCIsImV4cCI6MTcxNTU4NTk0NCwiaWF0IjoxNzE1NTg1NjQ0fQ.lacFlLZYlcNfplKzVmEiDwVlG9dRqSG29-3PbM8B-PQ"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"poorgas321\",\r\n    \"amount\" : \"969\",\r\n    \"keterangan\" : \"\", \r\n    \"bank\" : \"mandiri\",\r\n    \"mbank\" : \"mandiri\",\r\n    \"mnamarek\" : \"poorgas\",\r\n    \"mnorek\" : \"115424515221\",\r\n    \"balance\" : 0,\r\n    \"referral\" : \"Poorgas3277\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/prx/data/de"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy token login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlckxPQi02d2dzY2wwMFVXU2hRWkxFbCIsImV4cCI6MTcxNTY2MjA0MSwiaWF0IjoxNzE1NjYxNzQxfQ.II2bn7GRVfEJZ-dZ2RrCCqGY-OAv7kpcTGzJ-z3Ssjk"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"wantosw\",\r\n    \"iswap\" : \"false\",\r\n    \"device\" : \"d\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://back-staging.bosraka.com/prx/authlog"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy wd",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"poorgas321\",\r\n    \"amount\" : \"11\",\r\n    \"bank\" : \"mandiri\",\r\n    \"mbank\" : \"mandiri\",\r\n    \"mnamarek\" : \"poorgas\",\r\n    \"mnorek\" : \"115424515221\",\r\n    \"balance\" : 0,\r\n    \"referral\" : \"poorgas0202\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/data/wi"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy history log",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\" : \"wantosw\",\r\n  \"ipaddres\" : \"210.0.0.1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/history/log"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy register",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Username\" : \"wantosw2\",\r\n  \"Referral\" : \"poorgas321\",\r\n  \"baxybanknamexyynk\" : \"mandiri\",\r\n  \"xybankuserxy\" : \"wantos\",\r\n  \"xxybanknumberxy\" : \"12181213421\",\r\n  \"ipaddress\" : \"109.201.0.1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/register"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy get-recommend-matches",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/get-recommend-matches"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy cekuserreferral",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\" : \"wantosw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/cekuserreferral"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy getHistoryDw",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\" : \"poorgas321\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/getHistoryDw"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy checkLastTransaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"jenis\" : \"DP\",\r\n  \"username\" : \"poorgas321\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/checkLastTransaction"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy checkBalance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTY2Mzg1OCwiaWF0IjoxNzE1NjYyMDU4fQ.9GLA4-lA_iL-OqdvzY41KCVmWalG7MqizaSbl-XdMxY"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\" : \"wantosw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/checkBalance"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy getHistoryGame",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\" : \"wantosw\",\r\n  \"portfolio\" : \"SportsBook\",\r\n  \"startDate\" : \"2024-05-01\",\r\n  \"endDate\" : \"2024-05-30\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/getHistoryGame"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy getHistoryGameById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refNos\" : \"4485543\",\r\n  \"portfolio\" : \"SportsBook\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/getHistoryGameById"
+					},
+					"response": []
+				},
+				{
+					"name": "proxy getDataOutstanding",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiYW5ncG9vcmdhcyIsImlkIjoidXNlclRJcWhhMklndVByMzVfRDQyN0ZrbyIsImV4cCI6MTcxNTU4Mjg4MiwiaWF0IjoxNzE1NTgxMDgyfQ.4g6syEmX_xXUew5Dfu54bp5500DILn2PN-dbpEoLo-A"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "utilitiesgenerate",
+								"value": "2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refNos\" : \"4485543\",\r\n  \"portfolio\" : \"SportsBook\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5000/prx/getDataOutstanding"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "content",
+			"item": [
+				{
+					"name": "metatag",
+					"item": [
+						{
+							"name": "edit mettag",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"mttag\": \"test1234<h1>\",\r\n    \"artcl\": \"test123\",\r\n    \"scrptlvc\": \"test213\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/dtmttag/1"
+							},
+							"response": []
+						},
+						{
+							"name": "get metatag",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/dtmttag/gtdt"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "sitemap",
+					"item": [
+						{
+							"name": "add sitemap",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"urpage\": \"edited\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/stmp"
+							},
+							"response": []
+						},
+						{
+							"name": "edit sitemap",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"urpage\": \"test12345\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/stmp/test1234"
+							},
+							"response": []
+						},
+						{
+							"name": "get sitemap",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"urpage\": \"test1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/stmp"
+							},
+							"response": []
+						},
+						{
+							"name": "delete sitemap",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"urpage\": \"test1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/stmp"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "content promo",
+					"item": [
+						{
+							"name": "add promo",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ctprmur\": \"https://example.com/34\",\r\n    \"ttlectprm\": \"example title 2\",\r\n    \"trgturctprm\": \"https://example.com\",\r\n    \"statusctprm\": \"2\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/prm"
+							},
+							"response": []
+						},
+						{
+							"name": "edit promo",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ctprmur\": \"https://example.com/341\",\r\n    \"ttlectprm\": \"example title 2\",\r\n    \"trgturctprm\": \"https://example.com\",\r\n    \"statusctprm\": \"2\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/prm/1"
+							},
+							"response": []
+						},
+						{
+							"name": "get promo",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"urpage\": \"test1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/prm"
+							},
+							"response": []
+						},
+						{
+							"name": "delete promo",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"urpage\": \"test1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/prm/1"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "content general",
+					"item": [
+						{
+							"name": "edit content general",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nmwebsite\": \"kaguura\",\r\n    \"logrl\": \"kasti-logo.webp\",\r\n    \"icrl\": \"kasti-logo.webp\",\r\n    \"pkrl\": \"https://apkdownload.com/44\",\r\n    \"rnntxt\": \"kastiglobal SITUS RESMI | Situs Betting Parlay Terlengkap & Terpercaya | proses transaksi kurang dari 1 menit\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/ctgeneral/1"
+							},
+							"response": []
+						},
+						{
+							"name": "get content general",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nmwebsite\": \"nama website \",\r\n    \"logrl\": \"kasti-logo.webp\",\r\n    \"icrl\": \"kasti-logo.webp\",\r\n    \"pkrl\": \"https://apkdownload.com/44\",\r\n    \"rnntxt\": \"kastiglobal SITUS RESMI | Situs Betting Parlay Terlengkap & Terpercaya | proses transaksi kurang dari 1 menit\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/ctgeneral"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "content slider",
+					"item": [
+						{
+							"name": "edit slidergeneral",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ctsldrur\": \"https://example.com/4 \",\r\n    \"ttlectsldr\": \"example title 2\",\r\n    \"trgturctsldr\": \"https://example.com/5\",\r\n    \"statusctsldr\": \"4\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://127.0.0.1:5000/content/ctslider/1"
+							},
+							"response": []
+						},
+						{
+							"name": "get slider general",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nmwebsite\": \"nama website \",\r\n    \"logrl\": \"kasti-logo.webp\",\r\n    \"icrl\": \"kasti-logo.webp\",\r\n    \"pkrl\": \"https://apkdownload.com/44\",\r\n    \"rnntxt\": \"kastiglobal SITUS RESMI | Situs Betting Parlay Terlengkap & Terpercaya | proses transaksi kurang dari 1 menit\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/ctslider"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "content socmed",
+					"item": [
+						{
+							"name": "edit socmed",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-customblhdrs",
+										"value": "09c90c1d6e1b82015737f88d5f5b827060a57c874babe97f965aaa68072585191ce0eab75404312f4f349ee70029404c2d8f66698b6a4da18990445d1437ff79",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ctscmedur\": \"https://example.com/4 \",\r\n    \"nmectscmed\": \"example title 2\",\r\n    \"trgturctscmed\": \"https://example.com/5\",\r\n    \"statusctscmed\": \"4\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://127.0.0.1:5000/content/socmed/1"
+							},
+							"response": []
+						},
+						{
+							"name": "get slider general",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-customblhdrs",
+										"value": "09c90c1d6e1b82015737f88d5f5b827060a57c874babe97f965aaa68072585191ce0eab75404312f4f349ee70029404c2d8f66698b6a4da18990445d1437ff79",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nmwebsite\": \"nama website \",\r\n    \"logrl\": \"kasti-logo.webp\",\r\n    \"icrl\": \"kasti-logo.webp\",\r\n    \"pkrl\": \"https://apkdownload.com/44\",\r\n    \"rnntxt\": \"kastiglobal SITUS RESMI | Situs Betting Parlay Terlengkap & Terpercaya | proses transaksi kurang dari 1 menit\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/content/socmed",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"content",
+										"socmed"
+									],
+									"query": [
+										{
+											"key": "x-customblhdrs",
+											"value": "09c90c1d6e1b82015737f88d5f5b827060a57c874babe97f965aaa68072585191ce0eab75404312f4f349ee70029404c2d8f66698b6a4da18990445d1437ff79",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "content link",
+					"item": [
+						{
+							"name": "edit link content",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ctlnkname\": \"nama domain\",\r\n    \"ctlnkdmn\": \"https://example.com/5\",\r\n    \"statusctlnk\": \"4\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/ctlink/1"
+							},
+							"response": []
+						},
+						{
+							"name": "get link content",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nmwebsite\": \"nama website \",\r\n    \"logrl\": \"kasti-logo.webp\",\r\n    \"icrl\": \"kasti-logo.webp\",\r\n    \"pkrl\": \"https://apkdownload.com/44\",\r\n    \"rnntxt\": \"kastiglobal SITUS RESMI | Situs Betting Parlay Terlengkap & Terpercaya | proses transaksi kurang dari 1 menit\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/ctlink"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "statusmt",
+					"item": [
+						{
+							"name": "update status mt",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"stsmtncnc\": \"4\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/sts/1"
+							},
+							"response": []
+						},
+						{
+							"name": "get status mt",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"stsmtncnc\": \"4\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://back-staging.bosraka.com/content/sts"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

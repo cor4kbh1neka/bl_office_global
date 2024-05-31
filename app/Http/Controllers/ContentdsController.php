@@ -15,12 +15,17 @@ class ContentdsController extends Controller
     public function index()
     {
         $url = env('DOMAIN') . '/content/ctgeneral';
-        $response = Http::withTokenHeader()->get($url);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
         return view('contentds.index', [
             'title' => 'Content',
             'data' => $data,
+
             'totalnote' => 0,
         ]);
     }
@@ -40,8 +45,13 @@ class ContentdsController extends Controller
             'pkrl' => $raw['urlapk'],
             'rnntxt' => $raw['runningtext'],
         ];
-        $url = env('DOMAIN') . '/content/ctgeneral/' . $id;
-        $response = Http::withTokenHeader()->put($url, $validatedData);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+
+        $url = env('DOMAIN') . '/content/ctgeneral/1';
+        $response = Http::withHeaders($headers)->put($url, $validatedData);
         if ($response->successful()) {
             return redirect('/contentds')->with('success', 'Data Berhasil di Edit!');
         } else {
@@ -52,7 +62,11 @@ class ContentdsController extends Controller
     public function apiContentPromo()
     {
         $url = env('DOMAIN') . '/content/prm';
-        $response = Http::withTokenHeader()->get($url);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
         return $data;
@@ -60,6 +74,7 @@ class ContentdsController extends Controller
     public function promo()
     {
         $data = $this->apiContentPromo();
+
         usort($data, function ($a, $b) {
             return $a->pssprm <=> $b->pssprm;
         });
@@ -96,7 +111,11 @@ class ContentdsController extends Controller
             'dskprm' => $validatedData['description'],
             'pssprm' => $validatedData['urutanpromo'],
         ];
-        $response = Http::withTokenHeader()->post($url, $validatedData);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->post($url, $validatedData);
         if ($response->successful()) {
             return redirect('/contentds/promo')->with('success', 'Berhasil Menambah Data');
         } else {
@@ -177,8 +196,12 @@ class ContentdsController extends Controller
                     'pssprm' => request('urutan'),
                 ];
             }
-            $response1 = Http::withTokenHeader()->put($url1, $validatedData1);
-            $response2 = Http::withTokenHeader()->put($url2, $validatedData2);
+            $headers = [
+                'Accept' => 'application/json',
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ];
+            $response1 = Http::withHeaders($headers)->put($url1, $validatedData1);
+            $response2 = Http::withHeaders($headers)->put($url2, $validatedData2);
             if ($response1 && $response2->successful()) {
                 return redirect('/contentds/promo')->with('success', 'Data Berhasil di Edit!');
             } else {
@@ -215,7 +238,11 @@ class ContentdsController extends Controller
             'dskprm' => $validatedData['description'],
             'pssprm' => $validatedData['urutanpromo'],
         ];
-        $response = Http::withTokenHeader()->put($url, $validatedData);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->put($url, $validatedData);
 
         if ($response->successful()) {
             return redirect('/contentds/promo')->with('success', 'Data Berhasil di Edit!');
@@ -234,7 +261,11 @@ class ContentdsController extends Controller
                 break;
             }
         }
-        $response = Http::withTokenHeader()->delete($url, $data);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->delete($url, $data);
         if ($response->successful()) {
             return redirect('/contentds/promo')->with('success', 'Berhasil Hapus Data ' . $id);
         } else {
@@ -244,7 +275,11 @@ class ContentdsController extends Controller
     public function apiSlider()
     {
         $url = env('DOMAIN') . '/content/ctslider';
-        $response = Http::withTokenHeader()->get($url);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
         return $data;
@@ -305,8 +340,11 @@ class ContentdsController extends Controller
             'trgturctsldr' => $raw['targeturl'],
             'statusctsldr' => $raw['statuspromo'],
         ];
-
-        $response = Http::withTokenHeader()->put($url, $validatedData);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->put($url, $validatedData);
         if ($response->successful()) {
             return redirect('contentds/slider')->with('success', 'Berhasil Edit Data');
         } else {
@@ -317,7 +355,11 @@ class ContentdsController extends Controller
     public function apiLinkContent()
     {
         $url = env('DOMAIN') . "/content/ctlink";
-        $response = Http::withTokenHeader()->get($url);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
         return $data;
@@ -368,7 +410,11 @@ class ContentdsController extends Controller
             'ctlnkdmn' => $validatedData['urldomain'],
             'statusctlnk' => $validatedData['statuspromo'],
         ];
-        $response = Http::withTokenHeader()->put($url, $validatedData);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->put($url, $validatedData);
         if ($response->successful()) {
             return redirect('contentds/link')->with('success', 'Berhasil Edit Data');
         } else {
@@ -379,7 +425,11 @@ class ContentdsController extends Controller
     public function apiSocialmedia()
     {
         $url = env('DOMAIN') . '/content/socmed';
-        $response = Http::withTokenHeader()->get($url);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
         return $data;
@@ -390,6 +440,7 @@ class ContentdsController extends Controller
         usort($data, function ($a, $b) {
             return $a->idctscmed <=> $b->idctscmed;
         });
+
         return view('contentds.socialmedia', [
             'title' => 'Content',
             'data' => $data,
@@ -432,7 +483,11 @@ class ContentdsController extends Controller
             'trgturctscmed' => $validatedData['urltarget'],
             'statusctscmed' => $validatedData['statuspromo'],
         ];
-        $response = Http::withTokenHeader()->put($url, $validatedData);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->put($url, $validatedData);
         if ($response->successful()) {
             return redirect('/contentds/socialmedia')->with('success', 'Berhasil Edit Data');
         } else {
@@ -442,9 +497,14 @@ class ContentdsController extends Controller
     public function apiStatusMaintenance()
     {
         $url = env('DOMAIN') . '/content/sts';
-        $response = Http::withTokenHeader()->get($url);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
+
         return $data;
     }
     public function statusMaintenance()
@@ -474,7 +534,11 @@ class ContentdsController extends Controller
         $validatedData = [
             'stsmtncnc' => $validatedData['status']
         ];
-        $response = Http::withTokenHeader()->put($url, $validatedData);
+        $headers = [
+            'Accept' => 'application/json',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ];
+        $response = Http::withHeaders($headers)->put($url, $validatedData);
         if ($response->successful()) {
             return redirect('contentds/maintenance')->with('success', 'Berhasil Edit Data');
         } else {

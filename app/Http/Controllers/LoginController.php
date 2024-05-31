@@ -21,7 +21,6 @@ class LoginController extends Controller
 
     public function authenticate(Request $request)
     {
-
         $credentials = $request->validate([
             'username' => ['required', 'regex:/^[a-zA-Z0-9#]+$/'],
             'password' => 'required'

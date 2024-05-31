@@ -30,17 +30,6 @@ use Illuminate\Support\Facades\Log;
 
 class DepoWdController extends Controller
 {
-    private function reqApiBalance($username)
-    {
-        $dataApiCheckBalance = [
-            "Username" => $username,
-            "CompanyKey" => env('COMPANY_KEY'),
-            "ServerId" => env('SERVERID')
-        ];
-
-        return $this->requestApi('get-player-balance', $dataApiCheckBalance);
-    }
-
     public function indexdeposit()
     {
         $datDepo = DepoWd::where('status', 0)->where('jenis', 'DP')->orderBy('created_at', 'desc')->get();
@@ -531,40 +520,9 @@ class DepoWdController extends Controller
         ])->header('Content-Type', 'application/json; charset=UTF-8');
     }
 
-    private function saldoBerjalan($username)
-    {
-        $allTransactionTransaction = $this->getAllTransactions($username);
-
-        $dataAllTransactionsWD = $allTransactionTransaction->where('jenis', 'W')->sum('amount');
-        $dataAllTransactionsDP = $allTransactionTransaction->where('jenis', 'D')->sum('amount');
-
-        $saldoBerjalan = $dataAllTransactionsDP  - $dataAllTransactionsWD;
-
-        return $saldoBerjalan;
-    }
-
-    private function getAllTransactions($username)
-    {
-        $transactions = Transactions::where('username', $username)->get();
-        $transactionTransactions = collect();
-
-        foreach ($transactions as $transaction) {
-            $transactions = $transaction->transactionstatus->flatMap(function ($status) {
-                return $status->transactionsaldo;
-            });
-
-            $transactionTransactions = $transactionTransactions->concat($transactions);
-        }
-        return $transactionTransactions;
-    }
-
     public function getBalancePlayer($username)
     {
         try {
-            // $apiBalance = $this->reqApiBalance($username)["balance"];
-            // $saldoBerjalan = $this->saldoBerjalan($username);
-
-            // return $apiBalance + $saldoBerjalan;
             $dataBalance = Balance::where('username', $username)->first();
             if ($dataBalance) {
                 $amount = $dataBalance->amount;
@@ -577,32 +535,6 @@ class DepoWdController extends Controller
             return response()->json(['error' => $errorMessage], 500);
         }
     }
-
-    // public function getCountDataDPW()
-    // {
-    //     $countDataDP = Xdpwd::where('jenis', 'DP')->where('status', 0)->count();
-    //     $countDataWD = Xdpwd::where('jenis', 'WD')->where('status', 0)->count();
-
-    //     $dataOuts = Outstanding::get();
-    //     $dataOuts = $dataOuts->groupBy('username')->map(function ($group) {
-    //         $totalAmount = $group->sum('amount');
-    //         $count = $group->count();
-    //         return [
-    //             'username' => $group->first()['username'],
-    //             'totalAmount' => $totalAmount,
-    //             'count' => $count,
-    //         ];
-    //     });
-
-    //     $data = [
-    //         'dataWD' => $countDataWD,
-    //         'dataDP' => $countDataDP,
-    //         'dataOuts' => $dataOuts->count()
-    //     ];
-
-    //     return $data;
-    // }
-
 
     public function processBalance($username, $jenis, $amount)
     {

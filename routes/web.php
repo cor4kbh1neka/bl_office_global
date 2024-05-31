@@ -61,6 +61,7 @@ Route::get('/dashboard', function () {
         'totalnote' => 0
     ]);
 })->middleware('auth');
+// Route::get('/dashboard', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
 
 /* Login & Logout */
 Route::get('/login', [LoginController::class, 'index'])->name('login')->Middleware('guest');
@@ -107,15 +108,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/user/update', [UserController::class, 'update']);
     Route::delete('/user/delete', [UserController::class, 'destroy']);
     Route::get('/user/view/{id}', [UserController::class, 'views']);
-
-    /*--  Allowed IP --*/
-    Route::get('/allowedip', [AllowedipController::class, 'index']);
-    Route::get('/allowedip/add', [AllowedipController::class, 'create']);
-    Route::get('/allowedip/edit/{id}', [AllowedipController::class, 'edit']);
-    Route::post('/allowedip/store', [AllowedipController::class, 'store']);
-    Route::post('/allowedip/update', [AllowedipController::class, 'update']);
-    Route::delete('/allowedip/delete', [AllowedipController::class, 'destroy']);
-    Route::get('/allowedip/view/{id}', [AllowedipController::class, 'views']);
 
     /*-- Agents --*/
     Route::get('/agents', [AgentsController::class, 'index']);

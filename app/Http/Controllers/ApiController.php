@@ -153,9 +153,8 @@ class ApiController extends Controller
                 "CompanyKey" => env('COMPANY_KEY'),
                 "ServerId" => "XWZ-GLB"
             ];
-            return $data;
             $url = env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx';
-
+            return $url;
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json; charset=UTF-8'
             ])->post($url, $data);

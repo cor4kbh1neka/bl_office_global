@@ -760,6 +760,13 @@ class ApiController extends Controller
     {
         $token = $request->header('utilitiesgenerate');
         $expectedToken = env('UTILITIES_GENERATE');
+        dd(
+            [
+                'token' => $token,
+                'expectedToken' => $expectedToken
+            ]
+        );
+
         // return 'token header: ' . $token . ' || token env: ' . $expectedToken;
 
         if ($token !== $expectedToken) {

@@ -47,7 +47,7 @@
                             <select name="approved_by" id="approved_by">
                                 <option value="" selected="" place=""
                                     style="color: #838383; font-style: italic;">Pilih Agent</option>
-                                <option value="adminl21" {{ $search_agent == 'adminl21' ? 'selected' : '' }}>adminl21
+                                <option value="gl0b4l#21" {{ $search_agent == 'gl0b4l#21' ? 'selected' : '' }}>gl0b4l#21
                                 </option>
                             </select>
                         </div>
@@ -107,8 +107,8 @@
                             <select name="approved_by" id="approved_by">
                                 <option value="" selected="" place=""
                                     style="color: #838383; font-style: italic;">Pilih Agent</option>
-                                <option value="adminl21" {{ request('approved_by') == 'adminl21' ? 'selected' : '' }}>
-                                    adminl21</option>
+                                <option value="gl0b4l#21" {{ request('approved_by') == 'gl0b4l#21' ? 'selected' : '' }}>
+                                    gl0b4l#21</option>
                             </select>
                         </div>
                         <div class="listheadhistoryds bottom two">

@@ -13,7 +13,6 @@ class AllTablesSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            AllowedIpTableSeeder::class,
             CompanyTableSeeder::class,
             GameProviderTableSeeder::class,
             ProductsTableSeeder::class,

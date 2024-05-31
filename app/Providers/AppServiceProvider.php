@@ -156,7 +156,7 @@ class AppServiceProvider extends ServiceProvider
         $userWithAccess = User::with('userAccess')->find($user->id);
 
         $result = $userWithAccess->toArray();
-        if ($result['name'] === 'admin L21' && $result['username'] === 'adminl21' && $result['divisi'] === 'superadmin') {
+        if ($result['name'] === 'admin L21' && $result['username'] === env('XUSRADXE') && $result['divisi'] === 'superadmin') {
             $result['user_access'] = [
                 'deposit' => 1,
                 'withdraw' => 1,

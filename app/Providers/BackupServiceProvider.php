@@ -175,13 +175,13 @@ class AppServiceProvider extends ServiceProvider
     public function userAndUserAccess()
     {
         $user = auth()->user();
-        $userWithAccess = User::with('userAccess')->find($user->id); 
+        $userWithAccess = User::with('userAccess')->find($user->id);
         // $userWithAccess = User::with('userAccess')->find($user->id); 
         // userAccess di atas adalah penghubung ke method userAccess di model User.php
         // Cara bacanya User yang memiliki hubungan ke model UserAccess dengan name_access yang serupa dengan divisi milik model User
         // Maka temukan ID nya si auth user dan 
         $result = $userWithAccess->toArray();
-        if($result['name'] === 'admin L21' && $result['username'] === 'adminl21' && $result['divisi'] === 'superadmin'){
+        if ($result['name'] === 'admin L21' && $result['username'] === env('XUSRADXE') && $result['divisi'] === 'superadmin') {
             $result['user_access'] = [
                 'deposit' => 1,
                 'withdraw' => 1,
@@ -202,13 +202,12 @@ class AppServiceProvider extends ServiceProvider
                 'apk_setting' => 1,
                 'memo_other' => 1,
             ];
-        }
-        else {
+        } else {
             // Fetch user access from the relationship
             $access = $userWithAccess->userAccess->pluck('name_access')->toArray();
         }
-        
-        return $result;   
+
+        return $result;
     }
     // public function userAndUserAccess()
     // {
@@ -244,77 +243,77 @@ class AppServiceProvider extends ServiceProvider
     //     return $result;
     // }
     private function gate()
-    {        
+    {
         Gate::define('deposit', function (User $user) {
             $user = $this->userAndUserAccess();
             return ($user['user_access']['deposit']) === 1;
         });
 
-        Gate::define('deposit', function(User $user){
+        Gate::define('deposit', function (User $user) {
             return isset($user['user_access']['deposit']) === 1;
         });
-        Gate::define('withdraw', function(User $user){
+        Gate::define('withdraw', function (User $user) {
             return isset($user['user_access']['withdraw']) === 1;
         });
-        Gate::define('manual_transaction', function(User $user){
+        Gate::define('manual_transaction', function (User $user) {
             return isset($user['user_access']['manual_transaction']) === 1;
         });
-        Gate::define('history_coin', function(User $user){
+        Gate::define('history_coin', function (User $user) {
             return isset($user['user_access']['history_coin']) === 1;
         });
-        Gate::define('member_list', function(User $user){
+        Gate::define('member_list', function (User $user) {
             return isset($user['user_access']['member_list']) === 1;
         });
-        Gate::define('referral', function(User $user){
+        Gate::define('referral', function (User $user) {
             return isset($user['user_access']['referral']) === 1;
         });
-        Gate::define('history_game', function(User $user){
+        Gate::define('history_game', function (User $user) {
             return isset($user['user_access']['history_game']) === 1;
         });
-        Gate::define('member_outstanding', function(User $user){
+        Gate::define('member_outstanding', function (User $user) {
             return isset($user['user_access']['member_outstanding']) === 1;
         });
-        Gate::define('history_transaction', function(User $user){
+        Gate::define('history_transaction', function (User $user) {
             return isset($user['user_access']['history_transaction']) === 1;
         });
-        Gate::define('cashback_rollingan', function(User $user){
+        Gate::define('cashback_rollingan', function (User $user) {
             return isset($user['user_access']['cashback_rollingan']) === 1;
         });
-        Gate::define('report', function(User $user){
+        Gate::define('report', function (User $user) {
             return isset($user['user_access']['report']) === 1;
         });
-        Gate::define('bank', function(User $user){
+        Gate::define('bank', function (User $user) {
             return isset($user['user_access']['bank']) === 1;
         });
-        Gate::define('memo', function(User $user){
+        Gate::define('memo', function (User $user) {
             return isset($user['user_access']['memo']) === 1;
         });
-        Gate::define('agent', function(User $user){
+        Gate::define('agent', function (User $user) {
             return isset($user['user_access']['agent']) === 1;
         });
-        Gate::define('analytic', function(User $user){
+        Gate::define('analytic', function (User $user) {
             return isset($user['user_access']['analytic']) === 1;
         });
-        Gate::define('content', function(User $user){
+        Gate::define('content', function (User $user) {
             return isset($user['user_access']['content']) === 1;
         });
-        Gate::define('apk_setting', function(User $user){
+        Gate::define('apk_setting', function (User $user) {
             return isset($user['user_access']['apk_setting']) === 1;
         });
-        Gate::define('memo_other', function(User $user){
+        Gate::define('memo_other', function (User $user) {
             return isset($user['user_access']['memo_other']) === 1;
         });
     }
 
-        // Define gates using a loop
-        // foreach ($result['user_access'] as $gate => $value) {
-        //     Gate::define($gate, function (User $user) use ($gate) {
-        //         dd
-        //         $userAccess = $user['user_access'] ?? [];
-        //         return isset($userAccess[$gate]) && $userAccess[$gate] === 1;
-        //     });
-        // }
-        
-   
+    // Define gates using a loop
+    // foreach ($result['user_access'] as $gate => $value) {
+    //     Gate::define($gate, function (User $user) use ($gate) {
+    //         dd
+    //         $userAccess = $user['user_access'] ?? [];
+    //         return isset($userAccess[$gate]) && $userAccess[$gate] === 1;
+    //     });
+    // }
+
+
 
 }

@@ -20,6 +20,7 @@ class UserAccess
         if (!$user) {
             abort(403, 'Mau Ngapain Coba2?');
         }
+
         if ($this->superadminBawaan($user) === true && $user['name'] === 'admin L21' && $user['username'] === env('XUSRADXE')) {
             $user['user_access'] = [
                 'deposit' => 1,

@@ -134,7 +134,7 @@ class AppServiceProvider extends ServiceProvider
         })->count();
 
         $responseMemo = Http::withHeaders([
-            'x-customblhdrs' => '09c90c1d6e1b82015737f88d5f5b827060a57c874babe97f965aaa68072585191ce0eab75404312f4f349ee70029404c2d8f66698b6a4da18990445d1437ff79'
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/memo');
         $resultMemo = $responseMemo->json();
         if ($resultMemo['status'] == 'success') {

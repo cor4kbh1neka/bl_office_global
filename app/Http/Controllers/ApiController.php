@@ -151,7 +151,7 @@ class ApiController extends Controller
                 "UserGroup" => "c",
                 "Agent" => env('AGENTID'),
                 "CompanyKey" => env('COMPANY_KEY'),
-                "ServerId" => "YY-TEST"
+                "ServerId" => "XWZ-GLB"
             ];
 
             $url = env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx';
@@ -161,7 +161,6 @@ class ApiController extends Controller
             ])->post($url, $data);
 
             $responseData = $response->json();
-            return $responseData;
             if ($responseData["error"]["id"] === 0) {
 
                 try {

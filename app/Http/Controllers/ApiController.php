@@ -154,12 +154,12 @@ class ApiController extends Controller
                 "ServerId" => "XWZ-GLB"
             ];
             $url = env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx';
-            return $url;
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json; charset=UTF-8'
             ])->post($url, $data);
 
             $responseData = $response->json();
+            return $responseData;
             if ($responseData["error"]["id"] === 0) {
 
                 try {

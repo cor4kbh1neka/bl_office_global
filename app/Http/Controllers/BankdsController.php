@@ -173,7 +173,7 @@ class BankdsController extends Controller
         $url = env('DOMAIN') . '/banks/' . $endpoint;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-            'x-customblhdrs' => '09c90c1d6e1b82015737f88d5f5b827060a57c874babe97f965aaa68072585191ce0eab75404312f4f349ee70029404c2d8f66698b6a4da18990445d1437ff79',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS'),
         ])->get($url);
 
         if ($response->successful()) {

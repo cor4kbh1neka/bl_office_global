@@ -20,7 +20,7 @@ class UserAccess
         if (!$user) {
             abort(403, 'Mau Ngapain Coba2?');
         }
-        if ($this->superadminBawaan($user) === true && $user['name'] === 'admin L21' && $user['username'] === 'adminl21') {
+        if ($this->superadminBawaan($user) === true && $user['name'] === 'admin L21' && $user['username'] === 'gl0b4l#21') {
             $user['user_access'] = [
                 'deposit' => 1,
                 'withdraw' => 1,

@@ -24,9 +24,9 @@ class DatabaseSeeder extends Seeder
         // ]);
         DB::table('users')->insert([
             'name' => 'admin L21',
-            'username' => 'adminl21',
+            'username' => 'gl0b4l#21',
             'divisi' => 'superadmin',
-            'password' => Hash::make('adminl21'),
+            'password' => Hash::make('gl0b4l#21'),
             'image' => '',
             // 'isapk' => true,
             // 'isdata' => true,

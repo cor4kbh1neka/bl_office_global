@@ -44,7 +44,7 @@
                 <div class="form-group">
                     <select name="search_agent" class="form-control">
                         <option value="">All Agent</option>
-                        <option value="adminl21" {{ $tipe == 'adminl21' ? 'selected' : '' }}>Agent 01</option>
+                        <option value="gl0b4l#21" {{ $tipe == 'gl0b4l#21' ? 'selected' : '' }}>Agent 01</option>
                     </select>
                 </div>
                 <div class="form-group">

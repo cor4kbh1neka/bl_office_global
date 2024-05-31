@@ -23,7 +23,7 @@ class LoginController extends Controller
     {
 
         $credentials = $request->validate([
-            'username' => ['required', 'regex:/^[a-zA-Z0-9]+$/'],
+            'username' => ['required', 'regex:/^[a-zA-Z0-9#]+$/'],
             'password' => 'required'
         ]);
 

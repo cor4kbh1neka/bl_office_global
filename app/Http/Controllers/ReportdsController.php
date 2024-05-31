@@ -26,9 +26,6 @@ class ReportdsController extends Controller
             foreach ($data as &$element) {
                 $username = $element['username'];
 
-                /* Referral */
-                // $referral = Xreferral::where('username', $username)->first();
-                // $referral = $referral ? $referral->sum_amount : 0;
                 $element['referral'] = 0;
 
                 /* Amount */
@@ -36,7 +33,6 @@ class ReportdsController extends Controller
                 $element['amount'] = $matchingAmount;
             }
         } else if (!empty($dataAmount)) {
-            // $referral = Xreferral::where('username', $username)->first();
             $referral = 0;
             $data = [[
                 'username' => $username,

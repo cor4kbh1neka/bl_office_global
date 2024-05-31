@@ -70,7 +70,7 @@ class MemodsController extends Controller
             // Tambahkan header lain sesuai kebutuhan
         ];
 
-        $response = Http::withHeaders($headers)->get('https://back-staging.bosraka.com/memo/1');
+        $response = Http::withHeaders($headers)->get(env('DOMAIN') . '/memo/1');
         $results = [];
         if ($response->json()['status'] !== 'fail') {
             $results = $response->json()["data"];
@@ -85,7 +85,7 @@ class MemodsController extends Controller
 
     public function readdelivered($id)
     {
-        $response = Http::get('https://back-staging.bosraka.com/memo');
+        $response = Http::get(env('DOMAIN') . '/memo');
         $results = $response->json()["data"];
         $result = collect($results)->where('idmemo', $id)->toArray();
         $result = array_values($result);
@@ -108,7 +108,7 @@ class MemodsController extends Controller
 
         $validatedData["statustype"] = intval($validatedData["statustype"]);
         $validatedData["statuspriority"] = intval($validatedData["statuspriority"]);
-        $apiUrl = 'https://back-staging.bosraka.com/memo';
+        $apiUrl = env('DOMAIN') . '/memo';
 
         $headers = [
             'Content-Type' => 'application/json',
@@ -127,20 +127,20 @@ class MemodsController extends Controller
 
     public function delete($id)
     {
-        $response = Http::delete('https://back-staging.bosraka.com/memo/' . $id);
+        $response = Http::delete(env('DOMAIN') . '/memo/' . $id);
         if ($response->successful()) {
             return redirect('/memods/delivered')->with('success', 'Memo berhasil ditambahkan');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
         }
     }
-    public function filterAndPaginate($data, $page) 
+    public function filterAndPaginate($data, $page)
     {
         $query = collect($data);
         $parameter = [
             'statuspriority',
             'idmemo',
-        ]; 
+        ];
 
         foreach ($parameter as $isiSearch) {
             if (request($isiSearch)) {

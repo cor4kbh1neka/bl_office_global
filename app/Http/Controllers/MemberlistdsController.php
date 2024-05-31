@@ -63,7 +63,7 @@ class MemberlistdsController extends Controller
 
     private function getApiUser($username)
     {
-        $url = 'https://back-staging.bosraka.com/users/' . $username;
+        $url = env('DOMAIN') . '/users/' . $username;
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
@@ -127,7 +127,7 @@ class MemberlistdsController extends Controller
     private function updateIsVerif($username, $isverified)
     {
 
-        $url = 'https://back-staging.bosraka.com/users/vip/' . $username;
+        $url = env('DOMAIN') . '/users/vip/' . $username;
         $data = [
             "is_verified" => $isverified == 1 ? true : false
         ];
@@ -204,7 +204,7 @@ class MemberlistdsController extends Controller
 
     private function reqApiUpdateUser($data, $username)
     {
-        $url = 'https://back-staging.bosraka.com/users/' . $username;
+        $url = env('DOMAIN') . '/users/' . $username;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
         ])->put($url, $data);
@@ -223,7 +223,7 @@ class MemberlistdsController extends Controller
 
     private function reqApiUpdatePassword($data, $username)
     {
-        $url = 'https://back-staging.bosraka.com/users/pswdy/' . $username;
+        $url = env('DOMAIN') . '/users/pswdy/' . $username;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
         ])->put($url, $data);

@@ -15,7 +15,7 @@ class AnalyticsdsController extends Controller
 {
     public function index()
     {
-        $url = 'https://back-staging.bosraka.com/content/dtmttag/gtdt';
+        $url = env('DOMAIN') . '/content/dtmttag/gtdt';
         $response = Http::withTokenHeader()->get($url);
         $crot = json_decode($response);
         $data = $crot->data;
@@ -37,20 +37,19 @@ class AnalyticsdsController extends Controller
             'artcl' => $raw['article'],
             'scrptlvc' => $raw['script_livechat'],
         ];
-        
-        $url = 'https://back-staging.bosraka.com/content/dtmttag/1';
+
+        $url = env('DOMAIN') . '/content/dtmttag/1';
         $response = Http::withTokenHeader()->post($url, $validatedData);
-        if ($response->successful()){
+        if ($response->successful()) {
             return redirect('/analyticsds')->with('success', 'Data Berhasil di Edit!');
         } else {
             return redirect('/analyticsds')->with('error', 'Data Gagal di Edit!');
         }
-
     }
 
     public function apiSitemap()
     {
-        $url = 'https://back-staging.bosraka.com/content/stmp';
+        $url = env('DOMAIN') . '/content/stmp';
         $response = Http::withTokenHeader()->get($url);
         $crot = json_decode($response);
         $data = $crot->data;
@@ -77,23 +76,23 @@ class AnalyticsdsController extends Controller
         $validatedData = $request->validate([
             'urpage' => 'required'
         ]);
-        $url = 'https://back-staging.bosraka.com/content/stmp';
+        $url = env('DOMAIN') . '/content/stmp';
         $response = Http::withTokenHeader()->post($url, $validatedData);
-        if ($response->successful()){
+        if ($response->successful()) {
             return redirect('/analyticsds/sitemap')->with('success', 'Data Berhasil di Tambah!');
         } else {
             return redirect('/analyticsds/sitemap')->with('error', 'Data Gagal di Tambah!');
         }
     }
-    public function updateSitemap(Request $request , $urpage)
+    public function updateSitemap(Request $request, $urpage)
     {
-        $url = 'https://back-staging.bosraka.com/content/stmp/'.$urpage;
+        $url = env('DOMAIN') . '/content/stmp/' . $urpage;
         $waktuUpdate = Carbon::now()->format('Y-m-d');
-        if($request->urpage == $urpage && $request->lastmod == $waktuUpdate){
-            return redirect('analyticsds/sitemap/')->with('warning','Data ' .$urpage. ' tidak berubah');
+        if ($request->urpage == $urpage && $request->lastmod == $waktuUpdate) {
+            return redirect('analyticsds/sitemap/')->with('warning', 'Data ' . $urpage . ' tidak berubah');
         } elseif ($request->urpage == $urpage && $request->lastmod != $waktuUpdate) {
             $urpageSementara = '1asdaf856as1d';
-            if ($urpage === '1asdaf856as1d'){
+            if ($urpage === '1asdaf856as1d') {
                 $urpageSementara = '1fg45ds6g14sad';
             }
             $mauDiubah = [
@@ -104,11 +103,11 @@ class AnalyticsdsController extends Controller
                 'urpage' => $urpage,
                 'updated_at' => $waktuUpdate
             ];
-            $urlbalik = 'https://back-staging.bosraka.com/content/stmp/'.$urpageSementara;
+            $urlbalik = env('DOMAIN') . '/content/stmp/' . $urpageSementara;
             $responsesementara = Http::withTokenHeader()->post($url, $mauDiubah);
             $response = Http::withTokenHeader()->post($urlbalik, $validatedData);
-            if($response && $responsesementara->successful()){
-                return redirect('analyticsds/sitemap/')->with('success','Berhasil Ubah Tanggal ');
+            if ($response && $responsesementara->successful()) {
+                return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Ubah Tanggal ');
             }
         }
         $validatedData = $request->validate([
@@ -119,16 +118,16 @@ class AnalyticsdsController extends Controller
             'updated_at' => $waktuUpdate
         ];
         $response = Http::withTokenHeader()->post($url, $validatedData);
-      
-        if($response->successful()){
-            return redirect('analyticsds/sitemap/')->with('success','Berhasil Edit Page ');
+
+        if ($response->successful()) {
+            return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Edit Page ');
         } else {
-            return redirect('analyticsds/sitemap/')->with('error','Gagal Edit Page ' );
+            return redirect('analyticsds/sitemap/')->with('error', 'Gagal Edit Page ');
         }
     }
     public function deleteSitemap($urpage)
     {
-        $url = 'https://back-staging.bosraka.com/content/stmp';
+        $url = env('DOMAIN') . '/content/stmp';
         $raw = $this->apiSitemap();
         $data = null;
         foreach ($raw as $item) {
@@ -138,11 +137,10 @@ class AnalyticsdsController extends Controller
             }
         }
         $response = Http::withTokenHeader()->delete($url, $data);
-        if($response->successful()){
-            return redirect('analyticsds/sitemap/')->with('success','Berhasil Hapus Data '.$urpage);
+        if ($response->successful()) {
+            return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Hapus Data ' . $urpage);
         } else {
-            return redirect('analyticsds/sitemap/')->with('error','Gagal Hapus Data ' .$urpage);
+            return redirect('analyticsds/sitemap/')->with('error', 'Gagal Hapus Data ' . $urpage);
         }
     }
-    
 }

@@ -46,7 +46,7 @@ class SettingsController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-        ])->get('https://back-staging.bosraka.com/apks/settings/apkCrQQbIU5RGc9GSy9C4bn2');
+        ])->get(env('DOMAIN') . '/apks/settings/apkCrQQbIU5RGc9GSy9C4bn2');
 
         if ($response->successful()) {
             $responseData = $response->json();
@@ -104,7 +104,7 @@ class SettingsController extends Controller
         } else {
             try {
 
-                $url = 'https://back-staging.bosraka.com/apks/settings';
+                $url = env('DOMAIN') . '/apks/settings';
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json; charset=UTF-8',
                 ])->post($url, $request->all());

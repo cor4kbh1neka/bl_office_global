@@ -7,11 +7,9 @@ use App\Models\Transactions;
 use App\Models\TransactionStatus;
 use App\Models\TransactionSaldo;
 use App\Models\Member;
-use App\Models\Xreferral;
 use App\Models\MemberAktif;
 use App\Models\Xdpwd;
 use App\Models\DepoWd;
-use App\Models\Groupbank;
 use App\Models\HistoryTransaksi;
 use App\Models\Outstanding;
 use App\Models\Balance;
@@ -143,7 +141,7 @@ class ApiController extends Controller
         $responseCore = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
-        ])->post('https://back-staging.bosraka.com/users', $dataCore);
+        ])->post(env('DOMAIN') . '/users', $dataCore);
 
         $responseCore = $responseCore->json();
         if ($responseCore["status"] === "success") {
@@ -214,29 +212,6 @@ class ApiController extends Controller
                         'keterangan' => '-'
                     ]);
                 }
-
-                /* Create Xreferral */
-                // $dataXreferral = Xreferral::where('upline', $request->Referral)
-                //     ->whereDate('created_at', now())->first();
-                // if ($dataXreferral) {
-                //     $dataXreferral->increment('total_downline');
-                // } else {
-                //     Xreferral::create([
-                //         'upline' => $request->Referral,
-                //         'total_downline' => 1,
-                //         'downline_deposit' => 0,
-                //         'downline_aktif' => 0,
-                //         'total_bonus' => 0
-                //     ]);
-                // }
-
-
-                // $dataXreferral = Xreferral::where('username', $request->Referral)->first();
-                // if ($dataXreferral) {
-                //     $dataXreferral->update([
-                //         'count_referral' => $dataXreferral->count_referral + 1
-                //     ]);
-                // }
 
                 return $responseCore;
             } else {
@@ -848,7 +823,7 @@ class ApiController extends Controller
             'iswap' => $request->iswap,
             'device' => $request->device
         ];
-        $apiUrl = 'https://back-staging.bosraka.com/prx/checkBalance';
+        $apiUrl = env('DOMAIN') . '/prx/checkBalance';
 
         $response = Http::withHeaders([
             'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',

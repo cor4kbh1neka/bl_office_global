@@ -763,59 +763,6 @@ class ApiBolaController extends Controller
                         /* Win Loss */
                         $dataTransactionsS2 = TransactionSaldo::where('transtatus_id', $last2ndStatus->id)->orderBy('created_at', 'DESC')->orderBy('urutan', 'DESC')->first();
                         $this->addWinlossStake($request->TransferCode, $portfolio, ($dataTransactionsS2->amount * -1), 'rollback');
-
-                        /* Update Data Referral */
-                        // if (preg_match('/^[a-e]/i', $dataHistory->referral)) {
-                        //     $refAktif = ReferralAktif1::where('downline', $dataHistory->Username)->whereDate('created_at', date('Y-m-d', strtotime($dataHistory->Username)))->first();
-                        //     if ($refAktif) {
-                        //         if ($refAktif->amount === 0) {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, true, 'WD');
-                        //         } else {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, false, 'WD');
-                        //         }
-                        //         $refAktif->decrement('amount', $dataHistory->kredit);
-                        //     }
-                        // } elseif (preg_match('/^[f-j]/i', $dataHistory->referral)) {
-                        //     $refAktif = ReferralAktif2::where('downline', $dataHistory->Username)->whereDate('created_at', date('Y-m-d', strtotime($dataHistory->Username)))->first();
-                        //     if ($refAktif) {
-                        //         if ($refAktif->amount === 0) {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, true, 'WD');
-                        //         } else {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, false, 'WD');
-                        //         }
-                        //         $refAktif->decrement('amount', $dataHistory->kredit);
-                        //     }
-                        // } elseif (preg_match('/^[k-o]/i', $dataHistory->referral)) {
-                        //     $refAktif = ReferralAktif3::where('downline', $dataHistory->Username)->whereDate('created_at', date('Y-m-d', strtotime($dataHistory->Username)))->first();
-                        //     if ($refAktif) {
-                        //         if ($refAktif->amount === 0) {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, true, 'WD');
-                        //         } else {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, false, 'WD');
-                        //         }
-                        //         $refAktif->decrement('amount', $dataHistory->kredit);
-                        //     }
-                        // } elseif (preg_match('/^[p-t]/i', $dataHistory->referral)) {
-                        //     $refAktif = ReferralAktif4::where('downline', $dataHistory->Username)->whereDate('created_at', date('Y-m-d', strtotime($dataHistory->Username)))->first();
-                        //     if ($refAktif) {
-                        //         if ($refAktif->amount === 0) {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, true, 'WD');
-                        //         } else {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, false, 'WD');
-                        //         }
-                        //         $refAktif->decrement('amount', $dataHistory->kredit);
-                        //     }
-                        // } elseif (preg_match('/^[u-z]/i', $dataHistory->referral)) {
-                        //     $refAktif = ReferralAktif5::where('downline', $dataHistory->Username)->whereDate('created_at', date('Y-m-d', strtotime($dataHistory->Username)))->first();
-                        //     if ($refAktif) {
-                        //         if ($refAktif->amount === 0) {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, true, 'WD');
-                        //         } else {
-                        //             $this->execXreferral($dataHistory->referral, $dataHistory->kredit, false, 'WD');
-                        //         }
-                        //         $refAktif->decrement('amount', $dataHistory->kredit);
-                        //     }
-                        // }
                     }
                 }
             }
@@ -982,67 +929,42 @@ class ApiBolaController extends Controller
                             if (preg_match('/^[a-e]/i', $dataAktif->referral)) {
                                 $refAktif = ReferralAktif1::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
                                 if ($refAktif) {
-                                    // if ($refAktif->amount === 0) {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
-                                    // } else {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, false, 'DP');
-                                    // }
+
                                     $refAktif->increment('amount', $referralAmount);
                                 } else {
                                     ReferralAktif1::create($dataReferral);
-                                    // $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
                                 }
                             } elseif (preg_match('/^[f-j]/i', $dataAktif->referral)) {
                                 $refAktif = ReferralAktif2::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
                                 if ($refAktif) {
-                                    // if ($refAktif->amount === 0) {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
-                                    // } else {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, false, 'DP');
-                                    // }
+
                                     $refAktif->increment('amount', $referralAmount);
                                 } else {
                                     ReferralAktif2::create($dataReferral);
-                                    // $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
                                 }
                             } elseif (preg_match('/^[k-o]/i', $dataAktif->referral)) {
                                 $refAktif = ReferralAktif3::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
                                 if ($refAktif) {
-                                    // if ($refAktif->amount === 0) {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
-                                    // } else {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, false, 'DP');
-                                    // }
+
                                     $refAktif->increment('amount', $referralAmount);
                                 } else {
                                     ReferralAktif3::create($dataReferral);
-                                    // $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
                                 }
                             } elseif (preg_match('/^[p-t]/i', $dataAktif->referral)) {
                                 $refAktif = ReferralAktif4::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
                                 if ($refAktif) {
-                                    // if ($refAktif->amount === 0) {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
-                                    // } else {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, false, 'DP');
-                                    // }
+
                                     $refAktif->increment('amount', $referralAmount);
                                 } else {
                                     ReferralAktif4::create($dataReferral);
-                                    // $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
                                 }
                             } elseif (preg_match('/^[u-z]/i', $dataAktif->referral)) {
                                 $refAktif = ReferralAktif5::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
                                 if ($refAktif) {
-                                    // if ($refAktif->amount === 0) {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
-                                    // } else {
-                                    //     $this->execXreferral($dataAktif->referral, $referralAmount, false, 'DP');
-                                    // }
+
                                     $refAktif->increment('amount', $referralAmount);
                                 } else {
                                     ReferralAktif5::create($dataReferral);
-                                    // $this->execXreferral($dataAktif->referral, $referralAmount, true, 'DP');
                                 }
                             }
                         }
@@ -1065,32 +987,6 @@ class ApiBolaController extends Controller
                     }
                 }
             }
-        }
-    }
-
-    private function execXreferral($username, $amount, $isaktif, $jenis)
-    {
-        /* Create Xreferral */
-        $dataXreferral = Xreferral::where('upline', $username)
-            ->whereDate('created_at', now())->first();
-        if ($dataXreferral) {
-            if ($isaktif === true) {
-                $dataXreferral->increment('downline_aktif');
-            }
-
-            if ($jenis == 'DP') {
-                $dataXreferral->increment('total_bonus', $amount);
-            } else {
-                $dataXreferral->decrement('total_bonus', $amount);
-            }
-        } else {
-            Xreferral::create([
-                'upline' => $username,
-                'total_downline' => 0,
-                'downline_deposit' => 0,
-                'downline_aktif' => 1,
-                'total_bonus' => $amount
-            ]);
         }
     }
 

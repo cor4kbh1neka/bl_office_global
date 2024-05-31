@@ -153,7 +153,7 @@ class ApiController extends Controller
                 "CompanyKey" => env('COMPANY_KEY'),
                 "ServerId" => "XWZ-GLB"
             ];
-
+            dd($data);
             $url = env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx';
 
             $response = Http::withHeaders([

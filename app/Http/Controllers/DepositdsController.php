@@ -110,9 +110,7 @@ class DepositdsController extends Controller
         $response = Http::withHeaders($headers)->get($url);
 
         $response = $response->json();
-
         if ($response['status'] == 'success') {
-
             $response = $response['data'];
         } else {
             $response = [];

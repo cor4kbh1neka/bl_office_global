@@ -131,7 +131,7 @@ class MemberController extends Controller
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-        ])->put('https://back-staging.bosraka.com/users/' . $request->xyusernamexxy, $data);
+        ])->put(env('DOMAIN') . '/users/' . $request->xyusernamexxy, $data);
 
         if ($response->successful()) {
             $responseData = $response->json();
@@ -169,7 +169,7 @@ class MemberController extends Controller
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-        ])->put('https://back-staging.bosraka.com/users/pswdy/' . $request->xyusernamexxy, $data);
+        ])->put(env('DOMAIN') . '/users/pswdy/' . $request->xyusernamexxy, $data);
 
         if ($response->successful()) {
             $responseData = $response->json();
@@ -240,7 +240,7 @@ class MemberController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-        ])->post('https://back-staging.bosraka.com/users', $req);
+        ])->post(env('DOMAIN') . '/users', $req);
 
         if ($response->successful()) {
             $responseData = $response->json();
@@ -291,7 +291,7 @@ class MemberController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-        ])->get('https://back-staging.bosraka.com/users/' . $username);
+        ])->get(env('DOMAIN') . '/users/' . $username);
 
         if ($response->successful()) {
             $responseData = $response->json();

@@ -143,7 +143,7 @@ class ApiController extends Controller
         $responseCore = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
-        ])->post('https://back-staging.bosraka.com/users', $dataCore);
+        ])->post(env('DOMAIN') . '/users', $dataCore);
 
         $responseCore = $responseCore->json();
         if ($responseCore["status"] === "success") {
@@ -848,7 +848,7 @@ class ApiController extends Controller
             'iswap' => $request->iswap,
             'device' => $request->device
         ];
-        $apiUrl = 'https://back-staging.bosraka.com/prx/checkBalance';
+        $apiUrl = env('DOMAIN') . '/prx/checkBalance';
 
         $response = Http::withHeaders([
             'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',

@@ -14,7 +14,7 @@ class ContentdsController extends Controller
 {
     public function index()
     {
-        $url = 'https://back-staging.bosraka.com/content/ctgeneral';
+        $url = env('DOMAIN') . '/content/ctgeneral';
         $response = Http::withTokenHeader()->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
@@ -40,9 +40,9 @@ class ContentdsController extends Controller
             'pkrl' => $raw['urlapk'],
             'rnntxt' => $raw['runningtext'],
         ];
-        $url = 'https://back-staging.bosraka.com/content/ctgeneral/'.$id;
+        $url = env('DOMAIN') . '/content/ctgeneral/' . $id;
         $response = Http::withTokenHeader()->put($url, $validatedData);
-        if ($response->successful()){
+        if ($response->successful()) {
             return redirect('/contentds')->with('success', 'Data Berhasil di Edit!');
         } else {
             return redirect('/contentds')->with('error', 'Data Berhasil di Edit!');
@@ -51,7 +51,7 @@ class ContentdsController extends Controller
 
     public function apiContentPromo()
     {
-        $url = 'https://back-staging.bosraka.com/content/prm';
+        $url = env('DOMAIN') . '/content/prm';
         $response = Http::withTokenHeader()->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
@@ -79,7 +79,7 @@ class ContentdsController extends Controller
     }
     public function promostore(Request $request)
     {
-        $url = 'https://back-staging.bosraka.com/content/prm';
+        $url = env('DOMAIN') . '/content/prm';
         $validatedData = $request->validate([
             'titlepromo' => 'required',
             'imgurl' => 'required',
@@ -97,10 +97,10 @@ class ContentdsController extends Controller
             'pssprm' => $validatedData['urutanpromo'],
         ];
         $response = Http::withTokenHeader()->post($url, $validatedData);
-        if ($response->successful()){
+        if ($response->successful()) {
             return redirect('/contentds/promo')->with('success', 'Berhasil Menambah Data');
         } else {
-            return redirect('/contentds/promo')->with('error','Gagal Menambah Data');
+            return redirect('/contentds/promo')->with('error', 'Gagal Menambah Data');
         }
     }
     public function promoedit($id)
@@ -113,7 +113,7 @@ class ContentdsController extends Controller
                 break;
             }
         }
-        if($data === null){
+        if ($data === null) {
             abort(404);
         }
         return view('contentds.promo_edit', [
@@ -124,7 +124,7 @@ class ContentdsController extends Controller
     }
     public function promoupdate(Request $request, $id)
     {
-        if(request('urutan') && request('urutanlain')){
+        if (request('urutan') && request('urutanlain')) {
             $raw = $this->apiContentPromo();
             $data1 = null;
             foreach ($raw as $item) {
@@ -135,7 +135,7 @@ class ContentdsController extends Controller
             }
 
             if ($data1) {
-                $url1 = 'https://back-staging.bosraka.com/content/prm/'.$data1->idctprm;
+                $url1 = env('DOMAIN') . '/content/prm/' . $data1->idctprm;
                 $ctprmur = $data1->ctprmur;
                 $ttlectprm = $data1->ttlectprm;
                 $trgturctprm = $data1->trgturctprm;
@@ -151,7 +151,7 @@ class ContentdsController extends Controller
                     'pssprm' => request('urutanlain'),
                 ];
             }
-            
+
             $data2 = null;
             foreach ($raw as $item) {
                 if ($item->pssprm == request('urutanlain')) {
@@ -161,7 +161,7 @@ class ContentdsController extends Controller
             }
 
             if ($data2) {
-                $url2 = 'https://back-staging.bosraka.com/content/prm/'.$data2->idctprm;
+                $url2 = env('DOMAIN') . '/content/prm/' . $data2->idctprm;
                 $ctprmur = $data2->ctprmur;
                 $ttlectprm = $data2->ttlectprm;
                 $trgturctprm = $data2->trgturctprm;
@@ -179,14 +179,14 @@ class ContentdsController extends Controller
             }
             $response1 = Http::withTokenHeader()->put($url1, $validatedData1);
             $response2 = Http::withTokenHeader()->put($url2, $validatedData2);
-            if ($response1 && $response2->successful()){
-                    return redirect('/contentds/promo')->with('success', 'Data Berhasil di Edit!');
+            if ($response1 && $response2->successful()) {
+                return redirect('/contentds/promo')->with('success', 'Data Berhasil di Edit!');
             } else {
                 return redirect('/contentds/promo')->with('error', 'Data Gagal di Edit!');
             }
         }
         $urutanpromo = null;
-        if (request('urutanpromo') === null){
+        if (request('urutanpromo') === null) {
             $raw = $this->apiContentPromo();
             foreach ($raw as $item) {
                 if ($item->idctprm == $id) {
@@ -197,8 +197,8 @@ class ContentdsController extends Controller
         } else {
             $urutanpromo = request('urutanpromo');
         }
-        
-        $url = 'https://back-staging.bosraka.com/content/prm/'.$id;
+
+        $url = env('DOMAIN') . '/content/prm/' . $id;
         $validatedData = $request->validate([
             'titlepromo' => 'required',
             'imgurl' => 'required',
@@ -217,7 +217,7 @@ class ContentdsController extends Controller
         ];
         $response = Http::withTokenHeader()->put($url, $validatedData);
 
-        if ($response->successful()){
+        if ($response->successful()) {
             return redirect('/contentds/promo')->with('success', 'Data Berhasil di Edit!');
         } else {
             return redirect('/contentds/promo')->with('error', 'Data Gagal di Edit!');
@@ -225,7 +225,7 @@ class ContentdsController extends Controller
     }
     public function promodelete($id)
     {
-        $url = 'https://back-staging.bosraka.com/content/prm/'.$id;
+        $url = env('DOMAIN') . '/content/prm/' . $id;
         $raw = $this->apiContentPromo();
         $data = null;
         foreach ($raw as $item) {
@@ -235,15 +235,15 @@ class ContentdsController extends Controller
             }
         }
         $response = Http::withTokenHeader()->delete($url, $data);
-        if($response->successful()){
-            return redirect('/contentds/promo')->with('success','Berhasil Hapus Data '.$id);
+        if ($response->successful()) {
+            return redirect('/contentds/promo')->with('success', 'Berhasil Hapus Data ' . $id);
         } else {
-            return redirect('/contentds/promo')->with('error','Gagal Hapus Data ' .$id);
+            return redirect('/contentds/promo')->with('error', 'Gagal Hapus Data ' . $id);
         }
     }
     public function apiSlider()
     {
-        $url = 'https://back-staging.bosraka.com/content/ctslider';
+        $url = env('DOMAIN') . '/content/ctslider';
         $response = Http::withTokenHeader()->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
@@ -281,7 +281,7 @@ class ContentdsController extends Controller
                 break;
             }
         }
-        if($data === null){
+        if ($data === null) {
             abort(404);
         }
         return view('contentds.slider_edit', [
@@ -292,7 +292,7 @@ class ContentdsController extends Controller
     }
     public function sliderUpdate(Request $request, $id)
     {
-        $url = 'https://back-staging.bosraka.com/content/ctslider/'.$id;
+        $url = env('DOMAIN') . '/content/ctslider/' . $id;
         $raw = $request->validate([
             'titleslider' => 'required',
             'imgurl' => 'required',
@@ -307,17 +307,16 @@ class ContentdsController extends Controller
         ];
 
         $response = Http::withTokenHeader()->put($url, $validatedData);
-        if($response->successful()){
-            return redirect('contentds/slider')->with('success','Berhasil Edit Data');
+        if ($response->successful()) {
+            return redirect('contentds/slider')->with('success', 'Berhasil Edit Data');
         } else {
-            return redirect('contentds/slider')->with('error','Berhasil Edit Data');
+            return redirect('contentds/slider')->with('error', 'Berhasil Edit Data');
         }
-
     }
 
     public function apiLinkContent()
     {
-        $url = "https://back-staging.bosraka.com/content/ctlink";
+        $url = env('DOMAIN') . "/content/ctlink";
         $response = Http::withTokenHeader()->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
@@ -347,7 +346,7 @@ class ContentdsController extends Controller
                 break;
             }
         }
-        if($data === null){
+        if ($data === null) {
             abort(404);
         }
         return view('contentds.link_edit', [
@@ -358,7 +357,7 @@ class ContentdsController extends Controller
     }
     public function linkUpdate(Request $request, $id)
     {
-        $url = 'https://back-staging.bosraka.com/content/ctlink/'.$id;
+        $url = env('DOMAIN') . '/content/ctlink/' . $id;
         $validatedData = $request->validate([
             'name' => 'required',
             'urldomain' => 'required',
@@ -370,16 +369,16 @@ class ContentdsController extends Controller
             'statusctlnk' => $validatedData['statuspromo'],
         ];
         $response = Http::withTokenHeader()->put($url, $validatedData);
-        if($response->successful()){
-            return redirect('contentds/link')->with('success','Berhasil Edit Data');
+        if ($response->successful()) {
+            return redirect('contentds/link')->with('success', 'Berhasil Edit Data');
         } else {
-            return redirect('contentds/link')->with('error','Gagal Edit Data');
+            return redirect('contentds/link')->with('error', 'Gagal Edit Data');
         }
     }
 
     public function apiSocialmedia()
     {
-        $url = 'https://back-staging.bosraka.com/content/socmed';
+        $url = env('DOMAIN') . '/content/socmed';
         $response = Http::withTokenHeader()->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
@@ -408,7 +407,7 @@ class ContentdsController extends Controller
                 break;
             }
         }
-        if($data === null){
+        if ($data === null) {
             abort(404);
         }
         return view('contentds.socialmedia_edit', [
@@ -419,7 +418,7 @@ class ContentdsController extends Controller
     }
     public function socialmediaupdate(Request $request, $id)
     {
-        $url = 'https://back-staging.bosraka.com/content/socmed/'.$id;
+        $url = env('DOMAIN') . '/content/socmed/' . $id;
         $validatedData = $request->validate([
             'name' => 'required',
             'urltarget' => 'required',
@@ -434,15 +433,15 @@ class ContentdsController extends Controller
             'statusctscmed' => $validatedData['statuspromo'],
         ];
         $response = Http::withTokenHeader()->put($url, $validatedData);
-        if ($response->successful()){
-            return redirect('/contentds/socialmedia')->with('success','Berhasil Edit Data');
+        if ($response->successful()) {
+            return redirect('/contentds/socialmedia')->with('success', 'Berhasil Edit Data');
         } else {
-            return redirect('/contentds/socialmedia')->with('error','Gagal Edit Data');
+            return redirect('/contentds/socialmedia')->with('error', 'Gagal Edit Data');
         }
     }
     public function apiStatusMaintenance()
     {
-        $url = 'https://back-staging.bosraka.com/content/sts';
+        $url = env('DOMAIN') . '/content/sts';
         $response = Http::withTokenHeader()->get($url);
         $raw = json_decode($response);
         $data = $raw->data;
@@ -451,7 +450,7 @@ class ContentdsController extends Controller
     public function statusMaintenance()
     {
         $data = $this->apiStatusMaintenance();
-        return view('contentds.maintenance',[
+        return view('contentds.maintenance', [
             'title' => 'Content',
             'data' => $data,
             'totalnote' => 0
@@ -460,16 +459,15 @@ class ContentdsController extends Controller
     public function statusMaintenanceEdit()
     {
         $data = $this->apiStatusMaintenance();
-        return view('contentds.maintenance_edit',[
+        return view('contentds.maintenance_edit', [
             'title' => 'Content',
             'data' => $data,
             'totalnote' => 0,
         ]);
-
     }
     public function statusMaintenanceUpdate(Request $request, $status)
     {
-        $url = 'https://back-staging.bosraka.com/content/sts/1';
+        $url = env('DOMAIN') . '/content/sts/1';
         $validatedData = $request->validate([
             'status' => 'required'
         ]);
@@ -477,10 +475,10 @@ class ContentdsController extends Controller
             'stsmtncnc' => $validatedData['status']
         ];
         $response = Http::withTokenHeader()->put($url, $validatedData);
-        if ($response->successful()){
-            return redirect('contentds/maintenance')->with('success','Berhasil Edit Data');
+        if ($response->successful()) {
+            return redirect('contentds/maintenance')->with('success', 'Berhasil Edit Data');
         } else {
-            return redirect('contentds/maintenance')->with('error','Gagal Edit Data');
+            return redirect('contentds/maintenance')->with('error', 'Gagal Edit Data');
         }
     }
 }

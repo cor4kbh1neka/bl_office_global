@@ -62,7 +62,7 @@ class BankdsController extends Controller
             $bankData["statusxyxyy"] = intval($bankData["statusxyxyy"]);
             $bankData["wdstatusxyxyy"] = intval($bankData["wdstatusxyxyy"]);
 
-            $apiUrl = 'https://back-staging.bosraka.com/banks/master/' . $bankName;
+            $apiUrl = env('DOMAIN') . '/banks/master/' . $bankName;
 
             $response = Http::put($apiUrl, $bankData);
             if (!$response->successful()) {
@@ -85,7 +85,7 @@ class BankdsController extends Controller
         $validatedData["bnkmstrxyxyx"] = strtolower($validatedData["bnkmstrxyxyx"]);
         $validatedData["urllogoxxyx"] = strtolower($validatedData["urllogoxxyx"]);
 
-        $apiUrl = 'https://back-staging.bosraka.com/banks/master';
+        $apiUrl = env('DOMAIN') . '/banks/master';
 
         $response = Http::post($apiUrl, $validatedData);
         if ($response->successful()) {
@@ -113,7 +113,7 @@ class BankdsController extends Controller
         $validatedData["min_wd"] = intval($validatedData["min_wd"]);
         $validatedData["max_wd"] = intval($validatedData["max_wd"]);
 
-        $apiUrl = 'https://back-staging.bosraka.com/banks/group';
+        $apiUrl = env('DOMAIN') . 'banks/group';
 
         $response = Http::post($apiUrl, $validatedData);
         if ($response->successful()) {
@@ -134,7 +134,7 @@ class BankdsController extends Controller
 
     public function deletelistgroup($group)
     {
-        $responseGetGroup = Http::get('https://back-staging.bosraka.com/banks/group');
+        $responseGetGroup = Http::get(env('DOMAIN') . '/banks/group');
         if ($responseGetGroup->failed()) {
             return back()->withInput()->with('error', 'Gagal mengambil data grup');
         }
@@ -147,7 +147,7 @@ class BankdsController extends Controller
 
         $id = $resultGetGroup['data'][$group]["idgroup"];
 
-        $response = Http::delete('https://back-staging.bosraka.com/banks/group/' . $id);
+        $response = Http::delete(env('DOMAIN') . '/banks/group/' . $id);
         if ($response->successful()) {
             Groupbank::where('group', $group)->delete();
 
@@ -159,7 +159,7 @@ class BankdsController extends Controller
 
     public function deletelistmaster($id)
     {
-        $response = Http::delete('https://back-staging.bosraka.com/banks/master/' . $id);
+        $response = Http::delete(env('DOMAIN') . '/banks/master/' . $id);
         if ($response->successful()) {
             return redirect()->route('listmaster')->with('success', 'List group berhasil dihapus');
         } else {
@@ -170,7 +170,7 @@ class BankdsController extends Controller
     private function requestApi($endpoint)
     {
 
-        $url = 'https://back-staging.bosraka.com/banks/' . $endpoint;
+        $url = env('DOMAIN') . '/banks/' . $endpoint;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
             'x-customblhdrs' => '09c90c1d6e1b82015737f88d5f5b827060a57c874babe97f965aaa68072585191ce0eab75404312f4f349ee70029404c2d8f66698b6a4da18990445d1437ff79',
@@ -187,7 +187,7 @@ class BankdsController extends Controller
 
     public function setbankmaster($bank)
     {
-        $response = Http::get('https://back-staging.bosraka.com/banks/master');
+        $response = Http::get(env('DOMAIN') . '/banks/master');
         $data = $response->json()["data"];
         $results = array_filter($data, function ($item) use ($bank) {
             return $item['bnkmstrxyxyx'] === $bank;
@@ -216,7 +216,7 @@ class BankdsController extends Controller
         $dataReq['statusxyxyy'] = intval($dataReq["statusxyxyy"]);
         $dataReq['wdstatusxyxyy'] = intval($dataReq["wdstatusxyxyy"]);
 
-        $response = Http::put('https://back-staging.bosraka.com/banks/master/' . $bank, $dataReq);
+        $response = Http::put(env('DOMAIN') . '/banks/master/' . $bank, $dataReq);
 
         if ($response->successful()) {
             return redirect()->route('listmaster')->with('success', 'List group berhasil dihapus');
@@ -237,7 +237,7 @@ class BankdsController extends Controller
     public function setgroupbank($groupbank)
     {
 
-        $response = Http::get('https://back-staging.bosraka.com/banks/group');
+        $response = Http::get(env('DOMAIN') . '/banks/group');
         $results = $response->json()["data"];
 
         if (isset($results[$groupbank])) {
@@ -264,7 +264,7 @@ class BankdsController extends Controller
         $data['min_wd'] = intval($data['min_wd']);
         $data['max_wd'] = intval($data['max_wd']);
 
-        $response = Http::put('https://back-staging.bosraka.com/banks/group/' . $namagroup, $data);
+        $response = Http::put(env('DOMAIN') . '/banks/group/' . $namagroup, $data);
 
         if ($response->successful()) {
             Groupbank::where('group', $namagroup)->update([
@@ -290,7 +290,7 @@ class BankdsController extends Controller
     public function setbank($id, $groupbank)
     {
         $allgroup = [];
-        $responseByGroup = Http::get('https://back-staging.bosraka.com/banks/v2/' . $groupbank);
+        $responseByGroup = Http::get(env('DOMAIN') . '/banks/v2/' . $groupbank);
         $resultsGroup = $responseByGroup->json()["data"];
 
         $filteredGroups = [];
@@ -307,7 +307,7 @@ class BankdsController extends Controller
             }
         }
 
-        $responseBank = Http::get('https://back-staging.bosraka.com/banks/master');
+        $responseBank = Http::get(env('DOMAIN') . '/banks/master');
         $resultsBank = $responseBank->json()["data"];
 
         return view('bankds.rekbank_edit', [
@@ -348,7 +348,7 @@ class BankdsController extends Controller
         $validatedData["norekxyxy"] = strtolower(str_replace("-", "", $validatedData["norekxyxy"]));
         $validatedData["barcodexrxr"] = strtolower($validatedData["barcodexrxr"]);
 
-        $apiUrl = 'https://back-staging.bosraka.com/banks/v2/add';
+        $apiUrl = env('DOMAIN') . '/banks/v2/add';
         $response = Http::post($apiUrl, $validatedData);
 
         if ($response->successful()) {
@@ -360,7 +360,7 @@ class BankdsController extends Controller
 
     public function listmaster()
     {
-        $response = Http::get('https://back-staging.bosraka.com/banks/master');
+        $response = Http::get(env('DOMAIN') . '/banks/master');
         $results = $response->json()["data"];
 
         return view('bankds.listmaster', [
@@ -387,7 +387,7 @@ class BankdsController extends Controller
 
     public function compareData()
     {
-        $response = Http::get('https://back-staging.bosraka.com/banks/group');
+        $response = Http::get(env('DOMAIN') . '/banks/group');
         $data = $response->json();
         if ($data['status'] == 'success') {
             $data = $data["data"];
@@ -463,7 +463,7 @@ class BankdsController extends Controller
 
     public function listbank($group, $groupwd)
     {
-        $response = Http::get('https://back-staging.bosraka.com/banks/group');
+        $response = Http::get(env('DOMAIN') . '/banks/group');
         $listgroup = $response->json()["data"];
         $listgroupdp = array_filter($listgroup, function ($item) {
             return $item['grouptype'] == 1;
@@ -474,7 +474,7 @@ class BankdsController extends Controller
         });
         unset($listgroupwd['nongroupwd']);
 
-        $responseBank = Http::get('https://back-staging.bosraka.com/banks/master');
+        $responseBank = Http::get(env('DOMAIN') . '/banks/master');
         $listmasterbank = $responseBank->json()["data"];
 
 
@@ -482,13 +482,13 @@ class BankdsController extends Controller
         $listbankdpex = [];
         $listbankdp = [];
         if ($group != 0) {
-            $responseBankByGroup = Http::get('https://back-staging.bosraka.com/banks/v2/' . $group);
+            $responseBankByGroup = Http::get(env('DOMAIN') . '/banks/v2/' . $group);
             if ($responseBankByGroup->json()['status'] !== 'fail') {
                 $listbankdp = $responseBankByGroup->json()["data"];
                 unset($listbankdp['headers']);
             }
 
-            $responseexcgroupbank = Http::get('https://back-staging.bosraka.com/banks/exc/' . $group);
+            $responseexcgroupbank = Http::get(env('DOMAIN') . '/banks/exc/' . $group);
             if ($responseexcgroupbank->json()['status'] !== 'fail') {
                 $listbankdpex = $responseexcgroupbank->json()["data"];
                 unset($listbankdpex['headers']);
@@ -519,13 +519,13 @@ class BankdsController extends Controller
         $listbankwdex = [];
         $listbankwd = [];
         if ($groupwd != 0) {
-            $responseBankByGroupWd = Http::get('https://back-staging.bosraka.com/banks/v2/' . $groupwd);
+            $responseBankByGroupWd = Http::get(env('DOMAIN') . '/banks/v2/' . $groupwd);
             if ($responseBankByGroupWd->json()['status'] !== 'fail') {
                 $listbankwd = $responseBankByGroupWd->json()["data"];
                 unset($listbankwd['headers']);
             }
 
-            $responseexcgroupbankWd = Http::get('https://back-staging.bosraka.com/banks/exc/' . $groupwd);
+            $responseexcgroupbankWd = Http::get(env('DOMAIN') . '/banks/exc/' . $groupwd);
             if ($responseexcgroupbankWd->json()['status'] !== 'fail') {
                 $listbankwdex = $responseexcgroupbankWd->json()["data"];
                 unset($listbankwdex['headers']);
@@ -572,12 +572,12 @@ class BankdsController extends Controller
 
     public function getGroupBank($bank, $jenis)
     {
-        $response = Http::get('https://back-staging.bosraka.com/banks/exc/' . $bank);
+        $response = Http::get(env('DOMAIN') . '/banks/exc/' . $bank);
         $listgroup = $response->json()["data"];
 
         // dd($listgroup);
 
-        $responseGroup = Http::get('https://back-staging.bosraka.com/banks/group');
+        $responseGroup = Http::get(env('DOMAIN') . '/banks/group');
         $listgroupMaster = $responseGroup->json()["data"];
 
         foreach ($listgroup as $key => $value) {
@@ -754,7 +754,7 @@ class BankdsController extends Controller
 
     private function putChangeGroupbank($id, $groupbank)
     {
-        $apiUrl = 'https://back-staging.bosraka.com/banks/v3/' . $id;
+        $apiUrl = env('DOMAIN') . '/banks/v3/' . $id;
         $data = [
             'namegroupxyzt' => $groupbank
         ];
@@ -764,7 +764,7 @@ class BankdsController extends Controller
 
     private function deleteBankFromGroup($id, $groupbank)
     {
-        $url = 'https://back-staging.bosraka.com/banks/arr/' . $id .  '/' . $groupbank;
+        $url = env('DOMAIN') . '/banks/arr/' . $id .  '/' . $groupbank;
         $response = Http::delete($url);
         return $response->json();
     }
@@ -780,7 +780,7 @@ class BankdsController extends Controller
 
     public function deletelistbank($id, $groupbank)
     {
-        $response = Http::delete('https://back-staging.bosraka.com/banks/arr/' . $id . '/' . $groupbank);
+        $response = Http::delete(env('DOMAIN') . '/banks/arr/' . $id . '/' . $groupbank);
         if ($response->successful()) {
             return response()->json(['success' => true, 'message' => 'List bank berhasil dihapus']);
         } else {
@@ -803,7 +803,7 @@ class BankdsController extends Controller
             ];
         $idbank = $dataReq['idbank'];
         $bankname_old = $dataReq['bankname_old'];
-        $response = Http::put('https://back-staging.bosraka.com/banks/v2/' . $idbank . '/' . $bankname_old, $data);
+        $response = Http::put(env('DOMAIN') . '/banks/v2/' . $idbank . '/' . $bankname_old, $data);
 
         if ($response->successful()) {
             return redirect('/bankds/listbank/0/0')->with('success', 'Data berhasil diupdate');

@@ -71,7 +71,7 @@ class ReportdsController extends Controller
             "companyKey" => env('COMPANY_KEY'),
             "serverId" =>  env('SERVERID')
         ];
-        $apiUrl = 'https://ex-api-demo-yy.568win.com/web-root/restricted/report/get-customer-report-by-win-lost-date.aspx';
+        $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-customer-report-by-win-lost-date.aspx';
         $response = Http::post($apiUrl, $data);
         $results = $response->json();
 
@@ -92,7 +92,7 @@ class ReportdsController extends Controller
             "CompanyKey" => env('COMPANY_KEY'),
             "ServerId" =>  env('SERVERID')
         ];
-        $apiUrl = 'https://ex-api-demo-yy.568win.com/web-root/restricted/player/get-player-balance.aspx';
+        $apiUrl = env('BODOMAIN') . '/web-root/restricted/player/get-player-balance.aspx';
         $response = Http::post($apiUrl, $data);
         $results = $response->json();
 
@@ -211,7 +211,7 @@ class ReportdsController extends Controller
 
     private function requestApi($endpoint, $data)
     {
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/report/' . $endpoint . '.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/report/' . $endpoint . '.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',

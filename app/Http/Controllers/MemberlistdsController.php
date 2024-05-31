@@ -372,7 +372,7 @@ class MemberlistdsController extends Controller
             "ServerId" => "YY-TEST"
         ];
 
-        $url = 'https://ex-api-demo-yy.568win.com/web-root/restricted/player/register-player.aspx';
+        $url = env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx';
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8'

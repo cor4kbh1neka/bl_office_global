@@ -87,7 +87,7 @@ class PlayersController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-        ])->post('https://ex-api-demo-yy.568win.com/web-root/restricted/player/register-player.aspx', $req);
+        ])->post(env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx', $req);
 
         if ($response->successful()) {
             $responseData = $response->json();

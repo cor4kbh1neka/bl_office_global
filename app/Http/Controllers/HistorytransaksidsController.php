@@ -43,7 +43,7 @@ class HistorytransaksidsController extends Controller
             "language" => "en",
             "serverId" => "YY-TEST"
         ];
-        $response = Http::withTokenHeader()->post('https://ex-api-demo-yy.568win.com/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
+        $response = Http::withTokenHeader()->post(env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
 
         return $response->json();
     }

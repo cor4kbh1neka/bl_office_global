@@ -16,7 +16,8 @@
         <div class="sechistoryds">
             <div class="grouphistoryds">
                 <div class="groupheadhistoryds">
-                    <form id="searchForm" method="GET" action="/historytransaksids" class="listmembergroup historytransds">
+                    <form id="searchForm" method="GET" action="/historytransaksids"
+                        class="listmembergroup historytransds">
                         <div class="listinputmember">
                             <label for="username">username<span class="required">*</span></label>
                             <input type="text" id="username" name="username" placeholder="username"
@@ -44,13 +45,17 @@
                             <select name="status" id="status">
                                 <option value="" selected="" place=""
                                     style="color: #838383; font-style: italic;" disabled="">Status</option>
-                                <option value="deposit" {{ request('status') == 'deposit' ? 'selected' : '' }}>deposit</option>
-                                <option value="withdraw" {{ request('status') == 'withdraw' ? 'selected' : '' }}>withdraw</option>
+                                <option value="deposit" {{ request('status') == 'deposit' ? 'selected' : '' }}>deposit
+                                </option>
+                                <option value="withdraw" {{ request('status') == 'withdraw' ? 'selected' : '' }}>withdraw
+                                </option>
                                 <option value="manual" {{ request('status') == 'manual' ? 'selected' : '' }}>manual</option>
-                                <option value="pemasangan" {{ request('status') == 'pemasangan' ? 'selected' : '' }}>pemasangan
+                                <option value="pemasangan" {{ request('status') == 'pemasangan' ? 'selected' : '' }}>
+                                    pemasangan
                                 </option>
                                 <option value="menang" {{ request('status') == 'menang' ? 'selected' : '' }}>menang</option>
-                                <option value="referral" {{ request('status') == 'referral' ? 'selected' : '' }}>referral</option>
+                                <option value="referral" {{ request('status') == 'referral' ? 'selected' : '' }}>referral
+                                </option>
                             </select>
                         </div>
                         <div class="listinputmember">
@@ -61,7 +66,8 @@
                                         {{ request('checktransdari') == 'on' ? 'checked' : '' }}>
                                 </div>
                             </label>
-                            <input type="datetime-local" id="transdari" name="transdari" value="{{ request('transdari') }}">
+                            <input type="datetime-local" id="transdari" name="transdari"
+                                value="{{ request('transdari') }}">
                         </div>
                         <div class="listinputmember">
                             <label for="transhingga">
@@ -71,13 +77,15 @@
                                         {{ request('checktranshingga') == 'on' ? 'checked' : '' }}>
                                 </div>
                             </label>
-                            <input type="datetime-local" id="transhingga" name="transhingga" value="{{ request('transhingga') }}">
+                            <input type="datetime-local" id="transhingga" name="transhingga"
+                                value="{{ request('transhingga') }}">
                         </div>
                         <div class="listinputmember">
                             <label for="transdari">
                                 Check All
                                 <div class="check_box">
-                                    <input type="checkbox" id="checkall" name="checkall" {{ request('checkall') == 'on' ? 'checked' : '' }}>
+                                    <input type="checkbox" id="checkall" name="checkall"
+                                        {{ request('checkall') == 'on' ? 'checked' : '' }}>
                                 </div>
                             </label>
                             <button class="tombol primary">
@@ -95,8 +103,7 @@
                     <div class="groupmaksimaldata">
                         <span class="textmaksimaldata">Data yang di tampilkan adalah data <span class="dataterakhir">5
                                 minggu terakhir</span>, </span>
-                        <a href="/historytransaksids/transaksilama"
-                        {{-- <a href="/historytransaksids/transaksilama{{ $query != '' ? '?' . $query : '' }}" --}}
+                        <a href="/historytransaksids/transaksilama" {{-- <a href="/historytransaksids/transaksilama{{ $query != '' ? '?' . $query : '' }}" --}}
                             class="transaksilama tombol primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                 <path fill="currentColor"
@@ -120,7 +127,7 @@
                                 <th class="bagnominalhs">balance (IDR)</th>
                             </tr>
                             @php
-                                if($data != null){
+                                if ($data != null) {
                                     $currentPage = $data->currentPage();
                                     $perPage = $data->perPage();
                                     $startNumber = ($currentPage - 1) * $perPage + 1;
@@ -153,13 +160,13 @@
 
                         </tbody>
                     </table>
-                    
+
                     <div class="grouppagination" style="padding: 25px;">
-                        @if($data !== [])
+                        @if ($data !== [])
                             {{ $data->links('vendor.pagination.customdashboard') }}
                         @endif
                     </div>
-                    
+
                     {{-- <div class="grouppagination">
                         <div class="grouppaginationcc">
                             <div class="trigger left">
@@ -256,18 +263,18 @@
         });
 
         document.getElementById('searchForm').addEventListener('submit', function(event) {
-        const inputs = [
-            'username',
-            'invoice',
-            'status',
-            'transdari',
-            'transhingga',
-            'checkinvoice',
-            'checkstatus',
-            'checktransdari',
-            'checktranshingga',
-            'checkall',
-        ];
+            const inputs = [
+                'username',
+                'invoice',
+                'status',
+                'transdari',
+                'transhingga',
+                'checkinvoice',
+                'checkstatus',
+                'checktransdari',
+                'checktranshingga',
+                'checkall',
+            ];
             inputs.forEach(id => {
                 const inputElement = document.getElementById(id);
                 if (!inputElement.value) {
@@ -285,6 +292,35 @@
                 checkboxes.forEach((checkbox) => {
                     checkbox.checked = isChecked;
                 });
+            });
+        });
+
+        $('.exportdata').click(function() {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi',
+                text: 'Apakah ingin mendownload data ini?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+            }).then(function(result) {
+                if (result.isConfirmed) {
+
+                    var username = $('#username').val();
+                    var invoice = $('#invoice').val();
+                    var status = $('#status').val();
+                    var transdari = $('#transdari').val();
+                    var transhingga = $('#transhingga').val();
+
+                    // Membuat URL dengan parameter dinamis
+                    var url = '/historytransaksids/export?username=' + encodeURIComponent(username) +
+                        '&invoice=' + encodeURIComponent(invoice) +
+                        '&status=' + encodeURIComponent(status) +
+                        '&transdari=' + encodeURIComponent(transdari) +
+                        '&transhingga=' + encodeURIComponent(transhingga);
+
+                    window.location.href = url;
+                }
             });
         });
     </script>

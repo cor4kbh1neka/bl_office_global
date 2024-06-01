@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\DepoWdExport;
+use App\Exports\HistoryTransaksiExport;
 
 
 class HistorytransaksidsController extends Controller
@@ -109,14 +109,14 @@ class HistorytransaksidsController extends Controller
     public function filterAndPaginate($data, $page) // Untuk beberapa kondisi pisahkan array dari parameter agar lolos $query
     {
         $query = collect($data);
-        $parameter = [
-            'status',
+        $parameters = [
+            'status'
         ];
 
-        foreach ($parameter as $isiSearch) {
-            if (request($isiSearch)) {
-                $query = $query->filter(function ($item) use ($isiSearch) {
-                    return stripos($item[$isiSearch], request($isiSearch)) !== false;
+        foreach ($parameters as $searchParam) {
+            if (request($searchParam)) {
+                $query = $query->filter(function ($item) use ($searchParam) {
+                    return stripos($item[$searchParam], request($searchParam)) !== false;
                 });
             }
         }
@@ -131,6 +131,7 @@ class HistorytransaksidsController extends Controller
 
             $query = $query->whereBetween('created_at', [$transdari, $transhingga]);
         }
+
         // Filter untuk strict data
         if (request('username')) {
             $inputUsername = request('username');
@@ -138,16 +139,17 @@ class HistorytransaksidsController extends Controller
                 return $item['username'] === $inputUsername;
             });
         }
-        if (request('invoice')) {
-            $inputInvoice = request('invoice');
-            $query = $query->filter(function ($item) use ($inputInvoice) {
-                return stripos($item['invoice'], $inputInvoice) !== false;
+        if (request('refno')) {
+            $inputRefno = request('refno');
+            $query = $query->filter(function ($item) use ($inputRefno) {
+                return stripos($item['refno'], $inputRefno) !== false;
             });
         }
         if (!request('checkall') || !request(['checkinvoice', 'checkstatus', 'checktransdari', 'checktranshingga'])) {
             return $query = [];
         }
-        $parameter = array_merge($parameter, [
+
+        $parameters = array_merge($parameters, [
             'username',
             'invoice',
             'transdari',
@@ -157,30 +159,37 @@ class HistorytransaksidsController extends Controller
             'checktransdari',
             'checktranshingga',
             'checkall',
-        ]); // $parameter dikembaliin lagi supaya paginator nya jalan okey?
-        // Kalau bisa paginator ini jangan diubah, cukup sampai disini sajaa :(
-        $currentPage = Paginator::resolveCurrentPage();
-        $perPage = $page;
-        $currentPageItems = $query->slice(($currentPage - 1) * $perPage, $perPage)->values();
-        $paginatedItems = new LengthAwarePaginator(
-            $currentPageItems,
-            $query->count(),
-            $perPage,
-            $currentPage,
-            ['path' => Paginator::resolveCurrentPath()]
-        );
-        foreach ($parameter as $isiSearch) {
-            if (request($isiSearch)) {
-                $paginatedItems->appends($isiSearch, request($isiSearch));
+        ]); // $parameters dikembaliin lagi supaya paginator nya jalan okey?
+
+        if ($page == 0) {
+            // If $page is 0, return the filtered collection without pagination
+            return $query->values();
+        } else {
+            // Kalau bisa paginator ini jangan diubah, cukup sampai disini sajaa :(
+            $currentPage = Paginator::resolveCurrentPage();
+            $perPage = $page;
+            $currentPageItems = $query->slice(($currentPage - 1) * $perPage, $perPage)->values();
+            $paginatedItems = new LengthAwarePaginator(
+                $currentPageItems,
+                $query->count(),
+                $perPage,
+                $currentPage,
+                ['path' => Paginator::resolveCurrentPath()]
+            );
+
+            // Append parameters to the pagination links
+            foreach ($parameters as $searchParam) {
+                if (request($searchParam)) {
+                    $paginatedItems->appends($searchParam, request($searchParam));
+                }
             }
+            return $paginatedItems;
         }
-        return $paginatedItems;
     }
 
-    public function export()
+    public function export(Request $request)
     {
         $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
-        dd($data);
-        return Excel::download(new DepoWdExport($data), 'Historycoin.xlsx');
+        return Excel::download(new HistoryTransaksiExport($data), 'Historycoin.xlsx');
     }
 }

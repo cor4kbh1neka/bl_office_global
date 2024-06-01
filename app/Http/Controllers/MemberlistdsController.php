@@ -67,8 +67,8 @@ class MemberlistdsController extends Controller
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get($url);
-
         if ($response->successful()) {
             $responseData = $response->json();
         } else {
@@ -447,7 +447,8 @@ class MemberlistdsController extends Controller
     {
         $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
             ->select('member.*', 'balance.amount')->orderByDesc('created_at')->get();
-        $data = $this->filterAndPaginate($query, 0);
+        $proses = $this->filterAndPaginate($query, 20000);
+        $data = $proses->getCollection();
         return Excel::download(new MemberListExport($data), 'Memberlist.xlsx');
     }
 }

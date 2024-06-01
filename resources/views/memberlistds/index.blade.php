@@ -363,31 +363,31 @@
                 return pageNumber ? parseInt(pageNumber[1]) : 1;
             }
 
-            function updateUrlWithPage(pageNumber) {
-                var username = $("#username").val();
-                var norek = $("#norek").val();
-                var namerek = $("#namerek").val();
-                var bank = $("#bank").val();
-                var nope = $("#nope").val();
-                var referral = $("#referral").val();
-                var gabungdari = $("#gabungdari").val();
-                var gabunghingga = $("#gabunghingga").val();
-                var status = $("#status").val();
+            // function updateUrlWithPage(pageNumber) {
+            //     var username = $("#username").val();
+            //     var norek = $("#norek").val();
+            //     var namerek = $("#namerek").val();
+            //     var bank = $("#bank").val();
+            //     var nope = $("#nope").val();
+            //     var referral = $("#referral").val();
+            //     var gabungdari = $("#gabungdari").val();
+            //     var gabunghingga = $("#gabunghingga").val();
+            //     var status = $("#status").val();
 
-                var newUrl = "/memberlistds?";
-                newUrl += "username=" + username + "&";
-                newUrl += "norek=" + norek + "&";
-                newUrl += "namerek=" + namerek + "&";
-                newUrl += "bank=" + bank + "&";
-                newUrl += "nope=" + nope + "&";
-                newUrl += "referral=" + referral + "&";
-                newUrl += "gabungdari=" + gabungdari + "&";
-                newUrl += "gabunghingga=" + gabunghingga + "&";
-                newUrl += "status=" + status + "&";
-                newUrl += "page=" + pageNumber;
+            //     var newUrl = "/memberlistds?";
+            //     newUrl += "username=" + username + "&";
+            //     newUrl += "norek=" + norek + "&";
+            //     newUrl += "namerek=" + namerek + "&";
+            //     newUrl += "bank=" + bank + "&";
+            //     newUrl += "nope=" + nope + "&";
+            //     newUrl += "referral=" + referral + "&";
+            //     newUrl += "gabungdari=" + gabungdari + "&";
+            //     newUrl += "gabunghingga=" + gabunghingga + "&";
+            //     newUrl += "status=" + status + "&";
+            //     newUrl += "page=" + pageNumber;
 
-                window.location.href = newUrl;
-            }
+            //     window.location.href = newUrl;
+            // }
         });
 
         //open jendela detail
@@ -453,28 +453,31 @@
                 cancelButtonText: 'Batal',
             }).then(function(result) {
                 if (result.isConfirmed) {
-
-                    var username = $('#username').val();
-                    var norek = $('#norek').val();
-                    var namarek = $('#namarek').val();
-                    var bank = $('#bank').val();
-                    var nohp = $('#nohp').val();
-                    var referral = $('#referral').val();
-                    var gabungdari = $('#gabungdari').val();
-                    var gabunghingga = $('#gabunghingga').val();
-                    var status = $('#status').val();
+                    // Mendapatkan nilai dari input
+                    var username = $('#username').val(); // Asumsi ada elemen dengan id 'username'
+                    var norek = $('#norek').val(); // Asumsi ada elemen dengan id 'norek'
+                    var namarek = $('#namarek').val(); // Asumsi ada elemen dengan id 'namarek'
+                    var bank = $('#bank').val(); // Asumsi ada elemen dengan id 'bank'
+                    var nohp = $('#nohp').val(); // Asumsi ada elemen dengan id 'nohp'
+                    var referral = $('#referral').val(); // Asumsi ada elemen dengan id 'referral'
+                    var gabungdari = $('#gabungdari').val(); // Asumsi ada elemen dengan id 'gabungdari'
+                    var gabunghingga = $('#gabunghingga')
+                        .val(); // Asumsi ada elemen dengan id 'gabunghingga'
+                    var status = $('#status').val(); // Asumsi ada elemen dengan id 'status'
 
                     // Membuat URL dengan parameter dinamis
-                    var url = '/memberlistds/export?username=' + encodeURIComponent(username) +
+                    var url = '/memberlistds/export?' +
+                        '&username=' + encodeURIComponent(username) +
                         '&norek=' + encodeURIComponent(norek) +
                         '&namarek=' + encodeURIComponent(namarek) +
                         '&bank=' + encodeURIComponent(bank) +
                         '&nohp=' + encodeURIComponent(nohp) +
-                        '&referral=' + encodeURIComponent(referral) +
-                        '&gabungdari=' + encodeURIComponent(gabungdari) +
-                        '&gabunghingga=' + encodeURIComponent(gabunghingga) +
-                        '&status=' + encodeURIComponent(status);
+                        '&referral=' + encodeURIComponent(referral);
+                    '&gabungdari=' + encodeURIComponent(gabungdari);
+                    '&gabunghingga=' + encodeURIComponent(gabunghingga);
+                    '&status=' + encodeURIComponent(status);
 
+                    // Redirect ke URL
                     window.location.href = url;
                 }
             });

@@ -1,6 +1,6 @@
 <div class="breadcrumb">
     <ol class="main_bred">
-        <li class="list_bread"><span  id="root_breadtime"></span></li>
+        <li class="list_bread"><span id="root_breadtime"></span></li>
         <li class="separator_bread">
             {{-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"
@@ -13,12 +13,13 @@
 <div class="right_top_nav">
 
     <a href="/notifikasids" class="nav_notifikasi" data-informasi="23">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M21 19v1H3v-1l2-2v-6c0-3.1 2.03-5.83 5-6.71V4a2 2 0 0 1 2-2a2 2 0 0 1 2 2v.29c2.97.88 5 3.61 5 6.71v6zm-7 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2" />
+        {{-- <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="currentColor"
+                d="M21 19v1H3v-1l2-2v-6c0-3.1 2.03-5.83 5-6.71V4a2 2 0 0 1 2-2a2 2 0 0 1 2 2v.29c2.97.88 5 3.61 5 6.71v6zm-7 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2" />
         </svg>
         <div class="countnotif">
             <p></p>
-        </div>
+        </div> --}}
     </a>
     <div class="profile_nav">
         <img class="users_img"
@@ -68,7 +69,7 @@
 
 <script>
     // print data notifikasi
-    $(document).ready(function(){
+    $(document).ready(function() {
         var informasi = $(".nav_notifikasi").data("informasi");
         $(".countnotif p").text(informasi);
     });

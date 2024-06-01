@@ -22,7 +22,7 @@
                     <a href="/memods/delivered" class="tombol grey">
                         <span class="texttombol">delivered</span>
                     </a>
-                    <a href="/memods/viewinbox" class="tombol grey">
+                    {{-- <a href="/memods/viewinbox" class="tombol grey">
                         <span class="texttombol">inbox</span>
                         <span class="unreadmessage">2</span>
                     </a>
@@ -35,7 +35,7 @@
                             </g>
                         </svg>
                         <span class="texttombol">archive</span>
-                    </a>
+                    </a> --}}
                 </div>
                 <div class="groupdatamemo">
                     <form method="POST" action="/storememo" class="groupplayerinfo">

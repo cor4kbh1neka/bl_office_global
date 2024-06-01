@@ -270,7 +270,7 @@
                         </a>
                     </div>
                 @endcan
-                @can('memo_other')
+                {{-- @can('memo_other')
                     <div class="data_sidejsx {{ Request::is('memotouserds*') ? 'active' : '' }}">
                         <a href="/memotouserds" id="Player">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -281,7 +281,7 @@
                             <span class="nav_title1">memo to other user</span>
                         </a>
                     </div>
-                @endcan
+                @endcan --}}
             </div>
         </div>
     @endcanany

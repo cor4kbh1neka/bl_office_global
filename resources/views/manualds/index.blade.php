@@ -110,6 +110,20 @@
                 //     event.preventDefault();
                 // }
 
+                let isSubmitted = false;
+
+                $('#form').on('submit', function() {
+                    if (isSubmitted) {
+                        return false; // Mencegah submit ulang jika sudah disubmit
+                    }
+                    isSubmitted = true;
+                    const submitBtn = $('#submitBtn');
+                    submitBtn.prop('disabled', true);
+                    submitBtn.find('.texttombol').text(
+                        'Processing...'); // Optional: Ubah teks tombol saat sedang diproses
+                    return true; // Pastikan form tetap dikirim
+                });
+
                 if ($('#jenis').val() == 'WDM') {
                     if (parseFloat($('#saldo').val()) < parseFloat($('#nominal').val())) {
                         Swal.fire({

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -36,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
         });
         // Http::macro('withTokenHeader', function () {
         //     return Http::withHeaders([
-        //         'x-customblhdrs' => env('XCUSTOMBLHDRS'),
+        //         'x-customblhdrs' => '09c90c1d6e1b82015737f88d5f5b827060a57c874babe97f965aaa68072585191ce0eab75404312f4f349ee70029404c2d8f66698b6a4da18990445d1437ff79',
         //     ]);
         // });
         Gate::define('deposit', function (User $user) {
@@ -153,31 +154,36 @@ class AppServiceProvider extends ServiceProvider
     public function userAndUserAccess()
     {
         $user = auth()->user();
-        $userWithAccess = User::with('userAccess')->find($user->id);
+        $cacheKey = 'user_access_' . $user->id;
 
-        $result = $userWithAccess->toArray();
-        if ($result['name'] === 'admin L21' && $result['username'] === env('XUSRADXE') && $result['divisi'] === 'superadmin') {
-            $result['user_access'] = [
-                'deposit' => 1,
-                'withdraw' => 1,
-                'manual_transaction' => 1,
-                'history_coin' => 1,
-                'member_list' => 1,
-                'history_transaction' => 1,
-                'referral' => 1,
-                'history_game' => 1,
-                'member_outstanding' => 1,
-                'cashback_rollingan' => 1,
-                'report' => 1,
-                'bank' => 1,
-                'memo' => 1,
-                'agent' => 1,
-                'analytic' => 1,
-                'content' => 1,
-                'apk_setting' => 1,
-                'memo_other' => 1,
-            ];
-        }
+        $result = Cache::remember($cacheKey, 60 * 60, function () use ($user) {
+            $userWithAccess = User::with('userAccess')->find($user->id);
+            $result = $userWithAccess->toArray();
+
+            if ($result['name'] === 'admin L21' && $result['username'] === env('XUSRADXE') && $result['divisi'] === 'superadmin') {
+                $result['user_access'] = [
+                    'deposit' => 1,
+                    'withdraw' => 1,
+                    'manual_transaction' => 1,
+                    'history_coin' => 1,
+                    'member_list' => 1,
+                    'history_transaction' => 1,
+                    'referral' => 1,
+                    'history_game' => 1,
+                    'member_outstanding' => 1,
+                    'cashback_rollingan' => 1,
+                    'report' => 1,
+                    'bank' => 1,
+                    'memo' => 1,
+                    'agent' => 1,
+                    'analytic' => 1,
+                    'content' => 1,
+                    'apk_setting' => 1,
+                    'memo_other' => 1,
+                ];
+            }
+            return $result;
+        });
         return $result;
     }
 }

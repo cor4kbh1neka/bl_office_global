@@ -15,63 +15,6 @@
         </div>
         <div class="sechistoryds">
             <div class="grouphistoryds">
-                {{-- <form method="GET" action="/historycoinds" class="groupheadhistoryds" id="searchForm">
-                    <div class="listheadhistoryds top">
-                        <button type="button" class="tombol grey {{ request('jenis') == '' ? 'active' : '' }}" data-jenis="">
-                            <span class="texttombol">ALL TRANSACTION</span>
-                        </button>
-                        <button type="button" class="tombol grey {{ request('jenis') == 'DP' ? 'active' : '' }}"
-                            data-jenis="DP">
-                            <span class="texttombol">HISTORY DEPOSIT</span>
-                        </button>
-                        <button type="button" class="tombol grey {{ request('jenis') == 'WD' ? 'active' : '' }}"
-                            data-jenis="WD">
-                            <span class="texttombol">HISTORY WITHDRAW</span>
-                        </button>
-                        <button type="button" class="tombol grey {{ request('jenis') == 'M' ? 'active' : '' }}"
-                            data-jenis="M">
-                            <span class="texttombol">HISTORY MANUAL</span>
-                        </button>
-                    </div>
-                    <div class="grouplistheadhistoryds">
-                        <div class="listheadhistoryds bottom one">
-                            <input type="hidden" id="jenis" name="jenis" value="{{ request('jenis') }}">
-                            <input type="text" id="username" name="username" placeholder="User ID"
-                                value="{{ $search_username }}">
-                            <select name="status" id="status">
-                                <option value="" selected="" place=""
-                                    style="color: #838383; font-style: italic;">Pilih Status</option>
-                                <option value="accept" {{ $search_status == 1 ? 'selected' : '' }}>Accepted</option>
-                                <option value="cancel" {{ $search_status == 2 ? 'selected' : '' }}>Rejected</option>
-                            </select>
-                            <select name="approved_by" id="approved_by">
-                                <option value="" selected="" place=""
-                                    style="color: #838383; font-style: italic;">Pilih Agent</option>
-                                <option value="gl0b4l#21" {{ $search_agent == 'gl0b4l#21' ? 'selected' : '' }}>gl0b4l#21
-                                </option>
-                            </select>
-                        </div>
-                        <div class="listheadhistoryds bottom two">
-                            <input type="date" id="tgldari" name="tgldari" value="{{ $tgldari }}">
-                            <input type="date" id="tglsampai" name="tglsampai" value="{{ $tglsampai }}">
-                            <button class="tombol primary" id="searchbutton">
-                                <span class="texttombol">SUBMIT</span>
-                            </button>
-                        </div>
-                        <div class="exportdata">
-                            <span class="textdownload">download</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="m12 16l-5-5l1.4-1.45l2.6 2.6V4h2v8.15l2.6-2.6L17 11zm-6 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z" />
-                            </svg>
-                        </div>
-                    </div>
-                </form> --}}
-                @php
-                    $currentPage = $data->currentPage();
-                    $perPage = $data->perPage();
-                    $startNumber = ($currentPage - 1) * $perPage + 1;
-                @endphp
                 <form method="GET" action="/historycoinds" class="groupheadhistoryds" id="searchForm">
                     <div class="listheadhistoryds top">
                         <input type="hidden" name="jenis" id="jenis" value="{{ request('jenis') }}">
@@ -112,8 +55,13 @@
                             </select>
                         </div>
                         <div class="listheadhistoryds bottom two">
-                            <input type="date" id="tgldari" name="tgldari" value="{{ request('tgldari') }}">
-                            <input type="date" id="tglsampai" name="tglsampai" value="{{ request('tglsampai') }}">
+                            @if (request('tgldari') && request('tglsampai') === date('Y-m-d'))
+                                <input type="date" id="tgldari" name="tgldari" value="{{ request('tgldari') }}">
+                                <input type="date" id="tglsampai" name="tglsampai" value="{{ request('tglsampai') }}">
+                            @else
+                                <input type="date" id="tgldari" name="tgldari" value="{{ date('Y-m-d') }}">
+                                <input type="date" id="tglsampai" name="tglsampai" value="{{ date('Y-m-d') }}">
+                            @endif
                             <button type="submit" class="tombol primary" id="searchbutton">
                                 <span class="texttombol">SUBMIT</span>
                             </button>
@@ -147,7 +95,8 @@
                             @foreach ($data as $i => $d)
                                 <tr>
                                     <td>
-                                        <div class="statusmember">{{ $startNumber + $i }}</div>
+                                        <div class="statusmember">
+                                            {{ ($data->currentPage() - 1) * $data->perPage() + 1 + $i }}</div>
                                     </td>
                                     {{-- <td class="check_box" onclick="toggleCheckbox('myCheckbox-0')">
                                         <input type="checkbox" id="myCheckbox-0" name="myCheckbox-0"
@@ -174,6 +123,15 @@
         </div>
     </div>
 
+    @if (session()->has('gagalTarikData'))
+        <script>
+            Swal.fire({
+                text: '{{ session('gagalTarikData') }}',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
 
     <script>
         $(document).ready(function() {
@@ -289,6 +247,21 @@
             jenisElement.value = jenisElement.value || ''; // Pastikan jenis tidak kosong
         });
 
+        // $('.exportdata').click(function() {
+        //     Swal.fire({
+        //         icon: 'question',
+        //         title: 'Konfirmasi',
+        //         text: 'Apakah ingin mendownload data ini?',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Ya',
+        //         cancelButtonText: 'Batal',
+        //     }).then(function(result) {
+        //         if (result.isConfirmed) {
+        //             var url = '/historycoinds/export';
+        //             window.location.href = url;
+        //         }
+        //     });
+        // });
         $('.exportdata').click(function() {
             Swal.fire({
                 icon: 'question',
@@ -299,7 +272,23 @@
                 cancelButtonText: 'Batal',
             }).then(function(result) {
                 if (result.isConfirmed) {
-                    var url = '/historycoinds/export';
+                    // Mendapatkan nilai dari input
+                    var jenis = $('#jenis').val(); // Asumsi ada elemen dengan id 'jenis'
+                    var username = $('#username').val(); // Asumsi ada elemen dengan id 'username'
+                    var status = $('#status').val(); // Asumsi ada elemen dengan id 'status'
+                    var approved_by = $('#approved_by').val(); // Asumsi ada elemen dengan id 'approved_by'
+                    var tgldari = $('#tgldari').val(); // Asumsi ada elemen dengan id 'tgldari'
+                    var tglsampai = $('#tglsampai').val(); // Asumsi ada elemen dengan id 'tglsampai'
+
+                    // Membuat URL dengan parameter dinamis
+                    var url = '/historycoinds/export?jenis=' + encodeURIComponent(jenis) +
+                        '&username=' + encodeURIComponent(username) +
+                        '&status=' + encodeURIComponent(status) +
+                        '&approved_by=' + encodeURIComponent(approved_by) +
+                        '&tgldari=' + encodeURIComponent(tgldari) +
+                        '&tglsampai=' + encodeURIComponent(tglsampai);
+
+                    // Redirect ke URL
                     window.location.href = url;
                 }
             });

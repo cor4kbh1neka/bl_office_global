@@ -159,7 +159,6 @@ class ApiController extends Controller
             ])->post($url, $data);
 
             $responseData = $response->json();
-            return $responseData;
             if ($responseData["error"]["id"] === 0) {
 
                 try {

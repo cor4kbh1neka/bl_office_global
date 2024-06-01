@@ -123,7 +123,14 @@ class DepoWdController extends Controller
 
                 $checkDataMember = Member::where('username', $request->username)->first();
                 if (!$checkDataMember) {
-                    return $this->errorResponse($request->username, 'Username tidak terdaftar');
+                    // return $this->errorResponse($request->username, 'Username tidak terdaftar');
+                    return redirect()->route('manualds')->with([
+                        'title' => 'Proses Manual',
+                        'totalnote' => 0,
+                        'jenis' => $request->jenis,
+                        'errorCode' => 500,
+                        'message' => 'Username tidak terdaftar'
+                    ]);
                 }
 
                 $data = $request->all();

@@ -177,10 +177,10 @@ class HistorytransaksidsController extends Controller
         return $paginatedItems;
     }
 
-    // public function export()
-    // {
-    //     $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
-    //     dd($data);
-    //     return Excel::download(new DepoWdExport($data), 'Historycoin.xlsx');
-    // }
+    public function export()
+    {
+        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
+        dd($data);
+        return Excel::download(new DepoWdExport($data), 'Historycoin.xlsx');
+    }
 }

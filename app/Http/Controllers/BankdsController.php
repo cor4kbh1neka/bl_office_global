@@ -361,7 +361,7 @@ class BankdsController extends Controller
     public function listmaster()
     {
         $response = Http::withHeaders([
-            'x-customblhdrs' => 'Bearer ' . env('UTILITIES_GENERATE')
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/banks/master');
         $results = $response->json()["data"];
 
@@ -390,7 +390,7 @@ class BankdsController extends Controller
     public function compareData()
     {
         $response = Http::withHeaders([
-            'x-customblhdrs' => 'Bearer ' . env('UTILITIES_GENERATE')
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/banks/group');
         $data = $response->json();
         if ($data['status'] == 'success') {
@@ -468,7 +468,7 @@ class BankdsController extends Controller
     public function listbank($group, $groupwd)
     {
         $response = Http::withHeaders([
-            'x-customblhdrs' => 'Bearer ' . env('UTILITIES_GENERATE')
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/banks/group');
         $listgroup = $response->json()["data"];
         $listgroupdp = array_filter($listgroup, function ($item) {
@@ -480,7 +480,9 @@ class BankdsController extends Controller
         });
         unset($listgroupwd['nongroupwd']);
 
-        $responseBank = Http::get(env('DOMAIN') . '/banks/master');
+        $responseBank = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/master');
         $listmasterbank = $responseBank->json()["data"];
 
 

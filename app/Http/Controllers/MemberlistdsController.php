@@ -443,7 +443,7 @@ class MemberlistdsController extends Controller
         }
     }
 
-    public function export()
+    public function export(Request $request)
     {
         $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
             ->select('member.*', 'balance.amount')->orderByDesc('created_at')->get();

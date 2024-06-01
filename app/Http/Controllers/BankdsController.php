@@ -360,7 +360,9 @@ class BankdsController extends Controller
 
     public function listmaster()
     {
-        $response = Http::get(env('DOMAIN') . '/banks/master');
+        $response = Http::withHeaders([
+            'x-customblhdrs' => 'Bearer ' . env('UTILITIES_GENERATE')
+        ])->get(env('DOMAIN') . '/banks/master');
         $results = $response->json()["data"];
 
         return view('bankds.listmaster', [
@@ -387,7 +389,9 @@ class BankdsController extends Controller
 
     public function compareData()
     {
-        $response = Http::get(env('DOMAIN') . '/banks/group');
+        $response = Http::withHeaders([
+            'x-customblhdrs' => 'Bearer ' . env('UTILITIES_GENERATE')
+        ])->get(env('DOMAIN') . '/banks/group');
         $data = $response->json();
         if ($data['status'] == 'success') {
             $data = $data["data"];
@@ -463,7 +467,9 @@ class BankdsController extends Controller
 
     public function listbank($group, $groupwd)
     {
-        $response = Http::get(env('DOMAIN') . '/banks/group');
+        $response = Http::withHeaders([
+            'x-customblhdrs' => 'Bearer ' . env('UTILITIES_GENERATE')
+        ])->get(env('DOMAIN') . '/banks/group');
         $listgroup = $response->json()["data"];
         $listgroupdp = array_filter($listgroup, function ($item) {
             return $item['grouptype'] == 1;
@@ -482,13 +488,19 @@ class BankdsController extends Controller
         $listbankdpex = [];
         $listbankdp = [];
         if ($group != 0) {
-            $responseBankByGroup = Http::get(env('DOMAIN') . '/banks/v2/' . $group);
+            $responseBankByGroup = Http::withHeaders([
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ])->get(env('DOMAIN') . '/banks/v2/' . $group);
+
             if ($responseBankByGroup->json()['status'] !== 'fail') {
                 $listbankdp = $responseBankByGroup->json()["data"];
                 unset($listbankdp['headers']);
             }
 
-            $responseexcgroupbank = Http::get(env('DOMAIN') . '/banks/exc/' . $group);
+            $responseexcgroupbank = Http::withHeaders([
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ])->get(env('DOMAIN') . '/banks/exc/' . $group);
+
             if ($responseexcgroupbank->json()['status'] !== 'fail') {
                 $listbankdpex = $responseexcgroupbank->json()["data"];
                 unset($listbankdpex['headers']);
@@ -519,13 +531,18 @@ class BankdsController extends Controller
         $listbankwdex = [];
         $listbankwd = [];
         if ($groupwd != 0) {
-            $responseBankByGroupWd = Http::get(env('DOMAIN') . '/banks/v2/' . $groupwd);
+            $responseBankByGroupWd = Http::withHeaders([
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ])->get(env('DOMAIN') . '/banks/v2/' . $groupwd);
+
             if ($responseBankByGroupWd->json()['status'] !== 'fail') {
                 $listbankwd = $responseBankByGroupWd->json()["data"];
                 unset($listbankwd['headers']);
             }
 
-            $responseexcgroupbankWd = Http::get(env('DOMAIN') . '/banks/exc/' . $groupwd);
+            $responseexcgroupbankWd = Http::withHeaders([
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ])->get(env('DOMAIN') . '/banks/exc/' . $groupwd);
             if ($responseexcgroupbankWd->json()['status'] !== 'fail') {
                 $listbankwdex = $responseexcgroupbankWd->json()["data"];
                 unset($listbankwdex['headers']);
@@ -572,12 +589,16 @@ class BankdsController extends Controller
 
     public function getGroupBank($bank, $jenis)
     {
-        $response = Http::get(env('DOMAIN') . '/banks/exc/' . $bank);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/exc/' . $bank);
         $listgroup = $response->json()["data"];
 
         // dd($listgroup);
 
-        $responseGroup = Http::get(env('DOMAIN') . '/banks/group');
+        $responseGroup = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/group');
         $listgroupMaster = $responseGroup->json()["data"];
 
         foreach ($listgroup as $key => $value) {
@@ -758,14 +779,18 @@ class BankdsController extends Controller
         $data = [
             'namegroupxyzt' => $groupbank
         ];
-        $response = Http::put($apiUrl, $data);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->put($apiUrl, $data);
         return $response->json();
     }
 
     private function deleteBankFromGroup($id, $groupbank)
     {
         $url = env('DOMAIN') . '/banks/arr/' . $id .  '/' . $groupbank;
-        $response = Http::delete($url);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->delete($url);
         return $response->json();
     }
 
@@ -780,7 +805,9 @@ class BankdsController extends Controller
 
     public function deletelistbank($id, $groupbank)
     {
-        $response = Http::delete(env('DOMAIN') . '/banks/arr/' . $id . '/' . $groupbank);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->delete(env('DOMAIN') . '/banks/arr/' . $id . '/' . $groupbank);
         if ($response->successful()) {
             return response()->json(['success' => true, 'message' => 'List bank berhasil dihapus']);
         } else {
@@ -803,7 +830,10 @@ class BankdsController extends Controller
             ];
         $idbank = $dataReq['idbank'];
         $bankname_old = $dataReq['bankname_old'];
-        $response = Http::put(env('DOMAIN') . '/banks/v2/' . $idbank . '/' . $bankname_old, $data);
+
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->delete(env('DOMAIN') . '/banks/v2/' . $idbank . '/' . $bankname_old, $data);
 
         if ($response->successful()) {
             return redirect('/bankds/listbank/0/0')->with('success', 'Data berhasil diupdate');

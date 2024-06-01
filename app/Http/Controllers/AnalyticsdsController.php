@@ -16,7 +16,9 @@ class AnalyticsdsController extends Controller
     public function index()
     {
         $url = env('DOMAIN') . '/content/dtmttag/gtdt';
-        $response = Http::withTokenHeader()->get($url);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get($url);
         $crot = json_decode($response);
         $data = $crot->data;
         return view('analyticsds.index', [
@@ -39,7 +41,9 @@ class AnalyticsdsController extends Controller
         ];
 
         $url = env('DOMAIN') . '/content/dtmttag/1';
-        $response = Http::withTokenHeader()->post($url, $validatedData);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->post($url, $validatedData);
         if ($response->successful()) {
             return redirect('/analyticsds')->with('success', 'Data Berhasil di Edit!');
         } else {
@@ -50,7 +54,9 @@ class AnalyticsdsController extends Controller
     public function apiSitemap()
     {
         $url = env('DOMAIN') . '/content/stmp';
-        $response = Http::withTokenHeader()->get($url);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get($url);
         $crot = json_decode($response);
         $data = $crot->data;
         return $data;
@@ -77,7 +83,9 @@ class AnalyticsdsController extends Controller
             'urpage' => 'required'
         ]);
         $url = env('DOMAIN') . '/content/stmp';
-        $response = Http::withTokenHeader()->post($url, $validatedData);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->post($url, $validatedData);
         if ($response->successful()) {
             return redirect('/analyticsds/sitemap')->with('success', 'Data Berhasil di Tambah!');
         } else {
@@ -104,8 +112,12 @@ class AnalyticsdsController extends Controller
                 'updated_at' => $waktuUpdate
             ];
             $urlbalik = env('DOMAIN') . '/content/stmp/' . $urpageSementara;
-            $responsesementara = Http::withTokenHeader()->post($url, $mauDiubah);
-            $response = Http::withTokenHeader()->post($urlbalik, $validatedData);
+            $responsesementara = Http::withHeaders([
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ])->post($url, $mauDiubah);
+            $response = Http::withHeaders([
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ])->post($urlbalik, $validatedData);
             if ($response && $responsesementara->successful()) {
                 return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Ubah Tanggal ');
             }
@@ -117,7 +129,9 @@ class AnalyticsdsController extends Controller
             'urpage' => $validatedData['urpage'],
             'updated_at' => $waktuUpdate
         ];
-        $response = Http::withTokenHeader()->post($url, $validatedData);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->post($url, $validatedData);
 
         if ($response->successful()) {
             return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Edit Page ');
@@ -136,7 +150,9 @@ class AnalyticsdsController extends Controller
                 break;
             }
         }
-        $response = Http::withTokenHeader()->delete($url, $data);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->delete($url, $data);
         if ($response->successful()) {
             return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Hapus Data ' . $urpage);
         } else {

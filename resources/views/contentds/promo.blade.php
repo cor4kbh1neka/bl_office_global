@@ -74,59 +74,80 @@
                                     <th class="bagstatus">status</th>
                                     <th class="action">tools</th>
                                 </tr>
-                                @foreach($data as $d)
-                                <tr class="dinamicrow" data-row="1" data-statusactive="1">
-                                    <td>
-                                        <div class="statuspromorow">{{ $d->pssprm }}</div>
-                                    </td>
-                                    <td class="dragmenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                            <path fill="currentColor" d="M3 18v-2h18v2zm0-5v-2h18v2zm0-5V6h18v2z" />
-                                        </svg>
-                                    </td>
-                                    <td>
-                                        <img src="{{ $d->ctprmur }}" alt="image">
-                                    </td>
-                                    <td class="datamini">{{ $d->ttlectprm }}</td>
-                                    <td class="datamini">{{ $d->trgturctprm }}</td>
-                                    <td class="statuspromo" data-status="{{ $d->statusctprm }}"></td>
-                                    <td>
-                                        <div class="grouptools">
-                                            <a href="/contentds/promo/{{ $d->idctprm }}/edit" target="_blank" class="tombol grey openviewport">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-                                                        <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1" />
-                                                        <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3zM16 5l3 3" />
-                                                    </g>
-                                                </svg>
-                                                <span class="texttombol">edit</span>
-                                            </a>
-                                            <form action="/contentds/promo/{{ $d->idctprm }}" method="POST">
-                                                @method('delete')
-                                                @csrf
-                                                <button class="tombol cancel border" onclick="return confirm('Yaking Ingin Hapus Promo Ini?')">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                                        <path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z" />
+                                @foreach ($data as $d)
+                                    <tr class="dinamicrow" data-row="1" data-statusactive="1">
+                                        <td>
+                                            <div class="statuspromorow">{{ $d->pssprm }}</div>
+                                        </td>
+                                        <td class="dragmenu">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                viewBox="0 0 24 24">
+                                                <path fill="currentColor" d="M3 18v-2h18v2zm0-5v-2h18v2zm0-5V6h18v2z" />
+                                            </svg>
+                                        </td>
+                                        <td>
+                                            <img src="{{ $d->ctprmur }}" alt="image">
+                                        </td>
+                                        <td class="datamini">{{ $d->ttlectprm }}</td>
+                                        <td class="datamini">{{ $d->trgturctprm }}</td>
+                                        <td class="statuspromo" data-status="{{ $d->statusctprm }}"></td>
+                                        <td>
+                                            <div class="grouptools">
+                                                <a href="/contentds/promo/{{ $d->idctprm }}/edit" target="_blank"
+                                                    class="tombol grey openviewport">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                        viewBox="0 0 24 24">
+                                                        <g fill="none" stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2">
+                                                            <path
+                                                                d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1" />
+                                                            <path
+                                                                d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3zM16 5l3 3" />
+                                                        </g>
                                                     </svg>
-                                                    <span class="texttombol">delete</span>
-                                                </button>
-                                            </form>
-                                            @if($d->pssprm == 1)
-                                            @else
-                                            <form action="/contentds/promo/{{ $d->idctprm }}" method="POST" class="tombol grey">
-                                                @method('put')
-                                                @csrf
-                                                <input type="hidden" name="urutan" value="{{ $d->pssprm - 1 }}">
-                                                <input type="hidden" name="urutanlain" value="{{ $d->pssprm }}">
-                                                <button class="none" type="submit">
-                                                    <svg  xmlns="http://www.w3.org/2000/svg"  width="1em"  height="1em"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-up"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M18 11l-6 -6" /><path d="M6 11l6 -6" /></svg>
-                                                    {{-- <span class="texttombol">Naik</span> --}}
-                                                </button>
-                                            </form>
-                                            @endif
-                                            @if($d->pssprm == 1)
-                                            @else
-                                            {{-- <form action="/contentds/promo/{{ $d->idctprm }}" method="POST">
+                                                    <span class="texttombol">edit</span>
+                                                </a>
+                                                <form action="/contentds/promo/{{ $d->idctprm }}" method="POST">
+                                                    @method('delete')
+                                                    @csrf
+                                                    <button class="tombol cancel border"
+                                                        onclick="return confirm('Yaking Ingin Hapus Promo Ini?')">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                                                            height="1em" viewBox="0 0 24 24">
+                                                            <path fill="currentColor"
+                                                                d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z" />
+                                                        </svg>
+                                                        <span class="texttombol">delete</span>
+                                                    </button>
+                                                </form>
+                                                @if ($d->pssprm == 1)
+                                                @else
+                                                    <form action="/contentds/promo/{{ $d->idctprm }}" method="POST"
+                                                        class="tombol grey">
+                                                        @method('put')
+                                                        @csrf
+                                                        <input type="hidden" name="urutan"
+                                                            value="{{ $d->pssprm - 1 }}">
+                                                        <input type="hidden" name="urutanlain"
+                                                            value="{{ $d->pssprm }}">
+                                                        <button class="none" type="submit">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                                                                height="1em" viewBox="0 0 24 24" fill="none"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round" stroke-linejoin="round"
+                                                                class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-up">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                <path d="M12 5l0 14" />
+                                                                <path d="M18 11l-6 -6" />
+                                                                <path d="M6 11l6 -6" />
+                                                            </svg>
+                                                            {{-- <span class="texttombol">Naik</span> --}}
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                                @if ($d->pssprm == 1)
+                                                @else
+                                                    {{-- <form action="/contentds/promo/{{ $d->idctprm }}" method="POST">
                                                 @method('put')
                                                 @csrf
                                                 <input type="hidden" name="urutan" value="{{ $d->pssprm - 1 }}">
@@ -136,10 +157,10 @@
                                                     <span class="texttombol">Teratas</span>
                                                 </button>
                                             </form> --}}
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>

@@ -138,6 +138,7 @@ class AppServiceProvider extends ServiceProvider
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/memo');
         $resultMemo = $responseMemo->json();
+
         if ($resultMemo['status'] == 'success') {
             $countMemo = count($resultMemo['data']);
         } else {

@@ -453,7 +453,28 @@
                 cancelButtonText: 'Batal',
             }).then(function(result) {
                 if (result.isConfirmed) {
-                    var url = '/memberlistds/export';
+
+                    var username = $('#username').val();
+                    var norek = $('#norek').val();
+                    var namarek = $('#namarek').val();
+                    var bank = $('#bank').val();
+                    var nohp = $('#nohp').val();
+                    var referral = $('#referral').val();
+                    var gabungdari = $('#gabungdari').val();
+                    var gabunghingga = $('#gabunghingga').val();
+                    var status = $('#status').val();
+
+                    // Membuat URL dengan parameter dinamis
+                    var url = '/memberlistds/export?username=' + encodeURIComponent(username) +
+                        '&norek=' + encodeURIComponent(norek) +
+                        '&namarek=' + encodeURIComponent(namarek) +
+                        '&bank=' + encodeURIComponent(bank) +
+                        '&nohp=' + encodeURIComponent(nohp) +
+                        '&referral=' + encodeURIComponent(referral) +
+                        '&gabungdari=' + encodeURIComponent(gabungdari) +
+                        '&gabunghingga=' + encodeURIComponent(gabunghingga) +
+                        '&status=' + encodeURIComponent(status);
+
                     window.location.href = url;
                 }
             });

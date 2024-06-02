@@ -3,7 +3,7 @@
 @section('container')
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
-    <div class="sec_table">
+    <div class="sec_table newwindow">
         <div class="secgrouptitle">
             <h2>{{ $title }}</h2>
             <div class="fullscreen">

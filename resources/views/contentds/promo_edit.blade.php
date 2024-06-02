@@ -19,7 +19,7 @@
     </script>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<div class="sec_table">
+<div class="sec_table newwindow">
     <div class="secgrouptitle">
         <h2>{{ $title }} </h2>
     </div>

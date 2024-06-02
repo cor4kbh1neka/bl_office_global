@@ -98,59 +98,9 @@
             });
         });
 
-        $(document).ready(function() {
-            $('#form').on('submit', function(event) {
-                // if (!$('#readCheckbox').prop('checked')) {
-                //     Swal.fire({
-                //         icon: 'warning',
-                //         title: 'Anda harus melakukan check "Pastikan data yang dimasukkan sudah VALID DAN SESUAI" terlebih dahulu!',
-                //         showConfirmButton: false,
-                //         timer: 1500
-                //     });
-                //     event.preventDefault();
-                // }
-
-                let isSubmitted = false;
-
-                $('#form').on('submit', function() {
-                    if (isSubmitted) {
-                        return false; // Mencegah submit ulang jika sudah disubmit
-                    }
-                    isSubmitted = true;
-                    const submitBtn = $('#submitBtn');
-                    submitBtn.prop('disabled', true);
-                    submitBtn.find('.texttombol').text(
-                        'Processing...'); // Optional: Ubah teks tombol saat sedang diproses
-                    return true; // Pastikan form tetap dikirim
-                });
-
-                if ($('#jenis').val() == 'WDM') {
-                    if (parseFloat($('#saldo').val()) < parseFloat($('#nominal').val())) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Saldo tidak mencukupi',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                        event.preventDefault();
-                    }
-                }
-
-
-
-            });
-        });
-
         $('#username').on('blur', function() {
             var username = $(this).val();
             if (username != '') {
-                // Swal.fire({
-                //     icon: 'info',
-                //     title: 'Please wait ...',
-                //     text: "Username sedang dalam pengecekan",
-                //     showConfirmButton: false,
-                //     allowOutsideClick: false
-                // });
 
                 $.ajax({
                     url: '/getbalance/' + username,
@@ -163,20 +113,102 @@
                         $('#saldo').val(response);
                     },
                     error: function(xhr, status, error) {
-                        // console.error(xhr.responseText);
-                        // swal.close();
-                        // Swal.fire({
-                        //     icon: 'warning',
-                        //     title: 'Username tidak terdaftar',
-                        //     showConfirmButton: false,
-                        //     timer: 1500
-                        // });
                         $('#saldo').val(0);
                     }
                 });
             } else {
                 $('#saldo').val(0);
             }
+        });
+
+        $('#transaksiForm').submit(function(event) {
+            event.preventDefault();
+            var form = $(this);
+            var submitButton = form.find('button[type="submit"]');
+
+            submitButton.prop('disabled', true);
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda tidak akan bisa mengembalikan aksi ini!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, proses sekarang!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.unbind('submit').submit();
+                } else {
+                    submitButton.prop('disabled', false);
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            $('#form').on('submit', function(event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Pastikan data yang dimasukkan sudah benar.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Proses!'
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+                        if ($('#jenis').val() == 'WDM') {
+                            if (parseFloat($('#saldo').val()) < parseFloat($('#nominal').val())) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Saldo tidak mencukupi',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                event.preventDefault();
+                                return;
+                            }
+                        }
+
+                        $('.tombol.proses').prop('disabled', true);
+
+                        var formData = new FormData(this);
+
+                        $.ajax({
+                            url: $(this).attr('action'),
+                            method: $(this).attr('method'),
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            headers: {
+                                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Berhasil!',
+                                    'Data telah diproses.',
+                                    'success'
+                                );
+
+                                $('.tombol.proses').prop('disabled', false);
+                            },
+                            error: function(response) {
+                                Swal.fire(
+                                    'Gagal!',
+                                    'Terjadi kesalahan saat memproses data.',
+                                    'error'
+                                );
+
+                                $('.tombol.proses').prop('disabled', false);
+                            }
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection

@@ -112,25 +112,18 @@ class DepoWdController extends Controller
             'keterangan' => 'nullable|max:20',
             'amount' => 'required|numeric',
         ]);
+
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()], 400);
+            return response()->json(['status' => 'error', 'message' => $validator->errors()->all()], 400);
         } else {
             try {
                 $txnid = $this->generateTxnid('D');
-                if ($txnid === null) {
-                    return $this->errorResponse($request->username, 'Txnid error');
-                }
-
                 $checkDataMember = Member::where('username', $request->username)->first();
                 if (!$checkDataMember) {
-                    // return $this->errorResponse($request->username, 'Username tidak terdaftar');
-                    return redirect()->route('manualds')->with([
-                        'title' => 'Proses Manual',
-                        'totalnote' => 0,
-                        'jenis' => $request->jenis,
-                        'errorCode' => 500,
+                    return response()->json([
+                        'status' => 'error',
                         'message' => 'Username tidak terdaftar'
-                    ]);
+                    ], 400);
                 }
 
                 $data = $request->all();
@@ -143,11 +136,13 @@ class DepoWdController extends Controller
                 $data["balance"] = $data["saldo"];
                 $data["approved_by"] = Auth::user()->username;
 
-                if ($data["jenis"] == 'WDM') {
-                    if ($data["saldo"] < $data["amount"]) {
-                        return $this->errorResponse($request->username, 'Balance tidak mencukupi');
-                    }
+                if ($data["jenis"] == 'WDM' && $data["saldo"] < $data["amount"]) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Balance tidak mencukupi'
+                    ], 400);
                 }
+
                 $result = DepoWd::create($data);
 
                 if ($result) {
@@ -167,23 +162,18 @@ class DepoWdController extends Controller
                         $dataAPI["IsFullAmount"] = false;
                         $req = $this->requestApi('withdraw', $dataAPI);
                     } else {
-                        return redirect()->route('manualds')->with([
-                            'title' => 'Proses Manual',
-                            'totalnote' => 0,
-                            'jenis' => $request->jenis,
-                            'errorCode' => 500,
+                        return response()->json([
+                            'status' => 'error',
                             'message' => 'Gagal melakukan transaksi!'
-                        ]);
+                        ], 400);
                     }
+
                     if ($req["error"]["id"] !== 0) {
                         DepoWd::where('id', $result->id)->delete();
-                        return redirect()->route('manualds')->with([
-                            'title' => 'Proses Manual',
-                            'totalnote' => 0,
-                            'jenis' => $request->jenis,
-                            'errorCode' => 500,
+                        return response()->json([
+                            'status' => 'error',
                             'message' => 'Gagal melakukan transaksi!'
-                        ]);
+                        ], 400);
                     } else if ($req["error"]["id"] === 0) {
                         $processBalance = $this->processBalance($result->username, $jenis, $result->amount);
 
@@ -196,30 +186,22 @@ class DepoWdController extends Controller
                         /* Win Loss WD */
                         $this->addDataWinLoss($result->username, $result->amount, $keterangan);
 
-                        return redirect()->route('manualds')->with([
-                            'title' => 'Proses Manual',
-                            'totalnote' => 0,
-                            'jenis' => $result->jenis,
-                            'errorCode' => 200,
+                        return response()->json([
+                            'status' => 'success',
                             'message' => 'Transaksi berhasil!'
-                        ]);
+                        ], 200);
                     }
                 }
-                return redirect()->route('manualds')->with([
-                    'title' => 'Proses Manual',
-                    'totalnote' => 0,
-                    'jenis' => $request->jenis,
-                    'errorCode' => 500,
+
+                return response()->json([
+                    'status' => 'error',
                     'message' => 'Gagal melakukan transaksi!'
-                ]);
+                ], 400);
             } catch (\Exception $e) {
-                return redirect()->route('manualds')->with([
-                    'title' => 'Proses Manual',
-                    'totalnote' => 0,
-                    'jenis' => $request->jenis,
-                    'errorCode' => 500,
+                return response()->json([
+                    'status' => 'error',
                     'message' => 'Gagal melakukan transaksi!'
-                ]);
+                ], 500);
             }
         }
     }
@@ -393,12 +375,18 @@ class DepoWdController extends Controller
             if ($jenis == 'DP') {
                 $url = '/depositds';
                 $message = 'Deposit berhasil diproses';
+                return redirect($url)->with('success', [
+                    'success' => $message,
+                    'info' => 'Deposit',
+                ]);
             } else {
                 $url = '/withdrawds';
                 $message = 'Withdrawal berhasil diproses';
+                return redirect($url)->with('success', [
+                    'success' => $message,
+                    'info' => 'Withdraw',
+                ]);
             }
-
-            return redirect($url)->with('success', $message);
         } catch (\Exception $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -468,12 +456,21 @@ class DepoWdController extends Controller
 
             if ($jenis == 'DP') {
                 $url = '/depositds';
+                $info = 'Deposit';
                 $message = 'Deposit berhasil dibatalkan';
+                return redirect($url)->with('success', [
+                    'info' => $info,
+                    'success' => $message
+                ]);
             } else {
                 $url = '/withdrawds';
+                $info = 'Withdraw';
                 $message = 'Withdrawal berhasil dibatalkan';
+                return redirect($url)->with('success', [
+                    'info' => $info,
+                    'success' => $message
+                ]);
             }
-            return redirect($url)->with('success', $message);
         } catch (\Exception $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }

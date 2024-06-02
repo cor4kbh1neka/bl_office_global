@@ -295,14 +295,13 @@
 
         })
     </script>
-
     @if (session('success'))
         <script>
             $(document).ready(function() {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success',
-                    text: '{{ session('success') }}',
+                    title: '{{ session('success')['info'] }} Success',
+                    text: '{{ session('success')['success'] }}',
                 });
             });
         </script>
@@ -313,7 +312,7 @@
             $(document).ready(function() {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Failed',
+                    title: '{{ session('info') }} Failed',
                     text: '{{ session('error') }}',
                 });
             });

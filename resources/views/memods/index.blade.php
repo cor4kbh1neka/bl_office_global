@@ -122,8 +122,8 @@
             $(document).ready(function() {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success',
-                    text: '{{ session('success') }}',
+                    title: '{{ session('success')['info'] }} Rejected',
+                    text: '{{ session('success')['success'] }}',
                 });
             });
         </script>

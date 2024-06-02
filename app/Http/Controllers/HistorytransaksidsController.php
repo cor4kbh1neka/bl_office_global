@@ -189,7 +189,7 @@ class HistorytransaksidsController extends Controller
 
     public function export(Request $request)
     {
-        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
+        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 999999);
         return Excel::download(new HistoryTransaksiExport($data), 'Historycoin.xlsx');
     }
 }

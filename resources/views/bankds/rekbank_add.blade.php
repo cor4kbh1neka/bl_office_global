@@ -41,71 +41,73 @@
                         <span class="texttombol">X DATA</span>
                     </a>
                 </div>
-                <div class="secgroupdatabankds">
+                <div class="secgroupdatabankds custombankss">
+                    <span class="titlebankmaster">Add Detail Bank</span>
                     <form method="POST" action="/storebank" class="groupsetbankmaster">
-                        @csrf
-                        <span class="titlebankmaster">Add Detail Bank</span>
-                        <div class="listgroupplayerinfo left">
-                            <div class="listplayerinfo">
-                                <label for="masterbank">pilih master</label>
-                                <div class="groupeditinput">
-                                    <select id="bankmaster" name="masterbnkxyxt" value="bca" required>
-                                        <option value="bca">bca</option>
-                                        <option value="bni">bni</option>
-                                        <option value="bri">bri</option>
-                                        <option value="mandiri">mandiri</option>
-                                        <option value="cimb">cimb</option>
-                                        <option value="danamon">danamon</option>
-                                        <option value="panin">panin</option>
-                                        <option value="cimb">cimb</option>
-                                        <option value="permata">permata</option>
-                                        <option value="bsi">bsi</option>
-                                        <option value="dana">dana</option>
-                                        <option value="gopay">gopay</option>
-                                        <option value="ovo">ovo</option>
-                                        <option value="pulsa">pulsa</option>
-                                        <option value="linkaja">linkaja</option>
-                                        <option value="qris">qris</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="listplayerinfo">
-                                <label for="bankname">nama bank</label>
-                                <div class="groupnamabank">
+                        <div class="secformdatabank">
+                            @csrf
+                            <div class="listgroupplayerinfo left">
+                                <div class="listplayerinfo">
+                                    <label for="masterbank">pilih master</label>
                                     <div class="groupeditinput">
-                                        <input type="text" id="bankname" name="namebankxxyy" value=""
-                                            placeholder="masukkan nama bank" required>
-                                    </div>
-                                    <div class="groupeditinput">
-                                        <select id="methode" name="yyxxmethod" value="bank" required>
-                                            <option value="" selected="" place=""
-                                                style="color: #838383; font-style: italic;" disabled="">pilih methode
-                                            </option>
-                                            <option value="bank">bank</option>
-                                            <option value="ewallet">ewallet</option>
+                                        <select id="bankmaster" name="masterbnkxyxt" value="bca" required>
+                                            <option value="bca">bca</option>
+                                            <option value="bni">bni</option>
+                                            <option value="bri">bri</option>
+                                            <option value="mandiri">mandiri</option>
+                                            <option value="cimb">cimb</option>
+                                            <option value="danamon">danamon</option>
+                                            <option value="panin">panin</option>
+                                            <option value="cimb">cimb</option>
+                                            <option value="permata">permata</option>
+                                            <option value="bsi">bsi</option>
+                                            <option value="dana">dana</option>
+                                            <option value="gopay">gopay</option>
+                                            <option value="ovo">ovo</option>
+                                            <option value="pulsa">pulsa</option>
+                                            <option value="linkaja">linkaja</option>
+                                            <option value="qris">qris</option>
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="listplayerinfo">
-                                <label for="namarek">nama rekening</label>
-                                <div class="groupeditinput">
-                                    <input type="text" id="namarek" name="xynamarekx" value=""
-                                        placeholder="masukkan nama rekening" required>
+                                <div class="listplayerinfo">
+                                    <label for="bankname">nama bank</label>
+                                    <div class="groupnamabank">
+                                        <div class="groupeditinput">
+                                            <input type="text" id="bankname" name="namebankxxyy" value=""
+                                                placeholder="masukkan nama bank" required>
+                                        </div>
+                                        <div class="groupeditinput">
+                                            <select id="methode" name="yyxxmethod" value="bank" required>
+                                                <option value="" selected="" place=""
+                                                    style="color: #838383; font-style: italic;" disabled="">pilih methode
+                                                </option>
+                                                <option value="bank">bank</option>
+                                                <option value="ewallet">ewallet</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="listplayerinfo">
-                                <label for="nomorrek">nomor rekening</label>
-                                <div class="groupeditinput">
-                                    <input type="text" id="nomorrek" name="norekxyxy" value=""
-                                        placeholder="masukkan nomor rekening" required>
+                                <div class="listplayerinfo">
+                                    <label for="namarek">nama rekening</label>
+                                    <div class="groupeditinput">
+                                        <input type="text" id="namarek" name="xynamarekx" value=""
+                                            placeholder="masukkan nama rekening" required>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="listplayerinfo">
-                                <label for="urlbarcode">url barcode</label>
-                                <div class="groupeditinput">
-                                    <input type="text" id="urlbarcode" name="barcodexrxr" value=""
-                                        placeholder="jika tidak ingin menampilkan barcode isi angka '0'" required>
+                                <div class="listplayerinfo">
+                                    <label for="nomorrek">nomor rekening</label>
+                                    <div class="groupeditinput">
+                                        <input type="text" id="nomorrek" name="norekxyxy" value=""
+                                            placeholder="masukkan nomor rekening" required>
+                                    </div>
+                                </div>
+                                <div class="listplayerinfo">
+                                    <label for="urlbarcode">url barcode</label>
+                                    <div class="groupeditinput">
+                                        <input type="text" id="urlbarcode" name="barcodexrxr" value=""
+                                            placeholder="jika tidak ingin menampilkan barcode isi angka '0'" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>

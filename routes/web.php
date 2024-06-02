@@ -5,17 +5,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AllowedipController;
 use App\Http\Controllers\AgentsController;
 use App\Http\Controllers\PlayersController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\DepoWdController;
 use App\Http\Controllers\MemberController;
-use App\Http\Controllers\BankController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepositdsController;
-use App\Http\Controllers\WithdrawdsController;
 use App\Http\Controllers\ManualdsController;
 use App\Http\Controllers\HistorycoindsController;
 use App\Http\Controllers\MemberlistdsController;
@@ -30,9 +27,7 @@ use App\Http\Controllers\AgentdsController;
 use App\Http\Controllers\AnalyticsdsController;
 use App\Http\Controllers\ContentdsController;
 use App\Http\Controllers\ApksettingdsController;
-use App\Http\Controllers\AllowedipdsController;
 use App\Http\Controllers\MemotouserdsController;
-use App\Http\Controllers\UsermanagementdsController;
 use App\Http\Controllers\NotifikasidsController;
 use App\Http\Controllers\Menu2Controller;
 use App\Http\Controllers\PersentasedsController;
@@ -201,9 +196,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/event', [SettingsController::class, 'indexevent']);
     Route::get('/notice', [SettingsController::class, 'indexnotice']);
 
-    /*-- Bank --*/
-    Route::get('/bank', [BankController::class, 'index'])->middleware('bank');
-
     /*-- Dashboard --*/
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
@@ -350,8 +342,8 @@ Route::middleware(['auth'])->group(function () {
 
 
     /*-- MENU 2 --*/
-    Route::get('/menu2', [Menu2Controller::class, 'index']);
-    Route::get('/menu2/add', [Menu2Controller::class, 'create']);
+    // Route::get('/menu2', [Menu2Controller::class, 'index']);
+    // Route::get('/menu2/add', [Menu2Controller::class, 'create']);
 
 
     /*-- GET NOTIFICATION --*/

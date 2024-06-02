@@ -683,6 +683,7 @@ class ApiController extends Controller
         //     ->join('transaction_saldo', 'transaction_saldo.transtatus_id', '=', 'transaction_status.id')
         //     ->where('transaction_status.status', 'Running')
         //     ->get();
+        $jenis = $request->jenis;
 
         $lastStatuses = Outstanding::select('id AS trans_id', 'status', 'amount')->get();
 

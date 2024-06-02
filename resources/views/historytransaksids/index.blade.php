@@ -296,6 +296,7 @@
         });
 
         $('.exportdata').click(function() {
+            alert('test');
             Swal.fire({
                 icon: 'question',
                 title: 'Konfirmasi',

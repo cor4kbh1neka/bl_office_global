@@ -133,7 +133,6 @@ class AppServiceProvider extends ServiceProvider
                 'count' => $count,
             ];
         })->count();
-
         $responseMemo = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/memo');

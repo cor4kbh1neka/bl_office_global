@@ -72,7 +72,7 @@
                                     <th class="bagtitle">title</th>
                                     <th class="bagurltarget">url target</th>
                                     <th class="bagstatus">status</th>
-                                    <th class="action">tools</th>
+                                    <th class="action arrowmv">tools</th>
                                 </tr>
                                 @foreach ($data as $d)
                                     <tr class="dinamicrow" data-row="1" data-statusactive="1">
@@ -92,7 +92,7 @@
                                         <td class="datamini">{{ $d->trgturctprm }}</td>
                                         <td class="statuspromo" data-status="{{ $d->statusctprm }}"></td>
                                         <td>
-                                            <div class="grouptools">
+                                            <div class="grouptools arrowmove">
                                                 <a href="/contentds/promo/{{ $d->idctprm }}/edit" target="_blank"
                                                     class="tombol grey openviewport">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"

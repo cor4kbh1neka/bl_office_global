@@ -18,7 +18,7 @@
         });
     </script>
 </head>
-<div class="sec_table socialmedia_edit">
+<div class="sec_table newwindow">
     <div class="secgrouptitle newwindow">
         <h2>{{ $title }} </h2>
     </div>

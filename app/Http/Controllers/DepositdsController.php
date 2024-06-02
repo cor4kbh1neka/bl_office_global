@@ -101,7 +101,6 @@ class DepositdsController extends Controller
 
     private function getApi($url)
     {
-        dd($url);
         // Define the headers you want to add
         $headers = [
             'Accept' => 'application/json',
@@ -111,7 +110,6 @@ class DepositdsController extends Controller
         $response = Http::withHeaders($headers)->get($url);
 
         $response = $response->json();
-        dd($response);
         if ($response['status'] == 'success') {
             $response = $response['data'];
         } else {

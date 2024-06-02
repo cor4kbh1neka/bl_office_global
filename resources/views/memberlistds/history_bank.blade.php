@@ -18,7 +18,7 @@
         });
     </script> --}}
 </head>
-<div class="sec_table">
+<div class="sec_table newwindow">
     <div class="seceditmemberds historybetcc">
         <div class="groupseceditmemberds">
             <div class="datahistory">
@@ -35,7 +35,7 @@
                                 <th class="bagnominal">last coin</th>
                             </tr>
                             @php
-                                if($data != null){
+                                if ($data != null) {
                                     $currentPage = $data->currentPage();
                                     $perPage = $data->perPage();
                                     $startNumber = ($currentPage - 1) * $perPage + 1;

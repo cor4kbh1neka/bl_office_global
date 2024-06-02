@@ -101,6 +101,7 @@ class DepositdsController extends Controller
 
     private function getApi($url)
     {
+        dd($url);
         // Define the headers you want to add
         $headers = [
             'Accept' => 'application/json',

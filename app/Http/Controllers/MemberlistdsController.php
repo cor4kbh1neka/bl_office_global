@@ -38,7 +38,7 @@ class MemberlistdsController extends Controller
     public function update($id)
     {
         $data = Member::where('id', $id)->first();
-
+        dd($data);
         if ($data) {
             $username = $data->username;
         } else {

@@ -43,12 +43,27 @@ class DepositdsController extends Controller
         }
 
         $dataBank = $allDataBank;
-
+        // dd($dataBank);
         /* History transkasi */
         $dataTransaksi = DepoWd::whereIn('status', [1, 2])->where('jenis', $jenis)->orderBy('updated_at', 'DESC')->get();
 
         /* Data depo wd */
         $dataDepoWd = DepoWd::with('member:username,status')->where('status', 0)->where('jenis', $jenis)->orderBy('created_at', 'ASC')->get();
+
+        if ($jenis == 'WD') {
+            $mbankData = $dataDepoWd->pluck('mbank');
+            $mbankCounts = $mbankData->countBy()->map(function ($count, $mbank) {
+                return [
+                    'bnkmstrxyxyx' => $mbank,
+                    'count' => $count,
+                ];
+            })->values()->toArray();
+            $dataBank = array_merge($allDataBank, $mbankCounts);
+
+            usort($dataBank, function ($a, $b) {
+                return strcmp($a['bnkmstrxyxyx'], $b['bnkmstrxyxyx']);
+            });
+        }
 
         /* View depo / wd */
         if ($jenis == 'WD') {
@@ -58,7 +73,6 @@ class DepositdsController extends Controller
             $path = 'depositds.index';
             $title = 'Deposit';
         }
-
         return view($path, [
             'title' => $title,
             'totalnote' => 0,
@@ -71,9 +85,9 @@ class DepositdsController extends Controller
     private function getApiMasterBank()
     {
         // "status" => "success"
-        $ApiBank = $this->getApi(env('DOMAIN') . '/banks/v2/groupbank3');
+        $ApiBank = $this->getApi(env('DOMAIN') . '/banks/v2/groupbank1');
         unset($ApiBank['headers']);
-        $ApiBankExcept = $this->getApi(env('DOMAIN') . '/banks/exc/groupbank3');
+        $ApiBankExcept = $this->getApi(env('DOMAIN') . '/banks/exc/groupbank1');
         unset($ApiBankExcept['headers']);
 
         $data1 = [];
@@ -94,8 +108,9 @@ class DepositdsController extends Controller
             }
         }
 
+
         $allDataBank = array_merge($data1, $data2);
-        $allDataBank = [];
+        // $allDataBank = [];
         return $allDataBank;
     }
 

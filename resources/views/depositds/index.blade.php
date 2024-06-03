@@ -74,7 +74,7 @@
                                         <div class="splitcollum" title="{{ $d->ketmember }}">
                                             <span class="userpending">
                                                 {{ $d->username }}
-                                                <a href="/memberlistds/edit/{{ $d->username }}"
+                                                <a href="/memberlistds/edit/{{ $d->id }}"
                                                     class="iconprofile openviewport" target="_blank">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                                                         viewBox="0 0 24 24">

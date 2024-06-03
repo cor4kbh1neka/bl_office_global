@@ -46,7 +46,7 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->intended('depositds');
     }
-    return redirect()->intended('/login');
+    return redirect()->intended('/S0oDv1Ch4nG3T1');
 });
 
 /* Dashboard */
@@ -59,8 +59,8 @@ Route::get('/dashboard', function () {
 // Route::get('/dashboard', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
 
 /* Login & Logout */
-Route::get('/login', [LoginController::class, 'index'])->name('login')->Middleware('guest');
-Route::post('/login', [LoginController::class, 'authenticate']);
+Route::get('/S0oDv1Ch4nG3T1', [LoginController::class, 'index'])->name('login')->Middleware('guest');
+Route::post('/S0oDv1Ch4nG3T1', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout'])->Middleware('auth');
 
 

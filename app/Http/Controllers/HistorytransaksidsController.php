@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HistoryTransaksiExport;
+use Illuminate\Support\Collection;
 
 
 class HistorytransaksidsController extends Controller
@@ -115,9 +116,11 @@ class HistorytransaksidsController extends Controller
 
         foreach ($parameters as $searchParam) {
             if (request($searchParam)) {
-                $query = $query->filter(function ($item) use ($searchParam) {
-                    return stripos($item[$searchParam], request($searchParam)) !== false;
-                });
+                if (request($searchParam) != 'null') {
+                    $query = $query->filter(function ($item) use ($searchParam) {
+                        return stripos($item[$searchParam], request($searchParam)) !== false;
+                    });
+                }
             }
         }
 
@@ -145,9 +148,13 @@ class HistorytransaksidsController extends Controller
                 return stripos($item['refno'], $inputRefno) !== false;
             });
         }
+
+        dd(!request('checkall'));
         if (!request('checkall') || !request(['checkinvoice', 'checkstatus', 'checktransdari', 'checktranshingga'])) {
             return $query = [];
         }
+
+
 
         $parameters = array_merge($parameters, [
             'username',
@@ -183,13 +190,15 @@ class HistorytransaksidsController extends Controller
                     $paginatedItems->appends($searchParam, request($searchParam));
                 }
             }
-            return $paginatedItems;
+            return  $paginatedItems;
         }
     }
 
     public function export(Request $request)
     {
         $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
+        dd($data);
+        $data = collect($data);
         return Excel::download(new HistoryTransaksiExport($data), 'Historycoin.xlsx');
     }
 }

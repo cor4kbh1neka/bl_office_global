@@ -46,6 +46,7 @@ class MemberlistdsController extends Controller
         }
 
         $dataUser = $this->getApiUser($username);
+        dd($dataUser);
         if (is_array($dataUser)) {
             $dataUser = $dataUser["data"]["datauser"];
         } else {

@@ -34,6 +34,7 @@ class HistorycoindsController extends Controller
                 ELSE jenis
             END as jenis_temp")
             );
+        $query->whereIn('status', [1, 2]);
 
         $parameter = [
             'username',

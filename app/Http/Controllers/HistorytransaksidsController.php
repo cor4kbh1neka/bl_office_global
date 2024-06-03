@@ -149,12 +149,9 @@ class HistorytransaksidsController extends Controller
             });
         }
 
-        dd(!request('checkall'));
         if (!request('checkall') || !request(['checkinvoice', 'checkstatus', 'checktransdari', 'checktranshingga'])) {
             return $query = [];
         }
-
-
 
         $parameters = array_merge($parameters, [
             'username',
@@ -166,10 +163,10 @@ class HistorytransaksidsController extends Controller
             'checktransdari',
             'checktranshingga',
             'checkall',
-        ]); // $parameters dikembaliin lagi supaya paginator nya jalan okey?
-
+        ]);
+        // dd($page);
         if ($page == 0) {
-            // If $page is 0, return the filtered collection without pagination
+            dd($query->values());
             return $query->values();
         } else {
             // Kalau bisa paginator ini jangan diubah, cukup sampai disini sajaa :(
@@ -197,7 +194,7 @@ class HistorytransaksidsController extends Controller
     public function export(Request $request)
     {
         $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
-        dd($data);
+
         $data = collect($data);
         return Excel::download(new HistoryTransaksiExport($data), 'Historycoin.xlsx');
     }

@@ -307,16 +307,28 @@
                 if (result.isConfirmed) {
 
                     var username = $('#username').val();
+
+                    var checkinvoice = $('#checkinvoice').val();
                     var invoice = $('#invoice').val();
+
+                    var checkstatus = $('#checkstatus').val();
                     var status = $('#status').val();
+
+                    var checktransdari = $('#checktransdari').val();
                     var transdari = $('#transdari').val();
+
+                    var checktranshingga = $('#checktranshingga').val();
                     var transhingga = $('#transhingga').val();
 
                     // Membuat URL dengan parameter dinamis
                     var url = '/historytransaksids/export?username=' + encodeURIComponent(username) +
+                        '&checkinvoice=' + encodeURIComponent(checkinvoice) +
                         '&invoice=' + encodeURIComponent(invoice) +
+                        '&checkstatus=' + encodeURIComponent(checkstatus) +
                         '&status=' + encodeURIComponent(status) +
+                        '&checktransdari=' + encodeURIComponent(checktransdari) +
                         '&transdari=' + encodeURIComponent(transdari) +
+                        '&checktranshingga=' + encodeURIComponent(checktranshingga) +
                         '&transhingga=' + encodeURIComponent(transhingga);
 
                     window.location.href = url;

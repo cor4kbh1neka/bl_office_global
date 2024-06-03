@@ -153,11 +153,10 @@ class AppServiceProvider extends ServiceProvider
     }
     public function userAndUserAccess()
     {
-        Cache::flush();
         $user = auth()->user();
         $cacheKey = 'user_access_' . $user->id;
 
-        $result = Cache::remember($cacheKey, 60 * 60, function () use ($user) {
+        $result = Cache::rememberForever($cacheKey, function () use ($user) {
             $userWithAccess = User::with('userAccess')->find($user->id);
             $result = $userWithAccess->toArray();
 

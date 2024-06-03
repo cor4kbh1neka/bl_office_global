@@ -38,7 +38,7 @@ class BankController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
-        ])->get('https://back-staging.bosraka.com/banks/groupbank1');
+        ])->get(env('BODOMAIN') . '/banks/groupbank1');
 
         if ($response->successful()) {
             $responseData = $response->json();

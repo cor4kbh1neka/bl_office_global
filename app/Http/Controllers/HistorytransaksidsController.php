@@ -32,21 +32,21 @@ class HistorytransaksidsController extends Controller
         ]);
     }
 
-    private function getApiBetList()
-    {
-        $data = [
-            "username" => "abangpoorgas",
-            "portfolio" => "SportsBook",
-            "startDate" => "2024-04-01T00:00:00.540Z",
-            "endDate" => "2024-05-30T23:59:59.540Z",
-            "companyKey" => "C441C721B2214E658A6D2A72C41D2063",
-            "language" => "en",
-            "serverId" => "YY-TEST"
-        ];
-        $response = Http::withTokenHeader()->post(env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
+    // private function getApiBetList()
+    // {
+    //     $data = [
+    //         "username" => "abangpoorgas",
+    //         "portfolio" => "SportsBook",
+    //         "startDate" => "2024-04-01T00:00:00.540Z",
+    //         "endDate" => "2024-05-30T23:59:59.540Z",
+    //         "companyKey" => "C441C721B2214E658A6D2A72C41D2063",
+    //         "language" => "en",
+    //         "serverId" => "YY-TEST"
+    //     ];
+    //     $response = Http::withTokenHeader()->post(env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
 
-        return $response->json();
-    }
+    //     return $response->json();
+    // }
 
 
     public function transaksilama(Request $request)

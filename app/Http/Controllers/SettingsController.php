@@ -46,6 +46,7 @@ class SettingsController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/apks/settings/apkCrQQbIU5RGc9GSy9C4bn2');
 
         if ($response->successful()) {
@@ -107,6 +108,7 @@ class SettingsController extends Controller
                 $url = env('DOMAIN') . '/apks/settings';
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json; charset=UTF-8',
+                    'x-customblhdrs' => env('XCUSTOMBLHDRS')
                 ])->post($url, $request->all());
 
                 if ($response->successful()) {

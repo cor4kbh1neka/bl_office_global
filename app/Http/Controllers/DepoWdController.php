@@ -411,9 +411,6 @@ class DepoWdController extends Controller
                 if ($updateStatusTransaction) {
                     $updateStatusTransaction->update(['status' => 2, 'approved_by' => Auth::user()->username]);
 
-                    /* Create History Depo */
-                    $this->addDataHistory($updateStatusTransaction->username, $updateStatusTransaction->txnid, '', 'deposit', 'deposit', 0, $updateStatusTransaction->amount, 0);
-
                     /* delete transaction Xdpwd */
                     $dataToDelete = Xdpwd::where('username', $updateStatusTransaction->username)->where('jenis', $updateStatusTransaction->jenis)->first();
                     if ($dataToDelete) {

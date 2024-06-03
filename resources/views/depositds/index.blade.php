@@ -299,7 +299,7 @@
             $(document).ready(function() {
                 Swal.fire({
                     icon: 'success',
-                    title: '{{ session('success')['info'] }} Success',
+                    title: '{{ session('success')['info'] }}',
                     text: '{{ session('success')['success'] }}',
                 });
             });
@@ -311,7 +311,7 @@
             $(document).ready(function() {
                 Swal.fire({
                     icon: 'error',
-                    title: '{{ session('info') }} Failed',
+                    title: '{{ session('info') }}',
                     text: '{{ session('error') }}',
                 });
             });

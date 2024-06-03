@@ -51,6 +51,7 @@ class DepositdsController extends Controller
         $dataDepoWd = DepoWd::with('member:username,status')->where('status', 0)->where('jenis', $jenis)->orderBy('created_at', 'ASC')->get();
 
         if ($jenis == 'WD') {
+            /* Data master bank */
             $mbankData = $dataDepoWd->pluck('mbank');
             $mbankCounts = $mbankData->countBy()->map(function ($count, $mbank) {
                 return [
@@ -59,6 +60,16 @@ class DepositdsController extends Controller
                 ];
             })->values()->toArray();
             $dataBank = array_merge($allDataBank, $mbankCounts);
+
+            $dataBank = array_values(array_reduce($dataBank, function ($carry, $item) {
+                if (!isset($carry[$item['bnkmstrxyxyx']])) {
+                    $carry[$item['bnkmstrxyxyx']] = $item;
+                } else {
+                    // Jika sudah ada, tambahkan nilai count
+                    $carry[$item['bnkmstrxyxyx']]['count'] += $item['count'];
+                }
+                return $carry;
+            }, []));
 
             usort($dataBank, function ($a, $b) {
                 return strcmp($a['bnkmstrxyxyx'], $b['bnkmstrxyxyx']);

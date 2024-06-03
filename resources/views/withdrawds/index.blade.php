@@ -54,7 +54,7 @@
                             </tr>
 
                             @foreach ($data as $i => $d)
-                                <tr data-bank="{{ $d->bank }}">
+                                <tr data-bank="{{ $d->mbank }}">
                                     <td>
                                         <div class="statusmember" data-status="{{ $d->statususer }}">{{ $i + 1 }}
                                         </div>
@@ -259,6 +259,7 @@
 
         $(document).ready(function() {
             $('.groupbankproses input[type="checkbox"]').change(function() {
+
                 var checkedCheckboxes = $('.groupbankproses input[type="checkbox"]:checked');
                 var checkedBankNames = checkedCheckboxes.map(function() {
                     return this.id.replace('Checkbox', '');

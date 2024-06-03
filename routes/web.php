@@ -46,7 +46,7 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->intended('depositds');
     }
-    return redirect()->intended('/S0oDv1Ch4nG3T1');
+    abort(404);
 });
 
 /* Dashboard */

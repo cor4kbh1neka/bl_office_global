@@ -74,13 +74,12 @@ class AgentdsController extends Controller
         $request->validate([
             'id' => 'required',
             'divisi' => 'required',
-            'password' => 'nullable',
+            'newpassword' => 'nullable',
         ]);
 
         $user = User::findOrFail($request->id);
-
-        if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
+        if ($request->filled('newpassword')) {
+            $user->password = bcrypt($request->newpassword);
         }
 
         $user->divisi = $request->divisi;
@@ -283,18 +282,18 @@ class AgentdsController extends Controller
     public function userAndUserAccess()
     {
         $user = auth()->user();
-        $userWithAccess = User::with('userAccess')->find($user->id); 
+        $userWithAccess = User::with('userAccess')->find($user->id);
         // $userWithAccess = User::with('userAccess')->find($user->id); 
         // userAccess di atas adalah penghubung ke method userAccess di model User.php
         // Cara bacanya User yang memiliki hubungan ke model UserAccess dengan name_access yang serupa dengan divisi milik model User
         // Maka temukan ID nya si auth user dan 
         $result = $userWithAccess->toArray();
-        if ($result['user_access']['deposit'] = 1){
+        if ($result['user_access']['deposit'] = 1) {
             dd('masuk');
         } else {
             dd('keluar');
         }
-        
+
         return $result;
     }
 }

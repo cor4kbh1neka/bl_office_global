@@ -133,6 +133,7 @@ class MemberlistdsController extends Controller
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->put($url, $data);
 
         $responseData = $response->json();
@@ -206,6 +207,7 @@ class MemberlistdsController extends Controller
         $url = env('DOMAIN') . '/users/' . $username;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->put($url, $data);
 
         if ($response->successful()) {
@@ -225,6 +227,7 @@ class MemberlistdsController extends Controller
         $url = env('DOMAIN') . '/users/pswdy/' . $username;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->put($url, $data);
 
         if ($response->successful()) {
@@ -374,7 +377,8 @@ class MemberlistdsController extends Controller
         $url = env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx';
 
         $response = Http::withHeaders([
-            'Content-Type' => 'application/json; charset=UTF-8'
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->post($url, $data);
 
         $responseData = $response->json();

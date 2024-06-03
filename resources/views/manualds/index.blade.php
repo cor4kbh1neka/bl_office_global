@@ -199,7 +199,7 @@
                             error: function(response) {
                                 Swal.fire(
                                     'Gagal!',
-                                    'Terjadi kesalahan saat memproses data.',
+                                    'Username tidak tersedia.',
                                     'error'
                                 );
 

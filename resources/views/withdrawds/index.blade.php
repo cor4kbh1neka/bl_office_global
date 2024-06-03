@@ -287,8 +287,8 @@
             $(document).ready(function() {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success',
-                    text: '{{ session('success') }}',
+                    title: '{{ session('success')['info'] }}',
+                    text: '{{ session('success')['success'] }}',
                 });
             });
         </script>
@@ -299,7 +299,7 @@
             $(document).ready(function() {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Failed',
+                    title: '{{ session('info') }}',
                     text: '{{ session('error') }}',
                 });
             });

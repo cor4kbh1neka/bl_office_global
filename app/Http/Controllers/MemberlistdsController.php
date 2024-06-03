@@ -38,12 +38,11 @@ class MemberlistdsController extends Controller
     public function update($id)
     {
         $data = Member::where('id', $id)->first();
-
-        if ($data) {
-            $username = $data->username;
-        } else {
-            $username = $id;
+        if (!$data) {
+            $data = Member::where('username', $id)->first();
         }
+
+        $username = $data->username;
 
         $dataUser = $this->getApiUser($username);
         if (is_array($dataUser)) {

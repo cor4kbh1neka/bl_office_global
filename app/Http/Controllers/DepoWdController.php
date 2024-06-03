@@ -118,7 +118,12 @@ class DepoWdController extends Controller
         } else {
             try {
                 $txnid = $this->generateTxnid('D');
-                $checkDataMember = Member::where('username', $request->username)->first();
+
+                $checkDataMember = MemberAktif::where('username', $request->username)->first();
+                if (!$checkDataMember) {
+                    $checkDataMember = Member::where('username', $request->username)->first();
+                }
+
                 if (!$checkDataMember) {
                     return response()->json([
                         'status' => 'error',

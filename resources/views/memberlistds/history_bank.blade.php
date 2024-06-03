@@ -51,7 +51,7 @@
                                             {{ $d->jenis == 'DP' ? 'deposit' : 'withdraw' }}
                                         @else
                                             manual
-                                            {{ $d->jenis == 'DP' ? 'deposit' : 'withdraw' }}
+                                            {{ $d->jenis == 'DPM' ? 'deposit' : 'withdraw' }}
                                         @endif
                                     </td>
                                     <td>{{ $d->approved_by }}</td>

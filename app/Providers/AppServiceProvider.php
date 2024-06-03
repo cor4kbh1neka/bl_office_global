@@ -153,6 +153,8 @@ class AppServiceProvider extends ServiceProvider
     }
     public function userAndUserAccess()
     {
+        Cache::flush();
+
         $user = auth()->user();
         $cacheKey = 'user_access_' . $user->id;
 

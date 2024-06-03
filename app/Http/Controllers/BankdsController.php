@@ -64,7 +64,11 @@ class BankdsController extends Controller
 
             $apiUrl = env('DOMAIN') . '/banks/master/' . $bankName;
 
-            $response = Http::put($apiUrl, $bankData);
+            // $response = Http::put($apiUrl, $bankData);
+            $response = Http::withHeaders([
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ])->put($apiUrl, $bankData);
+
             if (!$response->successful()) {
 
                 return back()->withInput()->with('error', $response->json()["message"]);
@@ -87,7 +91,11 @@ class BankdsController extends Controller
 
         $apiUrl = env('DOMAIN') . '/banks/master';
 
-        $response = Http::post($apiUrl, $validatedData);
+        // $response = Http::post($apiUrl, $validatedData);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->post($apiUrl, $validatedData);
+
         if ($response->successful()) {
             return redirect()->route('bankds')->with('success', 'Master Bank berhasil ditambahkan');
         } else {
@@ -115,7 +123,11 @@ class BankdsController extends Controller
 
         $apiUrl = env('DOMAIN') . 'banks/group';
 
-        $response = Http::post($apiUrl, $validatedData);
+        // $response = Http::post($apiUrl, $validatedData);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->post($apiUrl, $validatedData);
+
         if ($response->successful()) {
 
             if ($validatedData["namegroupxyzt"] != 'nongroup' && $validatedData["namegroupxyzt"] != 'nongroupwd') {
@@ -134,7 +146,10 @@ class BankdsController extends Controller
 
     public function deletelistgroup($group)
     {
-        $responseGetGroup = Http::get(env('DOMAIN') . '/banks/group');
+        $responseGetGroup = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/group');
+
         if ($responseGetGroup->failed()) {
             return back()->withInput()->with('error', 'Gagal mengambil data grup');
         }
@@ -147,7 +162,11 @@ class BankdsController extends Controller
 
         $id = $resultGetGroup['data'][$group]["idgroup"];
 
-        $response = Http::delete(env('DOMAIN') . '/banks/group/' . $id);
+        // $response = Http::delete(env('DOMAIN') . '/banks/group/' . $id);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->delete(env('DOMAIN') . '/banks/group/' . $id);
+
         if ($response->successful()) {
             Groupbank::where('group', $group)->delete();
 
@@ -159,7 +178,11 @@ class BankdsController extends Controller
 
     public function deletelistmaster($id)
     {
-        $response = Http::delete(env('DOMAIN') . '/banks/master/' . $id);
+        // $response = Http::delete(env('DOMAIN') . '/banks/master/' . $id);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->delete(env('DOMAIN') . '/banks/master/' . $id);
+
         if ($response->successful()) {
             return redirect()->route('listmaster')->with('success', 'List group berhasil dihapus');
         } else {
@@ -187,7 +210,11 @@ class BankdsController extends Controller
 
     public function setbankmaster($bank)
     {
-        $response = Http::get(env('DOMAIN') . '/banks/master');
+        // $response = Http::get(env('DOMAIN') . '/banks/master');
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/master');
+
         $data = $response->json()["data"];
         $results = array_filter($data, function ($item) use ($bank) {
             return $item['bnkmstrxyxyx'] === $bank;
@@ -216,7 +243,10 @@ class BankdsController extends Controller
         $dataReq['statusxyxyy'] = intval($dataReq["statusxyxyy"]);
         $dataReq['wdstatusxyxyy'] = intval($dataReq["wdstatusxyxyy"]);
 
-        $response = Http::put(env('DOMAIN') . '/banks/master/' . $bank, $dataReq);
+        // $response = Http::put(env('DOMAIN') . '/banks/master/' . $bank, $dataReq);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->put(env('DOMAIN') . '/banks/master/' . $bank, $dataReq);
 
         if ($response->successful()) {
             return redirect()->route('listmaster')->with('success', 'List group berhasil dihapus');
@@ -237,7 +267,11 @@ class BankdsController extends Controller
     public function setgroupbank($groupbank)
     {
 
-        $response = Http::get(env('DOMAIN') . '/banks/group');
+        // $response = Http::get(env('DOMAIN') . '/banks/group');
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/group');
+
         $results = $response->json()["data"];
 
         if (isset($results[$groupbank])) {
@@ -264,7 +298,10 @@ class BankdsController extends Controller
         $data['min_wd'] = intval($data['min_wd']);
         $data['max_wd'] = intval($data['max_wd']);
 
-        $response = Http::put(env('DOMAIN') . '/banks/group/' . $namagroup, $data);
+        // $response = Http::put(env('DOMAIN') . '/banks/group/' . $namagroup, $data);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->put(env('DOMAIN') . '/banks/group/' . $namagroup, $data);
 
         if ($response->successful()) {
             Groupbank::where('group', $namagroup)->update([
@@ -290,7 +327,11 @@ class BankdsController extends Controller
     public function setbank($id, $groupbank)
     {
         $allgroup = [];
-        $responseByGroup = Http::get(env('DOMAIN') . '/banks/v2/' . $groupbank);
+        // $responseByGroup = Http::get(env('DOMAIN') . '/banks/v2/' . $groupbank);
+        $responseByGroup = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/v2/' . $groupbank);
+
         $resultsGroup = $responseByGroup->json()["data"];
 
         $filteredGroups = [];
@@ -307,7 +348,11 @@ class BankdsController extends Controller
             }
         }
 
-        $responseBank = Http::get(env('DOMAIN') . '/banks/master');
+        // $responseBank = Http::get(env('DOMAIN') . '/banks/master');
+        $responseBank = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/master');
+
         $resultsBank = $responseBank->json()["data"];
 
         return view('bankds.rekbank_edit', [
@@ -349,7 +394,11 @@ class BankdsController extends Controller
         $validatedData["barcodexrxr"] = strtolower($validatedData["barcodexrxr"]);
 
         $apiUrl = env('DOMAIN') . '/banks/v2/add';
-        $response = Http::post($apiUrl, $validatedData);
+        // $response = Http::post($apiUrl, $validatedData);
+
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->post($apiUrl, $validatedData);
 
         if ($response->successful()) {
             return redirect('/bankds/listbank/0/0')->with('success', 'Set Bank berhasil ditambahkan');

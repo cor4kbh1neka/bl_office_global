@@ -85,7 +85,11 @@ class MemodsController extends Controller
 
     public function readdelivered($id)
     {
-        $response = Http::get(env('DOMAIN') . '/memo');
+        // $response = Http::get(env('DOMAIN') . '/memo');
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/memo');
+
         $results = $response->json()["data"];
         $result = collect($results)->where('idmemo', $id)->toArray();
         $result = array_values($result);
@@ -127,7 +131,11 @@ class MemodsController extends Controller
 
     public function delete($id)
     {
-        $response = Http::delete(env('DOMAIN') . '/memo/' . $id);
+        // $response = Http::delete(env('DOMAIN') . '/memo/' . $id);
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->delete(env('DOMAIN') . '/memo/' . $id);
+
         if ($response->successful()) {
             return redirect('/memods/delivered')->with('success', 'Memo berhasil ditambahkan');
         } else {

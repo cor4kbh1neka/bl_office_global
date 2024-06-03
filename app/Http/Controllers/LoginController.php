@@ -94,6 +94,6 @@ class LoginController extends Controller
 
         request()->session()->regenerateToken();
 
-        return redirect('/x314cz9kc141DDX');
+        return redirect('/R3xTe2kss9D1');
     }
 }

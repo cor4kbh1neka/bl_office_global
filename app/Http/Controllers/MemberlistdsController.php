@@ -38,15 +38,13 @@ class MemberlistdsController extends Controller
     public function update($id)
     {
         $data = Member::where('id', $id)->first();
-        dd($data);
         if ($data) {
             $username = $data->username;
         } else {
-            $username = $id;
+            $data = Member::where('username', $id)->first();
         }
 
         $dataUser = $this->getApiUser($username);
-        dd($dataUser);
         if (is_array($dataUser)) {
             $dataUser = $dataUser["data"]["datauser"];
         } else {

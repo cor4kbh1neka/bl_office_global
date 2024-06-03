@@ -19,7 +19,7 @@
         });
     </script> --}}
 </head>
-<div class="sec_table">
+<div class="sec_table newwindow">
     <div class="secgrouptitle">
         <h2>{{ $title }} </h2>
 

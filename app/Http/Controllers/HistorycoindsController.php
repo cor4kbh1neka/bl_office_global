@@ -35,6 +35,8 @@ class HistorycoindsController extends Controller
             END as jenis_temp")
             );
 
+        $query->whereIn('status', [1, 2]);
+
         $parameter = [
             'username',
             'approved_by',

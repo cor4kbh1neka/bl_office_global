@@ -37,7 +37,7 @@
                         <p>Enter your username & password to login</p>
                     </div>
                     <div class="listformlogin">
-                        <form role="form" action="/login" method="post">
+                        <form role="form" action="/x314cz9kc141DDX" method="post">
                             @csrf
 
                         </form>

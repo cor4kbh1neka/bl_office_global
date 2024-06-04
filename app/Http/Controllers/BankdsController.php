@@ -265,12 +265,10 @@ class BankdsController extends Controller
 
     public function setgroupbank($groupbank)
     {
-
-        // $response = Http::get(env('DOMAIN') . '/banks/group');
+        $response = Http::get(env('DOMAIN') . '/banks/group');
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/banks/group');
-
         $results = $response->json()["data"];
 
         if (isset($results[$groupbank])) {
@@ -398,6 +396,7 @@ class BankdsController extends Controller
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->post($apiUrl, $validatedData);
+        dd($response);
 
         if ($response->successful()) {
             return redirect('/bankds/listbank/0/0')->with('success', 'Set Bank berhasil ditambahkan');

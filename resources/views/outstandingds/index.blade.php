@@ -239,5 +239,23 @@
                     windowLeft + ", top=" + windowTop);
             });
         });
+
+        $('.exportdata').click(function() {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi',
+                text: 'Apakah ingin mendownload data ini?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    var username = $('#username').val();
+                    var url = '/outstandingdsexport?' +
+                        '&username=' + encodeURIComponent(username);
+                    window.location.href = url;
+                }
+            });
+        });
     </script>
 @endsection

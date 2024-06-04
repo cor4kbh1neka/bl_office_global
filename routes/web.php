@@ -246,12 +246,14 @@ Route::middleware(['auth'])->group(function () {
     });
     /*-- Outstandingds --*/
     Route::get('/outstandingds/{username?}', [OutstandingdsController::class, 'index'])->middleware('member_outstanding');
+    Route::get('/outstandingdsexport', [OutstandingdsController::class, 'export'])->middleware('member_outstanding');
 
     /*-- Reportds --*/
     Route::middleware('report')->group(function () {
         Route::get('/reportds', [ReportdsController::class, 'index']);
         Route::get('/reportds/winlosematch', [ReportdsController::class, 'winlosematch']);
         Route::get('/reportds/memberstatement', [ReportdsController::class, 'memberstatement']);
+        Route::get('/reportds/export', [ReportdsController::class, 'export']);
     });
     /*-- Referralds --*/
     Route::middleware('referral')->group(function () {
@@ -359,6 +361,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bonusdetailds/{listbonus_id}', [BonusdsController::class, 'indexdetail']);
         Route::post('/storebonusds/{bonus}/{gabungdari}/{gabunghingga}/{kecuali}', [BonusdsController::class, 'store']);
         Route::post('/cancelbonusds', [BonusdsController::class, 'cancel']);
+        Route::get('/bonusds/export', [BonusdsController::class, 'export']);
     });
 
     /*-- Memotouserds --*/

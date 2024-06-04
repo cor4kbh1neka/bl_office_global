@@ -11,7 +11,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithEvents
+class WinLossMemberExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths
 {
     protected $data;
 
@@ -27,24 +27,23 @@ class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, Wit
                 return $item;
             }
 
-            $itemArray = $item->toArray();
-            unset($itemArray['id']); // Menghilangkan kolom "id"
+            if (is_object($item) && method_exists($item, 'toArray')) {
+                return $item->toArray();
+            }
 
-            return $itemArray;
+            if (is_object($item)) {
+                return (array) $item;
+            }
+
+            throw new \Exception('Invalid item type, expected array or object with toArray method');
         });
     }
 
     public function headings(): array
     {
         return [
-            "Username",
-            "Tanggal",
-            "Nomor Invoice",
-            "Detail",
-            "Odds Betingan",
-            "Nominal Bet (IDR)",
-            "Win/Loss(IDR)",
-            "Status Betingan",
+            ['#', 'Username', 'Curr', 'Amount', 'Valid Amount', 'Gross Com', 'Member', '', '', '', 'Company', '', '', ''],
+            ['', '', '', '', '', '', 'Referral', 'W/L', 'Com', 'W/L + Com', 'Referral', 'W/L', 'Com', 'W/L + Com'],
         ];
     }
 
@@ -58,14 +57,20 @@ class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, Wit
     public function columnWidths(): array
     {
         return [
-            'A' => 20,
+            'A' => 5,
             'B' => 20,
-            'C' => 15,
-            'D' => 30,
-            'E' => 10,
-            'F' => 20,
-            'G' => 20,
-            'H' => 25,
+            'C' => 10,
+            'D' => 15,
+            'E' => 15,
+            'F' => 15,
+            'G' => 15,
+            'H' => 15,
+            'I' => 15,
+            'J' => 15,
+            'K' => 15,
+            'L' => 15,
+            'M' => 15,
+            'N' => 15,
         ];
     }
 
@@ -73,7 +78,16 @@ class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, Wit
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $cellRange = 'A1:H' . (count($this->data) + 1);
+                $event->sheet->mergeCells('A1:A2');
+                $event->sheet->mergeCells('B1:B2');
+                $event->sheet->mergeCells('C1:C2');
+                $event->sheet->mergeCells('D1:D2');
+                $event->sheet->mergeCells('E1:E2');
+                $event->sheet->mergeCells('F1:F2');
+                $event->sheet->mergeCells('G1:J1');
+                $event->sheet->mergeCells('K1:N1');
+
+                $cellRange = 'A1:N2';
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray([
                     'borders' => [
                         'allBorders' => [

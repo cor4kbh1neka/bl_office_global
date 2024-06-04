@@ -11,7 +11,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithEvents
+class MemberOutstandingExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithEvents
 {
     protected $data;
 
@@ -41,9 +41,7 @@ class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, Wit
             "Tanggal",
             "Nomor Invoice",
             "Detail",
-            "Odds Betingan",
             "Nominal Bet (IDR)",
-            "Win/Loss(IDR)",
             "Status Betingan",
         ];
     }
@@ -64,8 +62,6 @@ class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, Wit
             'D' => 30,
             'E' => 10,
             'F' => 20,
-            'G' => 20,
-            'H' => 25,
         ];
     }
 
@@ -73,7 +69,7 @@ class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, Wit
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $cellRange = 'A1:H' . (count($this->data) + 1);
+                $cellRange = 'A1:F' . (count($this->data) + 1);
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray([
                     'borders' => [
                         'allBorders' => [

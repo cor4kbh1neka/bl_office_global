@@ -178,7 +178,7 @@
                                 </tbody>
                             </table>
                             <div class="grouppagination" style="padding: 25px;">
-                                
+
                             </div>
                         </div>
                     </div>
@@ -220,5 +220,31 @@
         function numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
+
+        $('.exportdata').click(function() {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi',
+                text: 'Apakah ingin mendownload data ini?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    var username = $('#username').val();
+                    var portfolio = $('#portfolio').val();
+                    var startDate = $('#startDate').val();
+                    var endDate = $('#endDate').val();
+
+                    var url = '/reportds/export?username=' + encodeURIComponent(username) +
+                        '&portfolio=' + encodeURIComponent(portfolio) +
+                        '&startDate=' + encodeURIComponent(startDate) +
+                        '&endDate=' + encodeURIComponent(endDate);
+
+                    // Redirect ke URL
+                    window.location.href = url;
+                }
+            });
+        });
     </script>
 @endsection

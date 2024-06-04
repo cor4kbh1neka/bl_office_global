@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\MemberOutstandingExport;
 
 class OutstandingdsController extends Controller
 {
@@ -105,5 +107,14 @@ class OutstandingdsController extends Controller
         );
 
         return $paginatedItems;
+    }
+
+    public function export(Request $request)
+    {
+        $username = $request->username;
+        $data = Outstanding::select('username', 'created_at', 'transfercode', 'gametype', 'status', 'amount')->get();
+
+        $data = collect($data);
+        return Excel::download(new MemberOutstandingExport($data), 'MemberOutstanding-' . $username . '.xlsx');
     }
 }

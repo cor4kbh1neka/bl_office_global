@@ -242,6 +242,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('history_game')->group(function () {
         Route::get('/historygameds', [HistorygamedsController::class, 'index']);
         Route::get('/historygameds/detail/{invoice}/{portfolio}', [HistorygamedsController::class, 'detail']);
+        Route::get('/historygameds/export', [HistorygamedsController::class, 'export']);
     });
     /*-- Outstandingds --*/
     Route::get('/outstandingds/{username?}', [OutstandingdsController::class, 'index'])->middleware('member_outstanding');

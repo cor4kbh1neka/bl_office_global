@@ -121,8 +121,7 @@ class BankdsController extends Controller
         $validatedData["min_wd"] = intval($validatedData["min_wd"]);
         $validatedData["max_wd"] = intval($validatedData["max_wd"]);
 
-        $apiUrl = env('DOMAIN') . 'banks/group';
-
+        $apiUrl = env('DOMAIN') . '/banks/group';
         // $response = Http::post($apiUrl, $validatedData);
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')

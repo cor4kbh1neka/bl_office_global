@@ -10,6 +10,7 @@ use App\Models\Persentase;
 use App\Models\UserAccess;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -84,6 +85,8 @@ class AgentdsController extends Controller
 
         $user->divisi = $request->divisi;
         $user->save();
+
+        Cache::forget('user_access_' . $user->id);
 
         return redirect()->back()->with('success', 'Data Agent berhasil diupdate.');
     }
@@ -202,6 +205,8 @@ class AgentdsController extends Controller
         $user->apk_setting = isset($request->apk_setting) ? true : false;
         $user->memo_other = isset($request->memo_other) ? true : false;
         $user->save();
+
+        Cache::flush();
 
         return redirect()->back()->with('success', 'Access agent berhasil diupdate.');
     }

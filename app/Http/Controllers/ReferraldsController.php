@@ -18,11 +18,9 @@ use App\Models\ReferralDepo3;
 use App\Models\ReferralDepo4;
 use App\Models\ReferralDepo5;
 use Illuminate\Support\Facades\DB;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ReferralExport;
 
 class ReferraldsController extends Controller
 {
@@ -34,6 +32,36 @@ class ReferraldsController extends Controller
         $gabungdari = $request->input('gabungdari', date('Y-m-d'));
         $gabunghingga = $request->input('gabunghingga', date('Y-m-d'));
 
+        $results = $this->getDataReferral($upline, $portfolio, $gabungdari, $gabunghingga);
+
+        return view('referralds.index', [
+            'title' => 'Referral',
+            'data' => $results,
+            'totalnote' => 0,
+            'upline' => $upline,
+            'portfolio' => $portfolio,
+            'gabungdari' => $gabungdari,
+            'gabunghingga' => $gabunghingga,
+            'query' => $query,
+            'total_upline' => 0,
+            'total_bonus' => 0
+        ]);
+    }
+
+    public function export(Request $request)
+    {
+        $upline = $request->upline;
+        $portfolio = $request->upline;
+        $gabungdari = $request->gabungdari ?? date('Y-m-d');
+        $gabunghingga = $request->gabunghingga ?? date('Y-m-d');
+
+        $results = $this->getDataReferral($upline, $portfolio, $gabungdari, $gabunghingga);
+        $data = collect($results);
+        return Excel::download(new ReferralExport($data), 'Referral -' . $gabungdari . ' - ' . $gabunghingga .  '.xlsx');
+    }
+
+    private function getDataReferral($upline, $portfolio, $gabungdari, $gabunghingga)
+    {
         if (isset($upline)) {
             $table = $this->determineTable($upline);
 
@@ -72,18 +100,7 @@ class ReferraldsController extends Controller
         } else {
             $results = [];
         }
-        return view('referralds.index', [
-            'title' => 'Referral',
-            'data' => $results,
-            'totalnote' => 0,
-            'upline' => $upline,
-            'portfolio' => $portfolio,
-            'gabungdari' => $gabungdari,
-            'gabunghingga' => $gabunghingga,
-            'query' => $query,
-            'total_upline' => 0,
-            'total_bonus' => 0
-        ]);
+        return $results;
     }
 
     private function determineTable($username)

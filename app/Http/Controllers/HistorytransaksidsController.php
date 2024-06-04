@@ -148,7 +148,8 @@ class HistorytransaksidsController extends Controller
                 return stripos($item['refno'], $inputRefno) !== false;
             });
         }
-
+        // dd(request('checkall'));
+        // dd(!request('checkall') || !request(['checkinvoice', 'checkstatus', 'checktransdari', 'checktranshingga']));
         if (!request('checkall') || !request(['checkinvoice', 'checkstatus', 'checktransdari', 'checktranshingga'])) {
             return $query = [];
         }
@@ -164,9 +165,8 @@ class HistorytransaksidsController extends Controller
             'checktranshingga',
             'checkall',
         ]);
-        // dd($page);
+
         if ($page == 0) {
-            dd($query->values());
             return $query->values();
         } else {
             // Kalau bisa paginator ini jangan diubah, cukup sampai disini sajaa :(

@@ -320,6 +320,8 @@
                     var checktranshingga = $('#checktranshingga').val();
                     var transhingga = $('#transhingga').val();
 
+                    var checkall = $('#checkall').val();
+
                     // Membuat URL dengan parameter dinamis
                     var url = '/historytransaksids/export?username=' + encodeURIComponent(username) +
                         '&checkinvoice=' + encodeURIComponent(checkinvoice) +
@@ -329,7 +331,8 @@
                         '&checktransdari=' + encodeURIComponent(checktransdari) +
                         '&transdari=' + encodeURIComponent(transdari) +
                         '&checktranshingga=' + encodeURIComponent(checktranshingga) +
-                        '&transhingga=' + encodeURIComponent(transhingga);
+                        '&transhingga=' + encodeURIComponent(transhingga) +
+                        '&checkall=' + encodeURIComponent(checkall);
 
                     window.location.href = url;
                 }

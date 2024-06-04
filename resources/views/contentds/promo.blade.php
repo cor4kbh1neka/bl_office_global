@@ -92,7 +92,7 @@
                                         <td class="datamini">{{ $d->trgturctprm }}</td>
                                         <td class="statuspromo" data-status="{{ $d->statusctprm }}"></td>
                                         <td>
-                                            <div class="grouptools arrowmove">
+                                            <div class="grouptools we">
                                                 <a href="/contentds/promo/{{ $d->idctprm }}/edit" target="_blank"
                                                     class="tombol grey openviewport">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"

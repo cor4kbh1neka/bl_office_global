@@ -60,7 +60,7 @@
                                             <option value="groupdepo3">groupdepo3</option>
                                             <option value="groupdepo4">groupdepo4</option> --}}
                                         </select>
-                                        <input type="hidden" name="namegroupxyzt" value="{{ $group }}">
+                                        <input type="hidden" name="namegroupxyzt" value="{{ $groupbank }}">
                                     </div>
                                 </div>
                                 <div class="listplayerinfo">

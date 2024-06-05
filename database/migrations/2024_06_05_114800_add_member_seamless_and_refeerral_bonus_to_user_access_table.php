@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('user_access', function (Blueprint $table) {
-            //
+            $table->boolean('member_seamless')->default(false);
+            $table->boolean('refeerral_bonus')->default(false);
         });
     }
 
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('user_access', function (Blueprint $table) {
-            //
+            $table->dropColumn('member_seamless');
+            $table->dropColumn('refeerral_bonus');
         });
     }
 };

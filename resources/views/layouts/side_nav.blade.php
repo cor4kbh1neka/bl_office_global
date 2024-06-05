@@ -91,7 +91,8 @@
         </div>
     @endcanany
 
-    @canany(['member_list', 'history_transaction', 'referral', 'history_game', 'member_outstanding', 'report'])
+    @canany(['member_list', 'seamless', 'history_transaction', 'referral', 'history_game', 'member_outstanding',
+        'report'])
         <div class="nav_group">
             <span class="title_Nav">DATA</span>
             <div class="list_sidejsx">
@@ -108,6 +109,8 @@
                             <span class="nav_title1">member list</span>
                         </a>
                     </div>
+                @endcan
+                @can('seamless')
                     <div class="data_sidejsx {{ Request::is('seamless*') ? 'active' : '' }}">
                         <a href="/seamless/addmember" id="Player">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -197,7 +200,7 @@
         </div>
     @endcanany
 
-    @canany(['bank', 'memo'])
+    @canany(['bank', 'referral_bonus', 'memo'])
         <div class="nav_group">
             <span class="title_Nav">GENERAL CONFIG</span>
             <div class="list_sidejsx">
@@ -209,6 +212,20 @@
                                     d="M11.5 1L2 6v2h19V6m-5 4v7h3v-7M2 22h19v-3H2m8-9v7h3v-7m-9 0v7h3v-7z" />
                             </svg>
                             <span class="nav_title1">bank</span>
+                        </a>
+                    </div>
+                @endcan
+                @can('referral_bonus')
+                    <div class="data_sidejsx {{ Request::is('referral_bonus*') ? 'active' : '' }}">
+                        <a href="/bonussetting" id="Player">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                                <path fill="currentColor" fill-rule="evenodd"
+                                    d="M16.67 13.13C18.04 14.06 19 15.32 19 17v3h4v-3c0-2.18-3.57-3.47-6.33-3.87" />
+                                <circle cx="9" cy="8" r="4" fill="currentColor" fill-rule="evenodd" />
+                                <path fill="currentColor" fill-rule="evenodd"
+                                    d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4c-.47 0-.91.1-1.33.24a5.98 5.98 0 0 1 0 7.52c.42.14.86.24 1.33.24m-6 1c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4" />
+                            </svg>
+                            <span class="nav_title1">Referral & Bonus</span>
                         </a>
                     </div>
                 @endcan

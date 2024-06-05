@@ -45,7 +45,7 @@ class MemberlistdsController extends Controller
         $username = $data->username;
 
         $dataUser = $this->getApiUser($username);
-        if (is_array($dataUser)) {
+        if ($dataUser["status"] === 'success') {
             $dataUser = $dataUser["data"]["datauser"];
         } else {
             $dataUser = [];
@@ -68,14 +68,8 @@ class MemberlistdsController extends Controller
             'Content-Type' => 'application/json; charset=UTF-8',
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get($url);
-        if ($response->successful()) {
-            $responseData = $response->json();
-        } else {
-            $statusCode = $response->status();
-            $errorMessage = $response->body();
-            $responseData = "Error: $statusCode - $errorMessage";
-        }
 
+        $responseData = $response->json();
         return $responseData;
     }
 
@@ -377,7 +371,7 @@ class MemberlistdsController extends Controller
                 "CompanyKey" => env('COMPANY_KEY'),
                 "ServerId" => env('SERVERID')
             ];
-            $urlapi = env('BODOMAIN') . 'web-root/restricted/player/get-player-balance.aspx';
+            $urlapi = env('BODOMAIN') . '/web-root/restricted/player/get-player-balance.aspx';
             $responseapi = Http::withHeaders([
                 'Content-Type' => 'application/json; charset=UTF-8'
             ])->post($urlapi, $dataapi);

@@ -290,6 +290,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bankds/xdata', [BankdsController::class, 'xdata']);
     });
 
+    Route::middleware('bank')->group(function () {
+    });
+
     /*-- Memods --*/
     Route::middleware('memo')->group(function () {
         Route::get('/memods', [MemodsController::class, 'index']);

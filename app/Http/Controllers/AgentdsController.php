@@ -160,7 +160,7 @@ class AgentdsController extends Controller
         $user->memo_other = isset($request->memo_other) ? true : false;
         $user->save();
 
-        return redirect('/agentds')->with('success', 'Access agent berhasil ditambahkan.');
+        return redirect('/agentds/access')->with('success', 'Access agent berhasil ditambahkan.');
     }
 
     public function destroy_access($id)

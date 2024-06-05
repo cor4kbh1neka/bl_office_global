@@ -116,6 +116,14 @@ class AppServiceProvider extends ServiceProvider
             $user = $this->userAndUserAccess();
             return $user['user_access']['memo_other'] === 1;
         });
+        Gate::define('seamless', function (User $user) {
+            $user = $this->userAndUserAccess();
+            return $user['user_access']['seamless'] === 1;
+        });
+        Gate::define('referral_bonus', function (User $user) {
+            $user = $this->userAndUserAccess();
+            return $user['user_access']['referral_bonus'] === 1;
+        });
     }
 
     private function getDataCount()
@@ -137,7 +145,7 @@ class AppServiceProvider extends ServiceProvider
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/memo');
         $resultMemo = $responseMemo->json();
-
+        dd($resultMemo);
         if ($resultMemo['status'] == 'success') {
             $countMemo = count($resultMemo['data']);
         } else {
@@ -180,6 +188,8 @@ class AppServiceProvider extends ServiceProvider
                     'content' => 1,
                     'apk_setting' => 1,
                     'memo_other' => 1,
+                    'seamless' => 1,
+                    'referral_bonus' => 1,
                 ];
             }
             return $result;

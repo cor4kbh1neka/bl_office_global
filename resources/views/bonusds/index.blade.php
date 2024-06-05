@@ -331,5 +331,31 @@
                 });
             });
         });
+
+        $('.exportdata').click(function() {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi',
+                text: 'Apakah ingin mendownload data ini?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    var bonus = $('#bonus').val();
+                    var gabungdari = $('#gabungdari').val();
+                    var gabunghingga = $('#gabunghingga').val();
+                    var kecuali = $('#kecuali').val();
+
+                    var url = '/bonusds/export?bonus=' + encodeURIComponent(bonus) +
+                        '&gabungdari=' + encodeURIComponent(gabungdari) +
+                        '&gabunghingga=' + encodeURIComponent(gabunghingga) +
+                        '&kecuali=' + encodeURIComponent(kecuali);
+
+                    // Redirect ke URL
+                    window.location.href = url;
+                }
+            });
+        });
     </script>
 @endsection

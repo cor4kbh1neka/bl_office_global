@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HistoryTransaksiExport;
+use Illuminate\Support\Collection;
 
 
 class HistorytransaksidsController extends Controller
@@ -32,21 +33,21 @@ class HistorytransaksidsController extends Controller
         ]);
     }
 
-    // private function getApiBetList()
-    // {
-    //     $data = [
-    //         "username" => "abangpoorgas",
-    //         "portfolio" => "SportsBook",
-    //         "startDate" => "2024-04-01T00:00:00.540Z",
-    //         "endDate" => "2024-05-30T23:59:59.540Z",
-    //         "companyKey" => "C441C721B2214E658A6D2A72C41D2063",
-    //         "language" => "en",
-    //         "serverId" => "YY-TEST"
-    //     ];
-    //     $response = Http::withTokenHeader()->post(env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
+    private function getApiBetList()
+    {
+        $data = [
+            "username" => "abangpoorgas",
+            "portfolio" => "SportsBook",
+            "startDate" => "2024-04-01T00:00:00.540Z",
+            "endDate" => "2024-05-30T23:59:59.540Z",
+            "companyKey" => "C441C721B2214E658A6D2A72C41D2063",
+            "language" => "en",
+            "serverId" => "YY-TEST"
+        ];
+        $response = Http::withTokenHeader()->post(env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
 
-    //     return $response->json();
-    // }
+        return $response->json();
+    }
 
 
     public function transaksilama(Request $request)
@@ -115,9 +116,11 @@ class HistorytransaksidsController extends Controller
 
         foreach ($parameters as $searchParam) {
             if (request($searchParam)) {
-                $query = $query->filter(function ($item) use ($searchParam) {
-                    return stripos($item[$searchParam], request($searchParam)) !== false;
-                });
+                if (request($searchParam) != 'null') {
+                    $query = $query->filter(function ($item) use ($searchParam) {
+                        return stripos($item[$searchParam], request($searchParam)) !== false;
+                    });
+                }
             }
         }
 
@@ -145,6 +148,8 @@ class HistorytransaksidsController extends Controller
                 return stripos($item['refno'], $inputRefno) !== false;
             });
         }
+        // dd(request('checkall'));
+        // dd(!request('checkall') || !request(['checkinvoice', 'checkstatus', 'checktransdari', 'checktranshingga']));
         if (!request('checkall') || !request(['checkinvoice', 'checkstatus', 'checktransdari', 'checktranshingga'])) {
             return $query = [];
         }
@@ -159,10 +164,9 @@ class HistorytransaksidsController extends Controller
             'checktransdari',
             'checktranshingga',
             'checkall',
-        ]); // $parameters dikembaliin lagi supaya paginator nya jalan okey?
+        ]);
 
         if ($page == 0) {
-            // If $page is 0, return the filtered collection without pagination
             return $query->values();
         } else {
             // Kalau bisa paginator ini jangan diubah, cukup sampai disini sajaa :(
@@ -183,13 +187,15 @@ class HistorytransaksidsController extends Controller
                     $paginatedItems->appends($searchParam, request($searchParam));
                 }
             }
-            return $paginatedItems;
+            return  $paginatedItems;
         }
     }
 
     public function export(Request $request)
     {
-        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 999999);
+        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
+
+        $data = collect($data);
         return Excel::download(new HistoryTransaksiExport($data), 'Historycoin.xlsx');
     }
 }

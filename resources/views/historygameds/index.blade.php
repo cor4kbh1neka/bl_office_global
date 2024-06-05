@@ -28,12 +28,15 @@
                                 <option value="" style="color: #838383; font-style: italic;" disabled="" selected>
                                     pilih
                                     jenis</option>
-                                <option value="SportsBook" {{ request('portfolio') == 'SportsBook' ? 'selected' : '' }}>SportsBook
+                                <option value="SportsBook" {{ request('portfolio') == 'SportsBook' ? 'selected' : '' }}>
+                                    SportsBook
                                 </option>
-                                <option value="VirtualSports" {{ request('portfolio') == 'VirtualSports' ? 'selected' : '' }}>
+                                <option value="VirtualSports"
+                                    {{ request('portfolio') == 'VirtualSports' ? 'selected' : '' }}>
                                     VirtualSports
                                 </option>
-                                <option value="Games" {{ request('portfolio') == 'Games' ? 'selected' : '' }}>Games</option>
+                                <option value="Games" {{ request('portfolio') == 'Games' ? 'selected' : '' }}>Games
+                                </option>
                                 <option value="SeamlessGame" {{ request('portfolio') == 'SeamlessGame' ? 'selected' : '' }}>
                                     SeamlessGame</option>
 
@@ -41,7 +44,8 @@
                         </div>
                         <div class="listinputmember">
                             <label for="startDate">dari <span class="required">*</span></label>
-                            <input type="date" name="startDate" id="startDate" value="{{ request('startDate') }}" required>
+                            <input type="date" name="startDate" id="startDate" value="{{ request('startDate') }}"
+                                required>
                         </div>
                         <div class="listinputmember">
                             <label for="endDate">hingga <span class="required">*</span></label>
@@ -408,19 +412,52 @@
             }
         });
         document.getElementById('form-historygameds').addEventListener('submit', function(event) {
-        const inputs = [
-            'username',
-            'portfolio',
-            'startDate',
-            'endDate',
-            'refNo',
-            'sportsType',
-            'status',
-        ];
+            const inputs = [
+                'username',
+                'portfolio',
+                'startDate',
+                'endDate',
+                'refNo',
+                'sportsType',
+                'status',
+            ];
             inputs.forEach(id => {
                 const inputElement = document.getElementById(id);
                 if (!inputElement.value) {
                     inputElement.disabled = true; // Untuk disabled input kalau tidak ada filter :D
+                }
+            });
+        });
+
+
+        $('.exportdata').click(function() {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi',
+                text: 'Apakah ingin mendownload data ini?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    var username = $('#username').val();
+                    var portfolio = $('#portfolio').val();
+                    var startDate = $('#startDate').val();
+                    var endDate = $('#endDate').val();
+                    var refNo = $('#refNo').val();
+                    var sportsType = $('#sportsType').val();
+                    var status = $('#status').val();
+
+                    var url = '/historygameds/export?' +
+                        '&username=' + encodeURIComponent(username) +
+                        '&portfolio=' + encodeURIComponent(portfolio) +
+                        '&startDate=' + encodeURIComponent(startDate) +
+                        '&endDate=' + encodeURIComponent(endDate) +
+                        '&refNo=' + encodeURIComponent(refNo) +
+                        '&sportsType=' + encodeURIComponent(sportsType) +
+                        '&status=' + encodeURIComponent(status);
+
+                    window.location.href = url;
                 }
             });
         });

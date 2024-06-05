@@ -16,12 +16,12 @@ use App\Models\winlossDay;
 use App\Models\winlossMonth;
 use App\Models\winlossYear;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CashbackRollinganExport;
 
 class BonusdsController extends Controller
 {
@@ -86,52 +86,7 @@ class BonusdsController extends Controller
         $gabunghingga =  $request->input('gabunghingga') != null ? date('Y-m-d', strtotime($request->input('gabunghingga'))) : '';
         $pengecualian = $request->input('kecuali');
 
-        if ($bonus == 'cashback') {
-            /*bonus cahsback*/
-            $dataPortfolio = ['Casino', 'Games', 'SeamlessGame', 'ThirdPartySportsBook'];
-        } else {
-            /*bonus rolingan*/
-            $dataPortfolio = ['SportsBook', 'VirtualSports'];
-        }
-
-        if ($bonus != null && $gabungdari !== null && $gabunghingga !== null && $pengecualian !== null) {
-            $hunter = Member::where('status', 4)
-                ->where('keterangan', $pengecualian)
-                ->pluck('username')
-                ->values()
-                ->toArray();
-
-            $query = WinlossbetDay::whereIn('portfolio', $dataPortfolio)
-                ->whereBetween('created_at', [$gabungdari . ' 00:00:00', $gabunghingga . ' 23:59:59'])
-                ->select('username', DB::raw('SUM(stake) as totalstake'), DB::raw('SUM(winloss) as totalwinloss'))
-                ->groupBy('username');
-
-
-            if (!empty($hunter)) {
-                $query->whereNotIn('username', $hunter);
-            }
-
-            $results = $query->get();
-            foreach ($results as $key => $result) {
-                $mBonus = Bonus::where('jenis_bonus', $bonus)->first();
-                $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
-                if ($bonus == 'cashback') {
-                    if ($total <= ($mBonus->min * -1)) {
-                        $result->totalbonus = abs($total) * $mBonus->persentase;
-                    } else {
-                        unset($results[$key]);
-                    }
-                } else {
-                    if ($total >= $mBonus->min) {
-                        $result->totalbonus = $total * $mBonus->persentase;
-                    } else {
-                        unset($results[$key]);
-                    }
-                }
-            }
-        } else {
-            $results = collect();
-        }
+        $results = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian);
 
         if ($results instanceof Collection && !$results->isEmpty()) {
             $isproses = true;
@@ -183,6 +138,59 @@ class BonusdsController extends Controller
             'totaluser' => $results->count(),
             'nominalbonus' => $results->sum('totalbonus') * 1000
         ]);
+    }
+
+    private function getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian)
+    {
+        if ($bonus == 'cashback') {
+            /*bonus cahsback*/
+            $dataPortfolio = ['Casino', 'Games', 'SeamlessGame', 'ThirdPartySportsBook'];
+        } else {
+            /*bonus rolingan*/
+            $dataPortfolio = ['SportsBook', 'VirtualSports'];
+        }
+
+        if ($bonus != null && $gabungdari !== null && $gabunghingga !== null && $pengecualian !== null) {
+            $hunter = Member::where('status', 4)
+                ->where('keterangan', $pengecualian)
+                ->pluck('username')
+                ->values()
+                ->toArray();
+
+            $query = WinlossbetDay::whereIn('portfolio', $dataPortfolio)
+                ->whereBetween('created_at', [$gabungdari . ' 00:00:00', $gabunghingga . ' 23:59:59'])
+                ->select('username', DB::raw('SUM(stake) as totalstake'), DB::raw('SUM(winloss) as totalwinloss'))
+                ->groupBy('username');
+
+            // dd(WinlossbetDay::get());
+            if (!empty($hunter)) {
+                $query->whereNotIn('username', $hunter);
+            }
+
+            $results = $query->get();
+
+            foreach ($results as $key => $result) {
+                $mBonus = Bonus::where('jenis_bonus', $bonus)->first();
+                $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
+                if ($bonus == 'cashback') {
+                    if ($total <= ($mBonus->min * -1)) {
+                        $result->totalbonus = abs($total) * $mBonus->persentase;
+                    } else {
+                        unset($results[$key]);
+                    }
+                } else {
+                    if ($total >= $mBonus->min) {
+                        $result->totalbonus = $total * $mBonus->persentase;
+                    } else {
+                        unset($results[$key]);
+                    }
+                }
+            }
+        } else {
+            $results = collect();
+        }
+
+        return $results;
     }
 
     private function getApi($username, $portfolio, $gabungdari, $gabunghingga)
@@ -502,5 +510,21 @@ class BonusdsController extends Controller
         // }
 
         return;
+    }
+
+    public function export(Request $request)
+    {;
+        $bonus = $request->input('bonus');
+        $gabungdari = $request->input('gabungdari') != null ? date('Y-m-d', strtotime($request->input('gabungdari'))) : '';
+        $gabunghingga =  $request->input('gabunghingga') != null ? date('Y-m-d', strtotime($request->input('gabunghingga'))) : '';
+        $pengecualian = $request->input('kecuali');
+
+        $data = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian);
+        foreach ($data as &$d) {
+            $d->totalstake *= 1000;
+            $d->totalwinloss *= 1000;
+            $d->totalbonus *= 1000;
+        }
+        return Excel::download(new CashbackRollinganExport($data), 'MemberOutstanding-' . $bonus . '-' . $gabungdari . '-' . $gabunghingga . '.xlsx');
     }
 }

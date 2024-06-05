@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Transactions;
 use App\Models\TransactionsSaldo;
 
-class BetSetting extends Model
+class Betsetting extends Model
 {
     use HasFactory;
 

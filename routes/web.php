@@ -33,6 +33,7 @@ use App\Http\Controllers\Menu2Controller;
 use App\Http\Controllers\PersentasedsController;
 use App\Http\Controllers\BonusdsController;
 use App\Http\Controllers\MaintenancedsController;
+use App\Http\Controllers\BonussettingdsController;
 use App\Models\Xdpwd;
 use App\Models\Outstanding;
 use App\Models\DepoWd;
@@ -290,7 +291,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bankds/xdata', [BankdsController::class, 'xdata']);
     });
 
-    Route::middleware('bank')->group(function () {
+    Route::middleware('referral_bonus')->group(function () {
+        Route::get('/bonussettingds', [BonussettingdsController::class, 'index'])->name('bonussettingds');
+        Route::post('/bonussettingds/update', [BonussettingdsController::class, 'update']);
     });
 
     /*-- Memods --*/

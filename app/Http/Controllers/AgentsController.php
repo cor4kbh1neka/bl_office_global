@@ -98,4 +98,22 @@ class AgentsController extends Controller
 
         return $responseData;
     }
+
+    // function requestApiLogin($data)
+    // {
+    //     $url = env('BODOMAIN') . '/web-root/restricted/player/login.aspx';
+
+    //     $response = Http::withHeaders([
+    //         'Content-Type' => 'application/json; charset=UTF-8',
+    //     ])->post($url, $data);
+
+    //     if ($response->successful()) {
+    //         $responseData = $response->json();
+    //     } else {
+    //         $statusCode = $response->status();
+    //         $errorMessage = $response->body();
+    //         $responseData = "Error: $statusCode - $errorMessage";
+    //     }
+    //     return ['url' => $responseData["url"]];
+    // }
 }

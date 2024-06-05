@@ -118,6 +118,7 @@ class AppServiceProvider extends ServiceProvider
         });
         Gate::define('seamless', function (User $user) {
             $user = $this->userAndUserAccess();
+            dd($user);
             return $user['user_access']['seamless'] === 1;
         });
         Gate::define('referral_bonus', function (User $user) {

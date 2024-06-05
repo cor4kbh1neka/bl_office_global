@@ -217,13 +217,11 @@
                 @endcan
                 @can('referral_bonus')
                     <div class="data_sidejsx {{ Request::is('referral_bonus*') ? 'active' : '' }}">
-                        <a href="/bonussetting" id="Player">
+                        <a href="/bonussettingds" id="Player">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                <path fill="currentColor" fill-rule="evenodd"
-                                    d="M16.67 13.13C18.04 14.06 19 15.32 19 17v3h4v-3c0-2.18-3.57-3.47-6.33-3.87" />
-                                <circle cx="9" cy="8" r="4" fill="currentColor" fill-rule="evenodd" />
-                                <path fill="currentColor" fill-rule="evenodd"
-                                    d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4c-.47 0-.91.1-1.33.24a5.98 5.98 0 0 1 0 7.52c.42.14.86.24 1.33.24m-6 1c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4" />
+                                <path fill="currentColor"
+                                    d="m9.25 22l-.4-3.2q-.325-.125-.612-.3t-.563-.375L4.7 19.375l-2.75-4.75l2.575-1.95Q4.5 12.5 4.5 12.338v-.675q0-.163.025-.338L1.95 9.375l2.75-4.75l2.975 1.25q.275-.2.575-.375t.6-.3l.4-3.2h5.5l.4 3.2q.325.125.613.3t.562.375l2.975-1.25l2.75 4.75l-2.575 1.95q.025.175.025.338v.674q0 .163-.05.338l2.575 1.95l-2.75 4.75l-2.95-1.25q-.275.2-.575.375t-.6.3l-.4 3.2zm2.8-6.5q1.45 0 2.475-1.025T15.55 12t-1.025-2.475T12.05 8.5q-1.475 0-2.488 1.025T8.55 12t1.013 2.475T12.05 15.5">
+                                </path>
                             </svg>
                             <span class="nav_title1">Referral & Bonus</span>
                         </a>

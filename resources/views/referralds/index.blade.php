@@ -18,6 +18,7 @@
                 <div class="groupdatareportds">
                     <div class="grouphistoryds memberlist referral">
                         <div class="groupheadhistoryds">
+
                             <form method="GET" action="/referralds" class="listmembergroup">
                                 <div class="listinputmember">
                                     <label for="upline">upline <span class="required">*</span></label>
@@ -228,5 +229,32 @@
         function formatCurrency(amount) {
             return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
+
+        $('.exportdata').click(function() {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi',
+                text: 'Apakah ingin mendownload data ini?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+            }).then(function(result) {
+                if (result.isConfirmed) {
+
+                    var upline = $('#upline').val();
+                    var portfolio = $('#portfolio').val();
+                    var gabungdari = $('#gabungdari').val();
+                    var gabunghingga = $('#gabunghingga').val();
+
+                    // Membuat URL dengan parameter dinamis
+                    var url = '/referralds/export?upline=' + encodeURIComponent(upline) +
+                        '&portfolio=' + encodeURIComponent(portfolio) +
+                        '&gabungdari=' + encodeURIComponent(gabungdari) +
+                        '&gabunghingga=' + encodeURIComponent(gabunghingga);
+
+                    window.location.href = url;
+                }
+            });
+        });
     </script>
 @endsection

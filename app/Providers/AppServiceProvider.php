@@ -116,6 +116,14 @@ class AppServiceProvider extends ServiceProvider
             $user = $this->userAndUserAccess();
             return $user['user_access']['memo_other'] === 1;
         });
+        Gate::define('seamless', function (User $user) {
+            $user = $this->userAndUserAccess();
+            return $user['user_access']['member_seamless'] === 1;
+        });
+        Gate::define('refeerral_bonus', function (User $user) {
+            $user = $this->userAndUserAccess();
+            return $user['user_access']['refeerral_bonus'] === 1;
+        });
     }
 
     private function getDataCount()
@@ -133,11 +141,11 @@ class AppServiceProvider extends ServiceProvider
                 'count' => $count,
             ];
         })->count();
-
         $responseMemo = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/memo');
         $resultMemo = $responseMemo->json();
+
         if ($resultMemo['status'] == 'success') {
             $countMemo = count($resultMemo['data']);
         } else {
@@ -153,12 +161,10 @@ class AppServiceProvider extends ServiceProvider
     }
     public function userAndUserAccess()
     {
-        Cache::flush();
-
         $user = auth()->user();
         $cacheKey = 'user_access_' . $user->id;
 
-        $result = Cache::remember($cacheKey, 60 * 60, function () use ($user) {
+        $result = Cache::rememberForever($cacheKey, function () use ($user) {
             $userWithAccess = User::with('userAccess')->find($user->id);
             $result = $userWithAccess->toArray();
 
@@ -182,6 +188,8 @@ class AppServiceProvider extends ServiceProvider
                     'content' => 1,
                     'apk_setting' => 1,
                     'memo_other' => 1,
+                    'member_seamless' => 1,
+                    'refeerral_bonus' => 1,
                 ];
             }
             return $result;

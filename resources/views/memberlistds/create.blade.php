@@ -6,20 +6,11 @@
     <div class="sec_table">
         <div class="secgrouptitle">
             <h2>{{ $title }}</h2>
-            <div class="kembali">
-                <a href="/memberlistds">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
-                        <path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"
-                            d="M44 40.836c-4.893-5.973-9.238-9.362-13.036-10.168c-3.797-.805-7.412-.927-10.846-.365V41L4 23.545L20.118 7v10.167c6.349.05 11.746 2.328 16.192 6.833c4.445 4.505 7.009 10.117 7.69 16.836Z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <span class="textkembali">Kembali</span>
-                </a>
-            </div>
+
         </div>
         <div class="secagentds">
             <div class="groupsecagentds">
-                <span class="titlebankmaster">Tambah member</span>
+                <span class="titlebankmaster">Tambah member seamless</span>
                 <form method="POST" action="/memberlistds/store" id="form-agentds" class="groupplayerinfo">
                     @csrf
                     <div class="listgroupplayerinfo left">
@@ -27,88 +18,13 @@
                             <label for="username">username</label>
                             <div class="groupeditinput">
                                 <input type="text" id="username" name="username" value=""
-                                    placeholder="masukkan username">
+                                    placeholder="masukkan username" required>
                             </div>
                         </div>
-                        <div class="listplayerinfo">
-                            <label for="referral">referral</label>
-                            <div class="groupeditinput">
-                                <input type="text" id="referral" name="referral" value=""
-                                    placeholder="masukkan referral">
-                            </div>
-                        </div>
-                        <div class="listplayerinfo">
-                            <label for="bank">bank</label>
-                            <select id="divisi" name="divisi">
-                                <option value="" class="pilihbank">Pilih Bank</option>
-                                <option value="bri">bri</option>
-                                <option value="bca">bca</option>
-                                <option value="bca digital">bca digital</option>
-                                <option value="sakuku">sakuku</option>
-                                <option value="bni">bni</option>
-                                <option value="mandiri">mandiri</option>
-                                <option value="permata">permata</option>
-                                <option value="panin">panin</option>
-                                <option value="danamon">danamon</option>
-                                <option value="cimb niaga">cimb niaga</option>
-                                <option value="bsi">bsi</option>
-                                <option value="maybank">maybank</option>
-                                <option value="bank jenius">bank jenius</option>
-                                <option value="bank jago">bank jago</option>
-                                <option value="seabank">seabank</option>
-                                <option value="dana">dana</option>
-                                <option value="ovo">ovo</option>
-                                <option value="gopay">gopay</option>
-                                <option value="linkaja">linkaja</option>
-                                <option value="shopeepay">shopeepay</option>
-                                <option value="bank kalbar">bank kalbar</option>
-                                <option value="bank bpd aceh">bank bpd aceh</option>
-                                <option value="bank btn">bank btn</option>
-                                <option value="allobank">allobank</option>
-                                <option value="bank btpn">bank btpn</option>
-                                <option value="bpd kalteng">bpd kalteng</option>
-                                <option value="keb hana">keb hana</option>
-                                <option value="shinhan bank">shinhan bank</option>
-                                <option value="arta graha">arta graha</option>
-                                <option value="bank aceh">bank aceh</option>
-                                <option value="bank bjb">bank bjb</option>
-                                <option value="bank papua">bank papua</option>
-                                <option value="bank kalsel">bank kalsel</option>
-                                <option value="bpd kaltim">bpd kaltim</option>
-                                <option value="bank aladin">bank aladin</option>
-                                <option value="bank aladin syariah">bank aladin syariah</option>
-                                <option value="bank bpdm ambon">bank bpdm ambon</option>
-                                <option value="bank bukopin">bank bukopin</option>
-                                <option value="bank raya">bank raya</option>
-                                <option value="sumsel babel">sumsel babel</option>
-                                <option value="bank kalsel">bank kalsel</option>
-                                <option value="ABA Bank">ABA Bank</option>
-                                <option value="canadia bank">canadia bank</option>
-                                <option value="phillip bank">phillip bank</option>
-                                <option value="wing bank">wing bank</option>
-                            </select>
-                        </div>
-                        <div class="listplayerinfo">
-                            <label for="namarek">namarek</label>
-                            <div class="groupeditinput">
-                                <input type="text" id="namarek" name="namarek" value=""
-                                    placeholder="masukkan namarek">
-                            </div>
-                        </div>
-                        <div class="listplayerinfo">
-                            <label for="norek">norek</label>
-                            <div class="groupeditinput">
-                                <input type="text" id="norek" name="norek" value=""
-                                    placeholder="masukkan norek">
-                            </div>
-                        </div>
-
-
-
                     </div>
                     <div class="listgroupplayerinfo right solo">
                         <button class="tombol primary">
-                            <span class="texttombol">SAVE DATA</span>
+                            <span class="texttombol">CREATE DATA</span>
                         </button>
                     </div>
                 </form>
@@ -211,4 +127,24 @@
             });
         });
     </script>
+
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
 @endsection

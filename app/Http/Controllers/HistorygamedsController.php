@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\HistoryGameExport;
 
 class HistorygamedsController extends Controller
 {
@@ -21,6 +22,32 @@ class HistorygamedsController extends Controller
         $sportsType = $request->query('sportsType');
         $status = $request->query('status');
 
+        $getDataHistoryGame = $this->getDataHistoryGame($username, $portfolio, $startDate, $endDate, $refNo, $sportsType, $status);
+        $data = $this->filterAndPaginate(collect($getDataHistoryGame['data']), 20);
+
+        //DATA SPORT TYPE   
+        // $dataSportType = [
+        //     'Football', 'Basketball', 'American Football', 'Ice Hockey', 'Badminton', 'Pool/Snooker', 'Motor Sport', 'Tennis', 'Baseball', 'Volleyball', 'Others', 'Golf', 'Boxing', 'Cricket', 'Table Tennis', 'Rugby', 'Handball', 'Cycling', 'Athletics', 'Beach Soccer', 'Futsal', 'Special'
+        // ];
+        return view('historygameds.index', [
+            'title' => 'History Game',
+            'data' => $data,
+            'totalnote' => 0,
+            'username' => $username,
+            'portfolio' => $portfolio,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'refNo' => $refNo,
+            'sportsType' => $sportsType,
+            'status' => $status,
+            // 'dataSportType' => $dataSportType,
+            'Message' => $getDataHistoryGame['Message'],
+            'data_filter_sportsTypes' => $getDataHistoryGame['data_filter_sportsTypes']
+        ]);
+    }
+
+    private function getDataHistoryGame($username, $portfolio, $startDate, $endDate, $refNo, $sportsType, $status)
+    {
         if ($refNo != '') {
             $username = '';
             $startDate = '';
@@ -56,7 +83,7 @@ class HistorygamedsController extends Controller
                 'language' => 'en',
                 'serverId' => env('SERVERID')
             ]);
-
+            // dd($portfolio);
             if ($data["error"]["id"] != 0) {
                 $Message = "Username tidak terdaftar";
                 $data = [];
@@ -73,7 +100,6 @@ class HistorygamedsController extends Controller
             $data_filter_sportsTypes = [];
         }
 
-        // dd($data);
         if ($sportsType != '') {
             $data = array_filter($data, function ($item) use ($portfolio, $sportsType) {
                 if ($portfolio == 'SportsBook') {
@@ -89,27 +115,12 @@ class HistorygamedsController extends Controller
                 return $item['status'] === $status;
             });
         }
-        $data = $this->filterAndPaginate(collect($data), 20);
 
-        //DATA SPORT TYPE   
-        // $dataSportType = [
-        //     'Football', 'Basketball', 'American Football', 'Ice Hockey', 'Badminton', 'Pool/Snooker', 'Motor Sport', 'Tennis', 'Baseball', 'Volleyball', 'Others', 'Golf', 'Boxing', 'Cricket', 'Table Tennis', 'Rugby', 'Handball', 'Cycling', 'Athletics', 'Beach Soccer', 'Futsal', 'Special'
-        // ];
-        return view('historygameds.index', [
-            'title' => 'History Game',
+        return [
             'data' => $data,
-            'totalnote' => 0,
-            'username' => $username,
-            'portfolio' => $portfolio,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'refNo' => $refNo,
-            'sportsType' => $sportsType,
-            'status' => $status,
-            // 'dataSportType' => $dataSportType,
             'Message' => $Message,
             'data_filter_sportsTypes' => $data_filter_sportsTypes
-        ]);
+        ];
     }
 
     public function detail($refNo, $portfolio)
@@ -195,5 +206,34 @@ class HistorygamedsController extends Controller
             }
         }
         return $paginatedItems;
+    }
+
+    public function export(Request $request)
+    {
+        $username = $request->query('username');
+        $portfolio = $request->query('portfolio');
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
+        $refNo = $request->query('refNo');
+        $sportsType = $request->query('sportsType');
+        $status = $request->query('status');
+
+        $data = $this->getDataHistoryGame($username, $portfolio, $startDate, $endDate, $refNo, $sportsType, $status);
+        $data = $data["data"];
+        $allData = [];
+        foreach ($data as $i => $d) {
+            $allData[] = [
+                "username" => $d["username"],
+                "orderTime" => $d["orderTime"],
+                "refNo" => $d["refNo"],
+                "detail" => $portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType'],
+                "odds" => $portfolio !== 'Games' ? $d['odds'] : 0.1,
+                "stake" => $d['stake'],
+                "winloss" => $d['winLost'],
+                "status" => $d['status'],
+            ];
+        }
+        $data = collect($allData);
+        return Excel::download(new HistoryGameExport($data), 'HistoryGame-' . $username . '-' . $portfolio . '-' . $startDate . '-' . $endDate . '.xlsx');
     }
 }

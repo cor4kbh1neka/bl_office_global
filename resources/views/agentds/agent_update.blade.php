@@ -77,59 +77,7 @@
                     </button>
                 </div>
             </form>
-            <spann class="titleeditmemberds change">agent setting</spann>
-            {{-- <form method="POST" action="/agentds/storesetting" class="groupplayerinfo">
-                @csrf --}}
-            <div class="groupplayerinfo">
-                <div class="listgroupplayerinfo left">
-                    <div class="listplayerinfo">
-                        <label for="min">minimal bet</label>
-                        <div class="groupeditinput">
-                            <input type="number" readonly id="min" name="min" value="10">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="listplayerinfo">
-                        <label for="max">maksimal bet</label>
-                        <div class="groupeditinput">
-                            <input type="number" readonly id="max" name="max" value="10000">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="listplayerinfo ssreff">
-                        <span class="labelbonusreff">Bonus Referral</span>
-                        <div class="groupbnsreff">
-                            <div class="listreff">
-                                <label for="sportsbook">sportsbook (%)</label>
-                                <input type="number" id="sportsbook" name="sportsbook" value="0.2"
-                                    placeholder="% referral">
-                            </div>
-                            <div class="listreff">
-                                <label for="virtualsports">virtualsports (%)</label>
-                                <input type="number" id="virtualsports" name="virtualsports" value="0.2"
-                                    placeholder="% referral">
-                            </div>
-                            <div class="listreff">
-                                <label for="games">games (%)</label>
-                                <input type="number" id="games" name="games" value="0.2"
-                                    placeholder="% games">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="listgroupplayerinfo right solo">
-                    <button class="tombol primary">
-                        <span class="texttombol">SAVE DATA</span>
-                    </button>
-                </div>
-            </div>
-            {{-- </form> --}}
+
         </div>
     </div>
 </div>

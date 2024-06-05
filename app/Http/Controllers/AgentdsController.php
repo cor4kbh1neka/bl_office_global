@@ -10,6 +10,7 @@ use App\Models\Persentase;
 use App\Models\UserAccess;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -85,6 +86,8 @@ class AgentdsController extends Controller
         $user->divisi = $request->divisi;
         $user->save();
 
+        Cache::forget('user_access_' . $user->id);
+
         return redirect()->back()->with('success', 'Data Agent berhasil diupdate.');
     }
 
@@ -140,6 +143,7 @@ class AgentdsController extends Controller
         $user->history_coin = isset($request->history_coin) ? true : false;
 
         $user->member_list = isset($request->member_list) ? true : false;
+        $user->member_seamless = isset($request->member_seamless) ? true : false;
         $user->referral = isset($request->referral) ? true : false;
         $user->history_game = isset($request->history_game) ? true : false;
         $user->member_outstanding = isset($request->member_outstanding) ? true : false;
@@ -148,6 +152,7 @@ class AgentdsController extends Controller
         $user->report = isset($request->report) ? true : false;
 
         $user->bank = isset($request->bank) ? true : false;
+        $user->refeerral_bonus = isset($request->refeerral_bonus) ? true : false;
         $user->memo = isset($request->memo) ? true : false;
 
         $user->agent = isset($request->agent) ? true : false;
@@ -157,7 +162,7 @@ class AgentdsController extends Controller
         $user->memo_other = isset($request->memo_other) ? true : false;
         $user->save();
 
-        return redirect('/agentds')->with('success', 'Access agent berhasil ditambahkan.');
+        return redirect('/agentds/access')->with('success', 'Access agent berhasil ditambahkan.');
     }
 
     public function destroy_access($id)
@@ -186,6 +191,7 @@ class AgentdsController extends Controller
         $user->history_coin = isset($request->history_coin) ? true : false;
 
         $user->member_list = isset($request->member_list) ? true : false;
+        $user->member_seamless = isset($request->member_seamless) ? true : false;
         $user->referral = isset($request->referral) ? true : false;
         $user->history_game = isset($request->history_game) ? true : false;
         $user->member_outstanding = isset($request->member_outstanding) ? true : false;
@@ -194,6 +200,7 @@ class AgentdsController extends Controller
         $user->report = isset($request->report) ? true : false;
 
         $user->bank = isset($request->bank) ? true : false;
+        $user->refeerral_bonus = isset($request->refeerral_bonus) ? true : false;
         $user->memo = isset($request->memo) ? true : false;
 
         $user->agent = isset($request->agent) ? true : false;
@@ -203,81 +210,83 @@ class AgentdsController extends Controller
         $user->memo_other = isset($request->memo_other) ? true : false;
         $user->save();
 
+        Cache::flush();
+
         return redirect()->back()->with('success', 'Access agent berhasil diupdate.');
     }
 
-    public function storesetting(Request $request)
-    {
-        $request->validate([
-            'min' => 'required',
-            'max' => 'required',
-            'sportsbook' => 'required',
-            'virtualsports' => 'required',
-            'games' => 'required'
-        ]);
+    // public function storesetting(Request $request)
+    // {
+    //     $request->validate([
+    //         'min' => 'required',
+    //         'max' => 'required',
+    //         'sportsbook' => 'required',
+    //         'virtualsports' => 'required',
+    //         'games' => 'required'
+    //     ]);
 
-        $dataBetSetting = BetSetting::where('id', 1)->first();
-        $reqBetSetting = [
-            'min' => $request->min,
-            'max' => $request->max
-        ];
-        if ($dataBetSetting) {
-            $dataBetSetting->update($reqBetSetting);
-        } else {
-            BetSetting::create($reqBetSetting);
-        }
+    //     $dataBetSetting = BetSetting::where('id', 1)->first();
+    //     $reqBetSetting = [
+    //         'min' => $request->min,
+    //         'max' => $request->max
+    //     ];
+    //     if ($dataBetSetting) {
+    //         $dataBetSetting->update($reqBetSetting);
+    //     } else {
+    //         BetSetting::create($reqBetSetting);
+    //     }
 
-        $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
-        if ($dataPersentaseSB) {
-            $dataPersentaseSB->update([
-                'persentase' => $request->sportsbook
-            ]);
-        } else {
-            Persentase::create([
-                'jenis' => 'SportsBook',
-                'persentase' => $request->sportsbook
-            ]);
-        }
-
-
-        $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
-        if ($dataPersentaseVS) {
-            $dataPersentaseVS->update([
-                'persentase' => $request->virtualsports
-            ]);
-        } else {
-            Persentase::create([
-                'jenis' => 'SportsBook',
-                'persentase' => $request->virtualsports
-            ]);
-        }
-
-        $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
-        if ($dataPersentaseG) {
-            $dataPersentaseG->update([
-                'persentase' => $request->games
-            ]);
-        } else {
-            Persentase::create([
-                'jenis' => 'SportsBook',
-                'persentase' => $request->games
-            ]);
-        }
+    //     $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
+    //     if ($dataPersentaseSB) {
+    //         $dataPersentaseSB->update([
+    //             'persentase' => $request->sportsbook
+    //         ]);
+    //     } else {
+    //         Persentase::create([
+    //             'jenis' => 'SportsBook',
+    //             'persentase' => $request->sportsbook
+    //         ]);
+    //     }
 
 
+    //     $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
+    //     if ($dataPersentaseVS) {
+    //         $dataPersentaseVS->update([
+    //             'persentase' => $request->virtualsports
+    //         ]);
+    //     } else {
+    //         Persentase::create([
+    //             'jenis' => 'SportsBook',
+    //             'persentase' => $request->virtualsports
+    //         ]);
+    //     }
 
-        $user = new User();
-        $user->name = $request->username;
-        $user->username = $request->username;
-        $user->divisi = $request->divisi;
-        $user->password = bcrypt($request->password);
-        $user->image = "";
-        $user->status = 1;
+    //     $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
+    //     if ($dataPersentaseG) {
+    //         $dataPersentaseG->update([
+    //             'persentase' => $request->games
+    //         ]);
+    //     } else {
+    //         Persentase::create([
+    //             'jenis' => 'SportsBook',
+    //             'persentase' => $request->games
+    //         ]);
+    //     }
 
-        $user->save();
 
-        return redirect('/agentds')->with('success', 'Aget berhasil ditambahkan.');
-    }
+
+    //     $user = new User();
+    //     $user->name = $request->username;
+    //     $user->username = $request->username;
+    //     $user->divisi = $request->divisi;
+    //     $user->password = bcrypt($request->password);
+    //     $user->image = "";
+    //     $user->status = 1;
+
+    //     $user->save();
+
+    //     return redirect('/agentds')->with('success', 'Aget berhasil ditambahkan.');
+    // }
 
     public function userAndUserAccess()
     {

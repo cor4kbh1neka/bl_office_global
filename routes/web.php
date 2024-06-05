@@ -5,17 +5,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AllowedipController;
 use App\Http\Controllers\AgentsController;
 use App\Http\Controllers\PlayersController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\DepoWdController;
 use App\Http\Controllers\MemberController;
-use App\Http\Controllers\BankController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepositdsController;
-use App\Http\Controllers\WithdrawdsController;
 use App\Http\Controllers\ManualdsController;
 use App\Http\Controllers\HistorycoindsController;
 use App\Http\Controllers\MemberlistdsController;
@@ -30,14 +27,13 @@ use App\Http\Controllers\AgentdsController;
 use App\Http\Controllers\AnalyticsdsController;
 use App\Http\Controllers\ContentdsController;
 use App\Http\Controllers\ApksettingdsController;
-use App\Http\Controllers\AllowedipdsController;
 use App\Http\Controllers\MemotouserdsController;
-use App\Http\Controllers\UsermanagementdsController;
 use App\Http\Controllers\NotifikasidsController;
 use App\Http\Controllers\Menu2Controller;
 use App\Http\Controllers\PersentasedsController;
 use App\Http\Controllers\BonusdsController;
 use App\Http\Controllers\MaintenancedsController;
+use App\Http\Controllers\BonussettingdsController;
 use App\Models\Xdpwd;
 use App\Models\Outstanding;
 use App\Models\DepoWd;
@@ -201,9 +197,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/event', [SettingsController::class, 'indexevent']);
     Route::get('/notice', [SettingsController::class, 'indexnotice']);
 
-    /*-- Bank --*/
-    Route::get('/bank', [BankController::class, 'index'])->middleware('bank');
-
     /*-- Dashboard --*/
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
@@ -242,7 +235,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/memberlistds/winlosemonth/{username}/{year}', [MemberlistdsController::class, 'winlosemonth']);
         Route::get('/memberlistds/winloseday/{username}/{year}/{month}', [MemberlistdsController::class, 'winloseday']);
         Route::get('/memberlistds/history/{username}', [MemberlistdsController::class, 'historybank']);
-        Route::get('/memberlistds/addmember', [MemberlistdsController::class, 'addmember']);
+        Route::get('/seamless/addmember', [MemberlistdsController::class, 'addmember']);
         Route::post('/memberlistds/store', [MemberlistdsController::class, 'store']);
         Route::get('/memberlistds/export', [MemberlistdsController::class, 'export']);
     });
@@ -250,21 +243,25 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('history_game')->group(function () {
         Route::get('/historygameds', [HistorygamedsController::class, 'index']);
         Route::get('/historygameds/detail/{invoice}/{portfolio}', [HistorygamedsController::class, 'detail']);
+        Route::get('/historygameds/export', [HistorygamedsController::class, 'export']);
     });
     /*-- Outstandingds --*/
     Route::get('/outstandingds/{username?}', [OutstandingdsController::class, 'index'])->middleware('member_outstanding');
+    Route::get('/outstandingdsexport', [OutstandingdsController::class, 'export'])->middleware('member_outstanding');
 
     /*-- Reportds --*/
     Route::middleware('report')->group(function () {
         Route::get('/reportds', [ReportdsController::class, 'index']);
         Route::get('/reportds/winlosematch', [ReportdsController::class, 'winlosematch']);
         Route::get('/reportds/memberstatement', [ReportdsController::class, 'memberstatement']);
+        Route::get('/reportds/export', [ReportdsController::class, 'export']);
     });
     /*-- Referralds --*/
     Route::middleware('referral')->group(function () {
         Route::get('/referralds', [ReferraldsController::class, 'index']);
         Route::get('/referralds/downline/{upline}/{jenis}/{total}/{total_referral}/{total_downline}', [ReferraldsController::class, 'downlinedetail']);
         Route::get('/referralds/bonusreferral', [ReferraldsController::class, 'bonusreferral']);
+        Route::get('/referralds/export', [ReferraldsController::class, 'export']);
     });
     /*-- Bankds --*/
     Route::middleware('bank')->group(function () {
@@ -292,6 +289,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bankds/listbank/{group}/{groupwd}', [BankdsController::class, 'listbank']);
         Route::get('/getGroupBank/{bank}/{jenis}', [BankdsController::class, 'getGroupBank']);
         Route::get('/bankds/xdata', [BankdsController::class, 'xdata']);
+    });
+
+    Route::middleware('refeerral_bonus')->group(function () {
+        Route::get('/bonussettingds', [BonussettingdsController::class, 'index'])->name('bonussettingds');
+        Route::post('/bonussettingds/update', [BonussettingdsController::class, 'update']);
     });
 
     /*-- Memods --*/
@@ -350,8 +352,8 @@ Route::middleware(['auth'])->group(function () {
 
 
     /*-- MENU 2 --*/
-    Route::get('/menu2', [Menu2Controller::class, 'index']);
-    Route::get('/menu2/add', [Menu2Controller::class, 'create']);
+    // Route::get('/menu2', [Menu2Controller::class, 'index']);
+    // Route::get('/menu2/add', [Menu2Controller::class, 'create']);
 
 
     /*-- GET NOTIFICATION --*/
@@ -365,6 +367,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bonusdetailds/{listbonus_id}', [BonusdsController::class, 'indexdetail']);
         Route::post('/storebonusds/{bonus}/{gabungdari}/{gabunghingga}/{kecuali}', [BonusdsController::class, 'store']);
         Route::post('/cancelbonusds', [BonusdsController::class, 'cancel']);
+        Route::get('/bonusds/export', [BonusdsController::class, 'export']);
     });
 
     /*-- Memotouserds --*/

@@ -144,8 +144,9 @@
         $('.deleteForm').submit(function(e) {
             e.preventDefault();
 
-            // Mendapatkan id data dari input tersembunyi dalam formulir yang bersangkutan
-            var dataId = $(this).find('input[name="id"]').val();
+            var form = $(this); // Simpan referensi ke form yang saat ini sedang submit
+            var dataId = form.find('input[name="id"]').val();
+
             Swal.fire({
                 title: 'Apakah Anda yakin ingin menghapus data ini?',
                 text: "Anda tidak akan dapat mengembalikan data yang dihapus!",
@@ -157,14 +158,28 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Set action formulir dengan menambahkan data-id ke dalam URL
-                    var formAction = $(this).attr('action');
-                    $(this).attr('action', formAction + '/' + dataId);
-
-                    // Jika pengguna menekan "Ya, hapus!", lanjutkan dengan penghapusan
-                    $(this).unbind('submit').submit();
+                    form.unbind('submit').submit(); // Lanjutkan dengan submit form
                 }
             });
         });
     </script>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
 @endsection

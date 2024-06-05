@@ -57,12 +57,22 @@ class ApiController extends Controller
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
             $getLogin = $this->requestApiLogin($dataLogin);
+
+
+
             if ($getLogin["url"] !== "") {
                 if ($device == 'd') {
                     $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=en&oddstyle=ID&theme=black&oddsmode=double&device=' . $device;
                 } else {
                     $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=en&oddstyle=ID&oddsmode=double&device=' . $device;
                 }
+            }
+
+            $apiMt = $this->apiStatusMaintenance();
+            if ($apiMt->stsmtncnc == '2') {
+                $getLogin["is_maintenance"] = true;
+            } else {
+                $getLogin["is_maintenance"] = false;
             }
 
             return $getLogin;
@@ -74,6 +84,15 @@ class ApiController extends Controller
                 'ErrorMessage' => 'Internal Error'
             ];;
         }
+    }
+
+    private function apiStatusMaintenance()
+    {
+        $url = env('DOMAIN') . '/content/sts';
+        $response = Http::withTokenHeader()->get($url);
+        $raw = json_decode($response);
+        $data = $raw->data;
+        return $data;
     }
 
 
@@ -297,68 +316,78 @@ class ApiController extends Controller
             return $validasiBearer;
         }
 
-        try {
-            // $validator = Validator::make($request->all(), [
-            //     'username' => 'required|max:50',
-            //     'amount' => 'required|numeric',
-            //     'keterangan' => 'nullable|max:20',
-            //     'bank' => 'required|max:100',
-            //     'mbank' => 'required|max:100',
-            //     'mnamarek' => 'required|max:150',
-            //     'mnorek' => 'required|max:30',
-            //     'balance' => 'required|numeric',
-            //     'referral' => 'nullable',
-            // ]);
-            // if ($validator->fails()) {
-            //     return response()->json(['errors' => $validator->errors()->all()], 400);
-            // }
+        $apiMt = $this->apiStatusMaintenance();
+        if ($apiMt->stsmtncnc != '2') {
 
-            // $dataMember = Member::where('username', strtolower($request->username))->first();
-            // if (!$dataMember) {
-            //     return response()->json([
-            //         'status' => 'Fail',
-            //         'message' => 'Username tidak terdaftar'
-            //     ], 400);
-            // }
+            try {
+                // $validator = Validator::make($request->all(), [
+                //     'username' => 'required|max:50',
+                //     'amount' => 'required|numeric',
+                //     'keterangan' => 'nullable|max:20',
+                //     'bank' => 'required|max:100',
+                //     'mbank' => 'required|max:100',
+                //     'mnamarek' => 'required|max:150',
+                //     'mnorek' => 'required|max:30',
+                //     'balance' => 'required|numeric',
+                //     'referral' => 'nullable',
+                // ]);
+                // if ($validator->fails()) {
+                //     return response()->json(['errors' => $validator->errors()->all()], 400);
+                // }
 
-            $dataDepoWd = DepoWd::where('username', strtolower($request->username))->where('jenis', 'DP')->where('status', '0')->first();
-            if ($dataDepoWd) {
+                // $dataMember = Member::where('username', strtolower($request->username))->first();
+                // if (!$dataMember) {
+                //     return response()->json([
+                //         'status' => 'Fail',
+                //         'message' => 'Username tidak terdaftar'
+                //     ], 400);
+                // }
+
+                $dataDepoWd = DepoWd::where('username', strtolower($request->username))->where('jenis', 'DP')->where('status', '0')->first();
+                if ($dataDepoWd) {
+                    return response()->json([
+                        'status' => 'Fail',
+                        'message' => 'Deposit anda sedang dalam proses'
+                    ], 400);
+                }
+
+                // $dataDepoWd = DepoWd::where('username', strtolower($request->username))->where('jenis', 'DP')->where('status', '1')->first();
+                // if (!$dataDepoWd) {
+                //     Member::where('username', strtolower($request->username))
+                //         ->update([
+                //             'status' => '9',
+                //             'is_notnew' => true,
+                //         ]);
+                // }
+
+                /* Request Ke Database Internal */
+                $data = $request->all();
+                $data["username"] = strtolower($data["username"]);
+                $data["jenis"] = "DP";
+                $data["txnid"] = null;
+                $data["status"] = 0;
+                $data["approved_by"] = null;
+
+                DepoWd::create($data);
+                Xdpwd::create($data);
+
                 return response()->json([
-                    'status' => 'Fail',
-                    'message' => 'Deposit anda sedang dalam proses'
-                ], 400);
+                    'status' => 'Success',
+                    'message' => 'Deposit sedang diproses'
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+                ], 500);
             }
-
-            // $dataDepoWd = DepoWd::where('username', strtolower($request->username))->where('jenis', 'DP')->where('status', '1')->first();
-            // if (!$dataDepoWd) {
-            //     Member::where('username', strtolower($request->username))
-            //         ->update([
-            //             'status' => '9',
-            //             'is_notnew' => true,
-            //         ]);
-            // }
-
-            /* Request Ke Database Internal */
-            $data = $request->all();
-            $data["username"] = strtolower($data["username"]);
-            $data["jenis"] = "DP";
-            $data["txnid"] = null;
-            $data["status"] = 0;
-            $data["approved_by"] = null;
-
-            DepoWd::create($data);
-            Xdpwd::create($data);
-
-            return response()->json([
-                'status' => 'Success',
-                'message' => 'Deposit sedang diproses'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
-            ], 500);
         }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Server sedang maintenance',
+            'is_maintenance' => true
+        ], 200);
     }
 
     public function withdrawal(Request $request)
@@ -368,94 +397,104 @@ class ApiController extends Controller
             return $validasiBearer;
         }
 
-        try {
-            /* Validasi WD */
-            $dataBalance = Balance::where('username', $request->username)->first();
-            if ($dataBalance) {
-                if ($request->amount > $dataBalance->amount) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Saldo tidak cukup'
-                    ], 500);
-                }
-            }
+        $apiMt = $this->apiStatusMaintenance();
+        if ($apiMt->stsmtncnc != '2') {
 
-            /* Request API check transaction */
-            $txnid = $this->generateTxnid('W');
-
-            /* Request Ke Database Internal */
-            $data = $request->all();
-            $data["username"] = strtolower($data["username"]);
-            $data["keterangan"] = null;
-            $data["jenis"] = "WD";
-            $data["txnid"] = $txnid;
-            $data["status"] = 0;
-            $data["approved_by"] = null;
-            $dataWD = DepoWd::create($data);
-
-            if ($dataWD) {
-                Xdpwd::create($data);
-                $dataAPI = [
-                    "Username" => $dataWD->username,
-                    "TxnId" => $txnid,
-                    "Amount" => $dataWD->amount,
-                    "CompanyKey" => env('COMPANY_KEY'),
-                    "ServerId" => env('SERVERID'),
-                    "IsFullAmount" => false
-                ];
-                $resultsApi = $this->requestApi('withdraw', $dataAPI);
-
-                $maxAttempts9720 = 10;
-                $attempt9720 = 0;
-                while ($resultsApi["error"]["id"] === 9720 && $attempt9720 < $maxAttempts9720) {
-                    sleep(6);
-                    $resultsApi = $this->requestApi('withdraw', $dataAPI);
-                    $attempt9720++;
+            try {
+                /* Validasi WD */
+                $dataBalance = Balance::where('username', $request->username)->first();
+                if ($dataBalance) {
+                    if ($request->amount > $dataBalance->amount) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Saldo tidak cukup'
+                        ], 500);
+                    }
                 }
 
-                $maxAttempts4404 = 10;
-                $attempt4404 = 0;
-                while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
-                    $txnid = $this->generateTxnid('W');
-                    $data["txnId"] = $txnid;
+                /* Request API check transaction */
+                $txnid = $this->generateTxnid('W');
+
+                /* Request Ke Database Internal */
+                $data = $request->all();
+                $data["username"] = strtolower($data["username"]);
+                $data["keterangan"] = null;
+                $data["jenis"] = "WD";
+                $data["txnid"] = $txnid;
+                $data["status"] = 0;
+                $data["approved_by"] = null;
+                $dataWD = DepoWd::create($data);
+
+                if ($dataWD) {
+                    Xdpwd::create($data);
+                    $dataAPI = [
+                        "Username" => $dataWD->username,
+                        "TxnId" => $txnid,
+                        "Amount" => $dataWD->amount,
+                        "CompanyKey" => env('COMPANY_KEY'),
+                        "ServerId" => env('SERVERID'),
+                        "IsFullAmount" => false
+                    ];
                     $resultsApi = $this->requestApi('withdraw', $dataAPI);
+
+                    $maxAttempts9720 = 10;
+                    $attempt9720 = 0;
+                    while ($resultsApi["error"]["id"] === 9720 && $attempt9720 < $maxAttempts9720) {
+                        sleep(6);
+                        $resultsApi = $this->requestApi('withdraw', $dataAPI);
+                        $attempt9720++;
+                    }
+
+                    $maxAttempts4404 = 10;
+                    $attempt4404 = 0;
+                    while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
+                        $txnid = $this->generateTxnid('W');
+                        $data["txnId"] = $txnid;
+                        $resultsApi = $this->requestApi('withdraw', $dataAPI);
+                        if ($resultsApi["error"]["id"] === 0) {
+                            DepoWd::where('id', $dataWD->id)->update([
+                                "txnid" => $txnid
+                            ]);
+                        }
+                        $attempt4404++;
+                    }
+
+                    if ($resultsApi["error"]["id"] !== 0) {
+                        DepoWd::destroy($dataWD->id);
+
+                        return response()->json([
+                            'status' => 'Error',
+                            'message' => $resultsApi["error"]["msg"]
+                        ], 500);
+                    }
+
                     if ($resultsApi["error"]["id"] === 0) {
-                        DepoWd::where('id', $dataWD->id)->update([
-                            "txnid" => $txnid
+                        $this->processBalance($dataWD->username, 'WD', $dataWD->amount);
+
+                        return response()->json([
+                            'status' => 'Success',
+                            'message' => 'Withdrawal sedang diproses'
                         ]);
                     }
-                    $attempt4404++;
                 }
 
-                if ($resultsApi["error"]["id"] !== 0) {
-                    DepoWd::destroy($dataWD->id);
-
-                    return response()->json([
-                        'status' => 'Error',
-                        'message' => $resultsApi["error"]["msg"]
-                    ], 500);
-                }
-
-                if ($resultsApi["error"]["id"] === 0) {
-                    $this->processBalance($dataWD->username, 'WD', $dataWD->amount);
-
-                    return response()->json([
-                        'status' => 'Success',
-                        'message' => 'Withdrawal sedang diproses'
-                    ]);
-                }
+                return response()->json([
+                    'status' => 'Success',
+                    'message' => 'Withdrawal sedang diproses'
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+                ], 500);
             }
-
-            return response()->json([
-                'status' => 'Success',
-                'message' => 'Withdrawal sedang diproses'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
-            ], 500);
         }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Server sedang maintenance',
+            'is_maintenance' => true
+        ], 200);
     }
 
     public function processBalance($username, $jenis, $amount)

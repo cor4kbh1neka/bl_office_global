@@ -45,7 +45,7 @@ class MemberlistdsController extends Controller
         $username = $data->username;
 
         $dataUser = $this->getApiUser($username);
-        if (is_array($dataUser)) {
+        if ($dataUser["status"] === 'success') {
             $dataUser = $dataUser["data"]["datauser"];
         } else {
             $dataUser = [];
@@ -68,14 +68,8 @@ class MemberlistdsController extends Controller
             'Content-Type' => 'application/json; charset=UTF-8',
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get($url);
-        if ($response->successful()) {
-            $responseData = $response->json();
-        } else {
-            $statusCode = $response->status();
-            $errorMessage = $response->body();
-            $responseData = "Error: $statusCode - $errorMessage";
-        }
 
+        $responseData = $response->json();
         return $responseData;
     }
 
@@ -365,9 +359,42 @@ class MemberlistdsController extends Controller
 
     public function store(Request $request)
     {
+        $username = $request->username;
+        $cekDataCoreUser = $this->getApiUser($username);
+        if ($cekDataCoreUser["status"] === 'success') {
+            $bank = $cekDataCoreUser["data"]["datauser"]["xybanknamexyy"];
+            $namarek = $cekDataCoreUser["data"]["datauser"]["xybankuserxy"];
+            $rek = $cekDataCoreUser["data"]["datauser"]["xxybanknumberxy"];
 
+            $dataapi = [
+                "Username" => $username,
+                "CompanyKey" => env('COMPANY_KEY'),
+                "ServerId" => env('SERVERID')
+            ];
+            $urlapi = env('BODOMAIN') . '/web-root/restricted/player/get-player-balance.aspx';
+            $responseapi = Http::withHeaders([
+                'Content-Type' => 'application/json; charset=UTF-8'
+            ])->post($urlapi, $dataapi);
+            $responseapi = $responseapi->json();
+            if ($responseapi["error"]["id"] !== 0) {
+                $createUserSeamless = $this->createUser($username, $bank, $namarek, $rek);
+                if ($createUserSeamless["status"] == 'success') {
+                    return redirect('seamless/addmember')->with('success', 'Data seamless berhasil ditambahkan.');
+                } else {
+                    return redirect()->back()->with('error', $createUserSeamless["message"]);
+                }
+            } else {
+                return redirect()->back()->with('error', 'Member seamless sudah terdaftar');
+            }
+        } else {
+            return redirect()->back()->with('error', 'Member tidak terdaftar');
+        }
+    }
+
+    private function createUser($username, $bank, $namarek, $rek)
+    {
         $data = [
-            "Username" => $request->username,
+            "Username" => $username,
             "UserGroup" => "c",
             "Agent" => env('AGENTID'),
             "CompanyKey" => env('COMPANY_KEY'),
@@ -383,14 +410,13 @@ class MemberlistdsController extends Controller
 
         $responseData = $response->json();
         if ($responseData["error"]["id"] === 0) {
-
             try {
                 Member::create([
-                    'username' => $request->username,
-                    'referral' => $request->referral,
-                    'bank' => $request->bank,
-                    'namarek' => $request->namarek,
-                    'norek' => $request->norek,
+                    'username' => $username,
+                    'referral' => '',
+                    'bank' => $bank,
+                    'namarek' => $namarek,
+                    'norek' => $rek,
                     'nohp' => 0,
                     'balance' => 0,
                     'ip_reg' => null,
@@ -405,28 +431,9 @@ class MemberlistdsController extends Controller
                 ]);
 
                 Balance::create([
-                    'username' => $request->username,
+                    'username' => $username,
                     'balance' => 0
                 ]);
-
-                if ($request->Referral !== null && $request->Referral !== '') {
-                    $dataReferral = [
-                        'upline' => $request->Referral,
-                        'downline' => $request->Username,
-                    ];
-
-                    if (preg_match('/^[a-e]/i', $request->Referral)) {
-                        Referral1::create($dataReferral);
-                    } elseif (preg_match('/^[f-j]/i', $request->Referral)) {
-                        Referral2::create($dataReferral);
-                    } elseif (preg_match('/^[k-o]/i', $request->Referral)) {
-                        Referral3::create($dataReferral);
-                    } elseif (preg_match('/^[p-t]/i', $request->Referral)) {
-                        Referral4::create($dataReferral);
-                    } elseif (preg_match('/^[u-z]/i', $request->Referral)) {
-                        Referral5::create($dataReferral);
-                    }
-                }
             } catch (\Exception $e) {
                 ListError::create([
                     'fungsi' => 'register',
@@ -435,17 +442,22 @@ class MemberlistdsController extends Controller
                 ]);
             }
 
-            return redirect('/memberlistds')->with('success', 'Tambah data member berhasil.');
+            return [
+                'status' => 'success',
+                'message' => 'Data member berhasil ditambahkan',
+            ];
         } else {
             ListError::create([
                 'fungsi' => 'register',
                 'pesan_error' => $responseData["error"]["msg"],
                 'keterangan' => '-'
             ]);
-            return redirect()->back()->with('error', 'Gagal menambahkan data member');
+            return [
+                'status' => 'fail',
+                'message' => 'Data member gagal ditambahkan',
+            ];
         }
     }
-
     public function export(Request $request)
     {
         $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')

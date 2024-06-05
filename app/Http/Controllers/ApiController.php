@@ -57,6 +57,9 @@ class ApiController extends Controller
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
             $getLogin = $this->requestApiLogin($dataLogin);
+
+            $apiMt = $this->apiStatusMaintenance();
+
             if ($getLogin["url"] !== "") {
                 if ($device == 'd') {
                     $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=en&oddstyle=ID&theme=black&oddsmode=double&device=' . $device;
@@ -74,6 +77,15 @@ class ApiController extends Controller
                 'ErrorMessage' => 'Internal Error'
             ];;
         }
+    }
+
+    private function apiStatusMaintenance()
+    {
+        $url = env('DOMAIN') . '/content/sts';
+        $response = Http::withTokenHeader()->get($url);
+        $raw = json_decode($response);
+        $data = $raw->data;
+        return $data;
     }
 
 

@@ -174,13 +174,13 @@ class BonusdsController extends Controller
                 $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
                 if ($bonus == 'cashback') {
                     if ($total <= ($mBonus->min * -1)) {
-                        $result->totalbonus = abs($total) * $mBonus->persentase;
+                        $result->totalbonus = (abs($total) * $mBonus->persentase) / 100;
                     } else {
                         unset($results[$key]);
                     }
                 } else {
                     if ($total >= $mBonus->min) {
-                        $result->totalbonus = $total * $mBonus->persentase;
+                        $result->totalbonus = ($total * $mBonus->persentase) / 100;
                     } else {
                         unset($results[$key]);
                     }

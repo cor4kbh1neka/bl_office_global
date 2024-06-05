@@ -74,6 +74,12 @@
                             </div>
                             <div class="listaccess">
                                 <div class="check_box">
+                                    <input type="checkbox" id="member_seamless" name="member_seamless" value="on">
+                                </div>
+                                <label for="member_seamless">view member seamless</label>
+                            </div>
+                            <div class="listaccess">
+                                <div class="check_box">
                                     <input type="checkbox" id="referral" name="referral" value="on">
                                 </div>
                                 <label for="referral">view referral</label>
@@ -93,13 +99,15 @@
                             </div>
                             <div class="listaccess">
                                 <div class="check_box">
-                                    <input type="checkbox" id="member_outstanding" name="member_outstanding" value="on">
+                                    <input type="checkbox" id="member_outstanding" name="member_outstanding"
+                                        value="on">
                                 </div>
                                 <label for="member_outstanding">view member outstanding</label>
                             </div>
                             <div class="listaccess">
                                 <div class="check_box">
-                                    <input type="checkbox" id="cashback_rollingan" name="cashback/rollingan" value="cashback/rollingan">
+                                    <input type="checkbox" id="cashback_rollingan" name="cashback/rollingan"
+                                        value="cashback/rollingan">
                                 </div>
                                 <label for="cashback_rollingan">view cashback/rollingan</label>
                             </div>
@@ -121,6 +129,12 @@
                                     <input type="checkbox" id="bank" name="bank" value="on">
                                 </div>
                                 <label for="bank">view bank</label>
+                            </div>
+                            <div class="listaccess">
+                                <div class="check_box">
+                                    <input type="checkbox" id="refeerral_bonus" name="refeerral_bonus" value="on">
+                                </div>
+                                <label for="refeerral_bonus">view bonus setting</label>
                             </div>
                             <div class="listaccess">
                                 <div class="check_box">

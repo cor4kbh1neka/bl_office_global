@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BetSetting;
+use App\Models\Bonus;
+use App\Models\Persentase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 
@@ -17,7 +20,7 @@ class BonussettingdsController extends Controller
         ]);
     }
 
-    public function create(Request $request)
+    public function update(Request $request)
     {
         // Validate the request data
         $request->validate([
@@ -43,6 +46,85 @@ class BonussettingdsController extends Controller
         //update max min bet Agent
         $updateMaxMin = $this->apiUpdateAgent($max, $min);
         if ($updateMaxMin["error"]["id"] === 0) {
+
+            $dataBetSetting = BetSetting::where('id', 1)->first();
+            $reqBetSetting = [
+                'min' => $request->min,
+                'max' => $request->max
+            ];
+            if ($dataBetSetting) {
+                $dataBetSetting->update($reqBetSetting);
+            } else {
+                BetSetting::create($reqBetSetting);
+            }
+
+            $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
+            if ($dataPersentaseSB) {
+                $dataPersentaseSB->update([
+                    'persentase' => $request->sportsbook
+                ]);
+            } else {
+                Persentase::create([
+                    'jenis' => 'SportsBook',
+                    'persentase' => $request->sportsbook
+                ]);
+            }
+
+            $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
+            if ($dataPersentaseVS) {
+                $dataPersentaseVS->update([
+                    'persentase' => $request->virtualsports
+                ]);
+            } else {
+                Persentase::create([
+                    'jenis' => 'SportsBook',
+                    'persentase' => $request->virtualsports
+                ]);
+            }
+
+            $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
+            if ($dataPersentaseG) {
+                $dataPersentaseG->update([
+                    'persentase' => $request->games
+                ]);
+            } else {
+                Persentase::create([
+                    'jenis' => 'SportsBook',
+                    'persentase' => $request->games
+                ]);
+            }
+
+
+            $dataPersentaseSG = Persentase::where('jenis', 'SeamlessGame')->first();
+            if ($dataPersentaseSG) {
+                $dataPersentaseSG->update([
+                    'persentase' => $request->seamlesgames
+                ]);
+            } else {
+                Persentase::create([
+                    'jenis' => 'SportsBook',
+                    'persentase' => $request->seamlesgames
+                ]);
+            }
+
+
+            $dataSettingCashback = Bonus::where('jenis_bonus', 'cashback')->first();
+            if ($dataSettingCashback) {
+                $dataSettingCashback->update([
+                    'persentase' => $request->cashback
+                ]);
+            } else {
+                Bonus::create([
+                    'jenis_bonus' => 'cashback',
+                    'persentase' => $request->cashback
+                ]);
+            }
+
+
+
+
+
+            return redirect('/agentds')->with('success', 'Aget berhasil ditambahkan.');
         }
 
         // // Create the user

@@ -60,10 +60,10 @@
                                 </div>
                             </div>
                             <div class="listplayerinfo ssreff">
-                                <span class="labelbonusreff">Bonus</span>
+                                <span class="labelbonusreff">cashback</span>
                                 <div class="groupbnsreff">
                                     <div class="listreff">
-                                        <label for="cashback">cashback (%)</label>
+                                        <label for="cashback"> (%)</label>
                                         <input type="number" id="cashback" name="cashback" value="0.2" step="0.1"
                                             placeholder="% cashback">
                                     </div>
@@ -71,6 +71,21 @@
                                         <label for="rollingan">rollingan (%)</label>
                                         <input type="number" id="rollingan" name="rollingan" value="0.2" step="0.1"
                                             placeholder="% rollingan">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="listplayerinfo ssreff">
+                                <span class="labelbonusreff">rollingan</span>
+                                <div class="groupbnsreff">
+                                    <div class="listreff">
+                                        <label for="cashback"> (%)</label>
+                                        <input type="number" id="cashback" name="cashback" value="0.2" step="0.1"
+                                            placeholder="% cashback">
+                                    </div>
+                                    <div class="listreff">
+                                        <label for="rollingan">rollingan (%)</label>
+                                        <input type="number" id="rollingan" name="rollingan" value="0.2"
+                                            step="0.1" placeholder="% rollingan">
                                     </div>
                                 </div>
                             </div>

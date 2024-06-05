@@ -90,6 +90,13 @@
                         </div>
                         <div class="listaccess">
                             <div class="check_box">
+                                <input type="checkbox" id="member_seamless" name="member_seamless" value="on"
+                                    {{ $data->member_seamless ? 'checked' : '' }}>
+                            </div>
+                            <label for="member_seamless">view member seamless</label>
+                        </div>
+                        <div class="listaccess">
+                            <div class="check_box">
                                 <input type="checkbox" id="referral" name="referral" value="on"
                                     {{ $data->referral ? 'checked' : '' }}>
                             </div>
@@ -118,8 +125,8 @@
                         </div>
                         <div class="listaccess">
                             <div class="check_box">
-                                <input type="checkbox" id="cashback_rollingan" name="cashback_rollingan" value="on"
-                                    {{ $data->cashback_rollingan ? 'checked' : '' }}>
+                                <input type="checkbox" id="cashback_rollingan" name="cashback_rollingan"
+                                    value="on" {{ $data->cashback_rollingan ? 'checked' : '' }}>
                             </div>
                             <label for="cashback_rollingan">view cashback/rollingan</label>
                         </div>
@@ -143,6 +150,13 @@
                                     {{ $data->bank ? 'checked' : '' }}>
                             </div>
                             <label for="bank">view bank</label>
+                        </div>
+                        <div class="listaccess">
+                            <div class="check_box">
+                                <input type="checkbox" id="refeerral_bonus" name="refeerral_bonus" value="on"
+                                    {{ $data->refeerral_bonus ? 'checked' : '' }}>
+                            </div>
+                            <label for="refeerral_bonus">view bonus setting</label>
                         </div>
                         <div class="listaccess">
                             <div class="check_box">

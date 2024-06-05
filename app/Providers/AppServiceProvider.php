@@ -118,12 +118,11 @@ class AppServiceProvider extends ServiceProvider
         });
         Gate::define('seamless', function (User $user) {
             $user = $this->userAndUserAccess();
-            dd($user);
-            return $user['user_access']['seamless'] === 1;
+            return $user['user_access']['member_seamless'] === 1;
         });
-        Gate::define('referral_bonus', function (User $user) {
+        Gate::define('refeerral_bonus', function (User $user) {
             $user = $this->userAndUserAccess();
-            return $user['user_access']['referral_bonus'] === 1;
+            return $user['user_access']['refeerral_bonus'] === 1;
         });
     }
 
@@ -189,8 +188,8 @@ class AppServiceProvider extends ServiceProvider
                     'content' => 1,
                     'apk_setting' => 1,
                     'memo_other' => 1,
-                    'seamless' => 1,
-                    'referral_bonus' => 1,
+                    'member_seamless' => 1,
+                    'refeerral_bonus' => 1,
                 ];
             }
             return $result;

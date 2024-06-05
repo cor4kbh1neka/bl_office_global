@@ -200,7 +200,7 @@
         </div>
     @endcanany
 
-    @canany(['bank', 'referral_bonus', 'memo'])
+    @canany(['bank', 'refeerral_bonus', 'memo'])
         <div class="nav_group">
             <span class="title_Nav">GENERAL CONFIG</span>
             <div class="list_sidejsx">
@@ -215,8 +215,8 @@
                         </a>
                     </div>
                 @endcan
-                @can('referral_bonus')
-                    <div class="data_sidejsx {{ Request::is('referral_bonus*') ? 'active' : '' }}">
+                @can('refeerral_bonus')
+                    <div class="data_sidejsx {{ Request::is('refeerral_bonus*') ? 'active' : '' }}">
                         <a href="/bonussettingds" id="Player">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                 <path fill="currentColor"

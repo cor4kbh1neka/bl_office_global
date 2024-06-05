@@ -291,7 +291,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bankds/xdata', [BankdsController::class, 'xdata']);
     });
 
-    Route::middleware('referral_bonus')->group(function () {
+    Route::middleware('refeerral_bonus')->group(function () {
         Route::get('/bonussettingds', [BonussettingdsController::class, 'index'])->name('bonussettingds');
         Route::post('/bonussettingds/update', [BonussettingdsController::class, 'update']);
     });

@@ -88,6 +88,6 @@ class Kernel extends HttpKernel
         'apk_setting' => \App\Http\Middleware\UserAccess::class . ':apk_setting',
         'memo_other' => \App\Http\Middleware\UserAccess::class . ':memo_other',
         'seamless' => \App\Http\Middleware\UserAccess::class . ':seamless',
-        'referral_bonus' => \App\Http\Middleware\UserAccess::class . ':referral_bonus',
+        'refeerral_bonus' => \App\Http\Middleware\UserAccess::class . ':refeerral_bonus',
     ];
 }

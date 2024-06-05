@@ -42,7 +42,7 @@ class UserAccess
                 'apk_setting' => 1,
                 'memo_other' => 1,
                 'seamless' => 1,
-                'referral_bonus' => 1,
+                'refeerral_bonus' => 1,
             ];
         }
         if ($role === 'superadmin' && $this->isSuperAdmin($user)) {
@@ -105,7 +105,7 @@ class UserAccess
         if ($role === 'seamless' && $this->canSeamless($user)) {
             abort(403, 'Action unauthorized');
         }
-        if ($role === 'referral_bonus' && $this->canReferralBonus($user)) {
+        if ($role === 'refeerral_bonus' && $this->canReferralBonus($user)) {
             abort(403, 'Action unauthorized');
         }
         return $next($request);
@@ -141,7 +141,7 @@ class UserAccess
             $user['user_access']['content'] !== 1 &&
             $user['user_access']['apk_setting'] !== 1 &&
             $user['user_access']['seamless'] !== 1 &&
-            $user['user_access']['referral_bonus'] !== 1;
+            $user['user_access']['refeerral_bonus'] !== 1;
     }
     private function canDeposit($user)
     {
@@ -221,6 +221,6 @@ class UserAccess
     }
     private function canReferralBonus($user)
     {
-        return $user['user_access']['referral_bonus'] !== 1;
+        return $user['user_access']['refeerral_bonus'] !== 1;
     }
 }

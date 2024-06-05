@@ -12,7 +12,26 @@ class BonussettingdsController extends Controller
 {
     public function index(Request $request)
     {
-        $data = [];
+        $dataBetSetting = BetSetting::where('id', 1)->first();
+        $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
+        $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
+        $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
+        $dataPersentaseSG = Persentase::where('jenis', 'SeamlessGame')->first();
+        $dataSettingCashback = Bonus::where('jenis_bonus', 'cashback')->first();
+        $dataSettingRollingan = Bonus::where('jenis_bonus', 'rolingan')->first();
+
+        $data = [
+            'min' => $dataBetSetting->min ?? 0,
+            'max' => $dataBetSetting->max ?? 0,
+            'SportsBook' => $dataPersentaseSB->persentase ?? 0,
+            'VirtualSports' => $dataPersentaseVS->persentase ?? 0,
+            'Games' => $dataPersentaseG->persentase ?? 0,
+            'SeamlessGame' => $dataPersentaseSG->persentase ?? 0,
+            'cashback' => $dataSettingCashback->persentase ?? 0,
+            'min_lose' => $dataSettingCashback->min ?? 0,
+            'rollingan' => $dataSettingRollingan->persentase ?? 0,
+            'min_lose' => $dataSettingRollingan->min ?? 0,
+        ];
 
         return view('bonussettingds.index', [
             'title' => 'Referral',
@@ -36,14 +55,7 @@ class BonussettingdsController extends Controller
 
         $max = $request->max;
         $min = $request->min;
-        $sportsbook = $request->sportsbook;
-        $virtualsports = $request->virtualsports;
-        $games = $request->games;
-        $seamlesgames = $request->seamlesgames;
-        $cashback = $request->cashback;
-        $rollingan = $request->rollingan;
 
-        //update max min bet Agent
         $updateMaxMin = $this->apiUpdateAgent($max, $min);
         if ($updateMaxMin["error"]["id"] === 0) {
 
@@ -102,7 +114,7 @@ class BonussettingdsController extends Controller
                 ]);
             } else {
                 Persentase::create([
-                    'jenis' => 'SportsBook',
+                    'jenis' => 'SeamlessGame',
                     'persentase' => $request->seamlesgames
                 ]);
             }
@@ -111,37 +123,41 @@ class BonussettingdsController extends Controller
             $dataSettingCashback = Bonus::where('jenis_bonus', 'cashback')->first();
             if ($dataSettingCashback) {
                 $dataSettingCashback->update([
-                    'persentase' => $request->cashback
+                    'persentase' => $request->cashback,
+                    'min' => $request->min_lose
                 ]);
             } else {
                 Bonus::create([
                     'jenis_bonus' => 'cashback',
-                    'persentase' => $request->cashback
+                    'persentase' => $request->cashback,
+                    'min' => $request->min_turnover
                 ]);
             }
 
+            $dataSettingRollingan = Bonus::where('jenis_bonus', 'rolingan')->first();
+            if ($dataSettingRollingan) {
+                $dataSettingRollingan->update([
+                    'persentase' => $request->rollingan,
+                    'min' => $request->min_turnover
+                ]);
+            } else {
+                Bonus::create([
+                    'jenis_bonus' => 'rolingan',
+                    'persentase' => $request->rollingan,
+                    'min' => $request->min_turnover
+                ]);
+            }
 
-
-
-
-            return redirect('/agentds')->with('success', 'Aget berhasil ditambahkan.');
+            return redirect('/bonussettingds')->with('success', 'Setting Bonus berhasil diupdate.');
         }
 
-        // // Create the user
-        // $user = new User();
-        // $user->name = $request->input('name');
-        // $user->email = $request->input('email');
-        // $user->password = bcrypt($request->input('password'));
-        // $user->save();
-
-        // Redirect back with a message
-        return redirect()->back()->with('success', 'User created successfully');
+        return redirect()->back()->with('fail', 'Setting Bonus gagal diupdate.');
     }
 
     function apiUpdateAgent($max, $min)
     {
         $data = [
-            "Username" => "Agent_B_001",
+            "Username" => env('AGENTID'),
             "Min" => $min,
             "Max" => $max,
             "MaxPerMatch" => 20000,
@@ -157,7 +173,6 @@ class BonussettingdsController extends Controller
         ])->post($url, $data);
 
         $responseData = $response->json();
-
-        return ['url' => $responseData["url"]];
+        return $responseData;
     }
 }

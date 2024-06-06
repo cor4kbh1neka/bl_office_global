@@ -1356,10 +1356,9 @@ class ApiBolaController extends Controller
             'balance' => $balance
         ];
 
+        HistoryTransaksi::create($historyData);
 
-        // dd($historyData);
-
-        AddHistoryJob::dispatch($historyData);
+        // AddHistoryJob::dispatch($historyData);
 
         return;
     }

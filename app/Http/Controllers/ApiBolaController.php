@@ -1090,6 +1090,7 @@ class ApiBolaController extends Controller
             $createTransaction = $this->createTransaction($request, 'Betting');
             $crteateStatusTransaction = $this->updateTranStatus($createTransaction->id, 'Running');
         }
+
         if ($crteateStatusTransaction) {
             if ($request->ProductType == 3 && $cekTransaction || $request->ProductType == 7 && $cekTransaction) {
                 $amount = $request->Amount - $dataTransactions->amount;
@@ -1119,8 +1120,9 @@ class ApiBolaController extends Controller
                     //     'kredit' => 0,
                     //     'balance' => $saldoMember
                     // ]);
+
                     $this->addHistoryTranskasi($request->Username, '', $request->TransferCode, $portfolio, $portfolio, 'pemasangan', $request->Amount, 0, $saldoMember);
-                    dd('setp 9');
+
                     /* Create Outstanding */
                     $this->createOutstanding([
                         "transactionid" => $request->TransactionId,
@@ -1353,6 +1355,9 @@ class ApiBolaController extends Controller
             'kredit' => $kredit,
             'balance' => $balance
         ];
+
+
+        dd($historyData);
 
         AddHistoryJob::dispatch($historyData);
 

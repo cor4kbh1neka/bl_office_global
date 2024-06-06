@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\HistoryTransaksi;
+use Illuminate\Support\Facades\Log;
 
 
 class AddHistoryJob implements ShouldQueue
@@ -28,6 +29,7 @@ class AddHistoryJob implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::error('data Request: ' . $this->data);
         HistoryTransaksi::create($this->data);
     }
 }

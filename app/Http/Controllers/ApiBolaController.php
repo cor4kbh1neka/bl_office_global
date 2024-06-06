@@ -1061,37 +1061,46 @@ class ApiBolaController extends Controller
 
         if ($cekTransaction) {
             if ($request->ProductType == 3 || $request->ProductType == 7) {
+                dd('step -2');
                 $cekLastStatus = TransactionStatus::where('trans_id', $cekTransaction->id)->orderBy('created_at', 'DESC')->orderBy('urutan', 'DESC')->first();
 
                 if ($cekLastStatus->status == 'Running') {
+                    dd('step -1');
                     $totalTransaction = TransactionSaldo::where('transtatus_id', $cekLastStatus->id)->sum('amount');
                     if (!($request->Amount > $totalTransaction)) {
+                        dd('step 0');
                         return $this->errorResponse($request->Username, 7);
                     }
                 } else {
+                    dd('step 1');
                     return $this->errorResponse($request->Username, 5003);
                 }
 
                 $dataTransactions = TransactionSaldo::where('transtatus_id', $cekLastStatus->id)->first();
                 $saldoMember = $saldoMember + $dataTransactions->amount;
             } else {
+                dd('step 2');
                 return $this->errorResponse($request->Username, 5003);
             }
         }
 
         if ($saldoMember < $request->Amount) {
+            dd('step 3');
             return $this->errorResponse($request->Username, 5);
         }
 
         if (($request->ProductType == 3 || $request->ProductType == 7) && $cekTransaction) {
+            dd('step 4');
             $createTransaction = $cekTransaction;
             $crteateStatusTransaction = $cekLastStatus;
         } else {
+            dd('step 5');
             $createTransaction = $this->createTransaction($request, 'Betting');
             $crteateStatusTransaction = $this->updateTranStatus($createTransaction->id, 'Running');
         }
-
+        dd('step 6');
         if ($crteateStatusTransaction) {
+            dd('step 7');
             if ($request->ProductType == 3 && $cekTransaction || $request->ProductType == 7 && $cekTransaction) {
                 $amount = $request->Amount - $dataTransactions->amount;
                 $saldoTransaction = $this->createSaldoTransaction($crteateStatusTransaction->id, '-', "W", $amount, 1);
@@ -1102,6 +1111,7 @@ class ApiBolaController extends Controller
 
             if ($saldoTransaction) {
                 /* Process Deduct / Saldo */
+                dd('step 8');
                 $porcessBalance = $this->processBalance($request->Username, 'WD', $amount);
                 if ($porcessBalance["status"] === 'success') {
                     /* Create Queue Job History Transkasi */
@@ -1122,7 +1132,7 @@ class ApiBolaController extends Controller
                     // ]);
 
                     $this->addHistoryTranskasi($request->Username, '', $request->TransferCode, $portfolio, $portfolio, 'pemasangan', $request->Amount, 0, $saldoMember);
-
+                    dd('setp 9');
                     /* Create Outstanding */
                     $this->createOutstanding([
                         "transactionid" => $request->TransactionId,

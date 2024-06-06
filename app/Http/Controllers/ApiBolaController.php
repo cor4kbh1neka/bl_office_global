@@ -329,21 +329,20 @@ class ApiBolaController extends Controller
     /* ====================== Validasi SBO ======================= */
     private function validasiSBO(Request $request)
     {
-        dd($request->username);
-        if ($request->username == '') {
-            return $this->errorResponse($request->username, 3);
+        if ($request->Username == '') {
+            return $this->errorResponse($request->Username, 3);
         }
 
-        $member = MemberAktif::where('username', $request->username)->first();
+        $member = MemberAktif::where('Username', $request->Username)->first();
         if (!$member) {
-            $member = Member::where('username', $request->username)->first();
+            $member = Member::where('Username', $request->Username)->first();
             if (!$member) {
-                return $this->errorResponse($request->username, 1);
+                return $this->errorResponse($request->Username, 1);
             }
         }
 
         if ($request->CompanyKey != env('COMPANY_KEY')) {
-            return $this->errorResponse($request->username, 4);
+            return $this->errorResponse($request->Username, 4);
         }
 
         return;

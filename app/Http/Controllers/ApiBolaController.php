@@ -59,8 +59,10 @@ class ApiBolaController extends Controller
 
     public function GetBetStatus(Request $request)
     {
-        $username = explode(env('UNIX_CODE'), $request->Username)[1];
-        $request->merge(['Username' => $username]);
+        if ($request->Username != '') {
+            $username = explode(env('UNIX_CODE'), $request->Username)[1];
+            $request->merge(['Username' => $username]);
+        }
 
         $validasiSBO = $this->validasiSBO($request);
         if ($validasiSBO) {

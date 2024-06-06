@@ -32,6 +32,7 @@ class ApiBolaController extends Controller
 {
     public function GetBalance(Request $request)
     {
+        dd($request->Username);
         $username = explode(env('UNIX_CODE'), $request->Username)[1];
         $request->merge(['Username' => $username]);
 

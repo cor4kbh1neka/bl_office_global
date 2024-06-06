@@ -89,7 +89,7 @@ class ApiBolaController extends Controller
     {
         $username = explode(env('UNIX_CODE'), $request->Username)[1];
         $request->merge(['Username' => $username]);
-
+        dd($request->Username);
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];

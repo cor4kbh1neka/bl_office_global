@@ -465,7 +465,7 @@ class DepoWdController extends Controller
                         }
                         $attempt4404++;
                     }
-
+                    dd($resultsApi["error"]["id"]);
                     if ($resultsApi["error"]["id"] !== 0 && $resultsApi["error"]["id"] !== 4404) {
                         $updateStatusTransaction->update([
                             'status' => 0,

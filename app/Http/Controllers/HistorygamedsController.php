@@ -75,7 +75,7 @@ class HistorygamedsController extends Controller
 
         if ($username != '' && $refNo == '') {
             $data = $this->requestApi('get-bet-list-by-modify-date', [
-                'username' => $username,
+                'username' => env('UNIX_CODE') . $username,
                 'portfolio' => $portfolio,
                 'startDate' => $startDate . 'T00:00:00.540Z',
                 'endDate' => $endDate . 'T23:59:59.540Z',

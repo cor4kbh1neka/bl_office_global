@@ -53,7 +53,7 @@ class AgentsController extends Controller
         } else {
             try {
                 $dataRegisterAgent = [
-                    "Username" => $request->username,
+                    "Username" => env('UNIX_CODE') . $request->username,
                     "Password" => $request->password,
                     "Currency" => $request->currency,
                     "Min" => $request->min,

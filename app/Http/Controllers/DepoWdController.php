@@ -152,7 +152,7 @@ class DepoWdController extends Controller
 
                 if ($result) {
                     $dataAPI = [
-                        "Username" => $result->username,
+                        "Username" => env('UNIX_CODE') . $result->username,
                         "TxnId" => $result->txnid,
                         "Amount" => $result->amount,
                         "CompanyKey" => env('COMPANY_KEY'),
@@ -238,7 +238,7 @@ class DepoWdController extends Controller
 
                         if ($dataDepo->jenis !== 'WD') {
                             $dataAPI = [
-                                "Username" => $dataDepo->username,
+                                "Username" => env('UNIX_CODE') . $dataDepo->username,
                                 "TxnId" => $txnid,
                                 "Amount" => $dataDepo->amount,
                                 "CompanyKey" => env('COMPANY_KEY'),
@@ -287,16 +287,36 @@ class DepoWdController extends Controller
                                             "txnid" => $txnid
                                         ]);
 
-                                        /* Proses Deduct Saldo */
                                         $prosesBalance = $this->processBalance($dataDepo->username, 'DP', $dataDepo->amount);
 
                                         /* Create History Depo */
                                         $this->addDataHistory($dataDepo->username, $txnid, '', 'deposit', 'deposit', 0, $dataDepo->amount, $prosesBalance["balance"]);
+
+                                        /* Win Loss DP */
+                                        $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "deposit");
+
+                                        /* Delete Notif */
+                                        $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
+                                        if ($dataToDelete) {
+                                            $dataToDelete->delete();
+                                        }
+
+                                        DepoWd::where('id', $id)->update(['txnid' => $txnid]);
+                                        $dataMember = Member::where('username', $dataDepo->username)
+                                            ->where('status', 9)
+                                            ->where('is_notnew', true)
+                                            ->first();
+
+                                        if ($dataMember) {
+                                            $dataMember->update([
+                                                'status' => 1
+                                            ]);
+                                        }
                                     }
                                     $attempt4404++;
                                 }
 
-                                if ($resultsApi["error"]["id"] !== 0) {
+                                if ($resultsApi["error"]["id"] !== 0 && $resultsApi["error"]["id"] === 4404) {
                                     $dataDepo->update(['status' => 0, 'approved_by' => '']);
 
                                     return back()->withInput()->with('error', $resultsApi["error"]["msg"]);
@@ -439,7 +459,7 @@ class DepoWdController extends Controller
 
                     /* Proses Pengembalian Dana*/
                     $dataAPI = [
-                        "Username" => $updateStatusTransaction->username,
+                        "Username" => env('UNIX_CODE') . $updateStatusTransaction->username,
                         // "TxnId" => $txnid,
                         "TxnId" => 'W3AIQBE32TA',
                         "Amount" => $updateStatusTransaction->amount,

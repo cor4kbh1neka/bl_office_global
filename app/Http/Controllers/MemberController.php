@@ -67,7 +67,7 @@ class MemberController extends Controller
 
         if ($resultReqApi["status"] === "success") {
             $dataSeamless = [
-                'Username' => $resultReqApi["data"]["addedUser"]["username"],
+                'Username' => env('UNIX_CODE') . $resultReqApi["data"]["addedUser"]["username"],
                 'UserGroup' => 'c',
                 "Agent" => env('AGENTID'),
                 'CompanyKey' => env('COMPANY_KEY'),
@@ -210,7 +210,7 @@ class MemberController extends Controller
         ]);
 
         $results = $this->reqApiUpdateMaxMinBet([
-            'Username' => $request->xyusernamexxy,
+            'Username' => env('UNIX_CODE') . $request->xyusernamexxy,
             'Min' => $request->min_bet,
             'Max' => $request->max_bet,
             "MaxPerMatch" => 2000,

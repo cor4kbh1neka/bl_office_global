@@ -52,25 +52,25 @@ class OutstandingdsController extends Controller
         ]);
     }
 
-    private function requestApi($endpoint, $data)
-    {
-        $url = env('BODOMAIN') . '/web-root/restricted/report/' . $endpoint . '.aspx';
+    // private function requestApi($endpoint, $data)
+    // {
+    //     $url = env('BODOMAIN') . '/web-root/restricted/report/' . $endpoint . '.aspx';
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json; charset=UTF-8',
-        ])->post($url, $data);
+    //     $response = Http::withHeaders([
+    //         'Content-Type' => 'application/json; charset=UTF-8',
+    //     ])->post($url, $data);
 
-        if ($response->successful()) {
-            $responseData = $response->json();
-        } else {
-            // $statusCode = $response->status();
-            // $errorMessage = $response->body();
-            // $responseData = "Error: $statusCode - $errorMessage";
-            $responseData = $response->json();
-        }
+    //     if ($response->successful()) {
+    //         $responseData = $response->json();
+    //     } else {
+    //         // $statusCode = $response->status();
+    //         // $errorMessage = $response->body();
+    //         // $responseData = "Error: $statusCode - $errorMessage";
+    //         $responseData = $response->json();
+    //     }
 
-        return $responseData;
-    }
+    //     return $responseData;
+    // }
     public function paginate($data, $page)
     {
         $query = collect($data);

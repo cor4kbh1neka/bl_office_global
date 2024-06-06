@@ -197,7 +197,7 @@ class BonusdsController extends Controller
     private function getApi($username, $portfolio, $gabungdari, $gabunghingga)
     {
         $data = [
-            "username" => $username,
+            "username" => env('UNIX_CODE') . $username,
             "portfolio" => $portfolio,
             "startDate" => $gabungdari . "T00:00:00.540Z",
             "endDate" => $gabunghingga . "T23:59:59.540Z",
@@ -268,7 +268,6 @@ class BonusdsController extends Controller
                     $attempt4404 = 0;
                     while ($prosesApiDepo["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
                         $txnid = $this->generateTxnid('D');
-                        $data["txnId"] = $txnid;
                         $resultsApi = $this->apiDepo($d['username'], $d['bonus'], $txnid);
                         if ($resultsApi["error"]["id"] === 0) {
                             // 2.create DepoWd DPM
@@ -327,7 +326,7 @@ class BonusdsController extends Controller
     private function apiDepo($username, $amount, $txnid)
     {
         $data = [
-            "Username" => $username,
+            "Username" => env('UNIX_CODE') . $username,
             "TxnId" => $txnid,
             "Amount" => $amount,
             'companyKey' => env('COMPANY_KEY'),

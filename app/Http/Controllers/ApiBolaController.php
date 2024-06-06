@@ -33,8 +33,9 @@ class ApiBolaController extends Controller
     public function GetBalance(Request $request)
     {
         $username = explode("G1bl_", $request->Username)[1];
-        $request->merge(['Username' => $username]);
         return $request->Username . ' ' . $username;
+        $request->merge(['Username' => $username]);
+
         $validasiSBO = $this->validasiSBO($request);
         if ($validasiSBO) {
             return $validasiSBO;

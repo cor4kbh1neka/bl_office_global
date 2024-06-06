@@ -43,7 +43,7 @@ class ApiBolaController extends Controller
         $saldo = Balance::where('username', $request->Username)->first()->amount + 0;
 
         return [
-            "AccountName" => $request->Username,
+            "AccountName" => env('UNIX_CODE') . $request->Username,
             "Balance" => $saldo,
             "ErrorCode" => 0,
             "ErrorMessage" => "No Error"
@@ -89,7 +89,7 @@ class ApiBolaController extends Controller
     {
         $username = explode(env('UNIX_CODE'), $request->Username)[1];
         $request->merge(['Username' => $username]);
-        dd($request->Username);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];

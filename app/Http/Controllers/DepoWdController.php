@@ -280,7 +280,7 @@ class DepoWdController extends Controller
                                 $attempt4404 = 0;
                                 while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
                                     $txnid = $this->generateTxnid('D');
-                                    $data["TxnId"] = $txnid;
+                                    $dataAPI["TxnId"] = $txnid;
                                     $resultsApi = $this->requestApi('deposit', $dataAPI);
                                     if ($resultsApi["error"]["id"] === 0) {
                                         $dataDepo->update([

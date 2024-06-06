@@ -460,8 +460,8 @@ class DepoWdController extends Controller
                     /* Proses Pengembalian Dana*/
                     $dataAPI = [
                         "Username" => env('UNIX_CODE') . $updateStatusTransaction->username,
-                        // "TxnId" => $txnid,
-                        "TxnId" => 'W3AIQBE32TA',
+                        "TxnId" => $txnid,
+                        // "TxnId" => 'W3AIQBE32TA',
                         "Amount" => $updateStatusTransaction->amount,
                         "CompanyKey" => env('COMPANY_KEY'),
                         "ServerId" => env('SERVERID')

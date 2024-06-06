@@ -447,7 +447,7 @@ class DepoWdController extends Controller
                         "ServerId" => env('SERVERID')
                     ];
                     $resultsApi = $this->requestApi('deposit', $dataAPI);
-
+                    dd($resultsApi);
                     if ($resultsApi["error"]["id"] === 0) {
                         $this->processBalance($updateStatusTransaction->username, 'DP', $updateStatusTransaction->amount);
                     }

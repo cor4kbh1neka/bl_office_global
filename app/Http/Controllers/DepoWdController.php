@@ -447,7 +447,7 @@ class DepoWdController extends Controller
                         "ServerId" => env('SERVERID')
                     ];
                     $resultsApi = $this->requestApi('deposit', $dataAPI);
-                    dd($resultsApi);
+
                     if ($resultsApi["error"]["id"] === 0) {
                         $this->processBalance($updateStatusTransaction->username, 'DP', $updateStatusTransaction->amount);
                     }
@@ -466,7 +466,7 @@ class DepoWdController extends Controller
                         $attempt4404++;
                     }
 
-                    if ($resultsApi["error"]["id"] !== 0) {
+                    if ($resultsApi["error"]["id"] !== 0 && $resultsApi["error"]["id"] !== 4404) {
                         $updateStatusTransaction->update([
                             'status' => 0,
                             'approved_by' => ''

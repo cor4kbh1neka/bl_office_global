@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CashbackRollinganExport;
+use App\Models\ListError;
 
 class BonusdsController extends Controller
 {
@@ -285,6 +286,9 @@ class BonusdsController extends Controller
                             $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $d['bonus'], $prosesBalance["balance"]);
                         }
                         $attempt4404++;
+                    }
+
+                    if ($prosesApiDepo["error"]["id"] !== 0) {
                     }
                 }
             }

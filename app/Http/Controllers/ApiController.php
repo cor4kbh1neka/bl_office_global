@@ -455,6 +455,12 @@ class ApiController extends Controller
                             DepoWd::where('id', $dataWD->id)->update([
                                 "txnid" => $txnid
                             ]);
+                            $this->processBalance($dataWD->username, 'WD', $dataWD->amount);
+
+                            return response()->json([
+                                'status' => 'Success',
+                                'message' => 'Withdrawal sedang diproses'
+                            ]);
                         }
                         $attempt4404++;
                     }

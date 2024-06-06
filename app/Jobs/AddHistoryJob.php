@@ -29,7 +29,6 @@ class AddHistoryJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::error('data Request: ' . $this->data);
         HistoryTransaksi::create($this->data);
     }
 }

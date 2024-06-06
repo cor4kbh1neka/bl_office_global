@@ -32,7 +32,7 @@ class ApiBolaController extends Controller
 {
     public function GetBalance(Request $request)
     {
-        $username = str_replace("G1bl_", "", $request->Username);
+        $username = explode("G1bl_", $request->Username)[1];
         $request->merge(['Username' => $username]);
 
         $validasiSBO = $this->validasiSBO($request);
@@ -52,7 +52,7 @@ class ApiBolaController extends Controller
 
     public function GetBetStatus(Request $request)
     {
-        $username = str_replace("G1bl_", "", $request->Username);
+        $username = explode("G1bl_", $request->Username)[1];
         $request->merge(['Username' => $username]);
 
         $validasiSBO = $this->validasiSBO($request);
@@ -87,7 +87,7 @@ class ApiBolaController extends Controller
 
     public function Deduct(Request $request)
     {
-        $username = str_replace("G1bl_", "", $request->Username);
+        $username = explode("G1bl_", $request->Username)[1];
         $request->merge(['Username' => $username]);
 
         $saldoMember = $this->GetBalance($request);
@@ -102,7 +102,7 @@ class ApiBolaController extends Controller
 
     public function Settle(Request $request)
     {
-        $username = str_replace("G1bl_", "", $request->Username);
+        $username = explode("G1bl_", $request->Username)[1];
         $request->merge(['Username' => $username]);
 
         $saldoMember = $this->GetBalance($request);
@@ -126,7 +126,7 @@ class ApiBolaController extends Controller
 
     public function Cancel(Request $request)
     {
-        $username = str_replace("G1bl_", "", $request->Username);
+        $username = explode("G1bl_", $request->Username)[1];
         $request->merge(['Username' => $username]);
 
         $saldoMember = $this->GetBalance($request);
@@ -160,7 +160,7 @@ class ApiBolaController extends Controller
 
     public function Rollback(Request $request)
     {
-        $username = str_replace("G1bl_", "", $request->Username);
+        $username = explode("G1bl_", $request->Username)[1];
         $request->merge(['Username' => $username]);
 
         $saldoMember = $this->GetBalance($request);
@@ -194,7 +194,7 @@ class ApiBolaController extends Controller
 
     public function Bonus(Request $request)
     {
-        $username = str_replace("G1bl_", "", $request->Username);
+        $username = explode("G1bl_", $request->Username)[1];
         $request->merge(['Username' => $username]);
 
         $saldoMember = $saldo = Balance::where('username', $request->Username)->first()->amount + 0;
@@ -249,7 +249,7 @@ class ApiBolaController extends Controller
 
     public function ReturnStake(Request $request)
     {
-        $username = str_replace("G1bl_", "", $request->Username);
+        $username = explode("G1bl_", $request->Username)[1];
         $request->merge(['Username' => $username]);
 
         $saldoMember = Balance::where('username', $request->Username)->first()->amount + 0;

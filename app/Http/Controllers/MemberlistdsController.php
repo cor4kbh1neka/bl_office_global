@@ -367,7 +367,7 @@ class MemberlistdsController extends Controller
             $rek = $cekDataCoreUser["data"]["datauser"]["xxybanknumberxy"];
 
             $dataapi = [
-                "Username" => $username,
+                "Username" => env('UNIX_CODE') . $username,
                 "CompanyKey" => env('COMPANY_KEY'),
                 "ServerId" => env('SERVERID')
             ];
@@ -394,7 +394,7 @@ class MemberlistdsController extends Controller
     private function createUser($username, $bank, $namarek, $rek)
     {
         $data = [
-            "Username" => $username,
+            "Username" => env('UNIX_CODE') . $username,
             "UserGroup" => "c",
             "Agent" => env('AGENTID'),
             "CompanyKey" => env('COMPANY_KEY'),

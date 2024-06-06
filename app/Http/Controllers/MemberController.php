@@ -67,7 +67,7 @@ class MemberController extends Controller
 
         if ($resultReqApi["status"] === "success") {
             $dataSeamless = [
-                'Username' => $resultReqApi["data"]["addedUser"]["username"],
+                'Username' => env('UNIX_CODE') . $resultReqApi["data"]["addedUser"]["username"],
                 'UserGroup' => 'c',
                 "Agent" => env('AGENTID'),
                 'CompanyKey' => env('COMPANY_KEY'),
@@ -129,8 +129,14 @@ class MemberController extends Controller
             'xxybanknumberxy' => $request->xxybanknumberxy,
         ];
 
+
+        // $responseexcgroupbankWd = Http::withHeaders([
+        //     'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        // ])->get(env('DOMAIN') . '/banks/exc/' . $groupwd);
+
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->put(env('DOMAIN') . '/users/' . $request->xyusernamexxy, $data);
 
         if ($response->successful()) {
@@ -169,6 +175,7 @@ class MemberController extends Controller
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->put(env('DOMAIN') . '/users/pswdy/' . $request->xyusernamexxy, $data);
 
         if ($response->successful()) {
@@ -203,7 +210,7 @@ class MemberController extends Controller
         ]);
 
         $results = $this->reqApiUpdateMaxMinBet([
-            'Username' => $request->xyusernamexxy,
+            'Username' => env('UNIX_CODE') . $request->xyusernamexxy,
             'Min' => $request->min_bet,
             'Max' => $request->max_bet,
             "MaxPerMatch" => 2000,
@@ -240,6 +247,7 @@ class MemberController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->post(env('DOMAIN') . '/users', $req);
 
         if ($response->successful()) {
@@ -257,6 +265,7 @@ class MemberController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->post(env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx', $req);
 
         if ($response->successful()) {
@@ -274,6 +283,7 @@ class MemberController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->post(env('BODOMAIN') . '/web-root/restricted/player/update-player-bet-settings.aspx', $req);
 
         if ($response->successful()) {
@@ -291,6 +301,7 @@ class MemberController extends Controller
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/users/' . $username);
 
         if ($response->successful()) {

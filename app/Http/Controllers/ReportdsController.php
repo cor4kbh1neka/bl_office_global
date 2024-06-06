@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\WinLossMemberExport;
 
 class ReportdsController extends Controller
 {
@@ -24,20 +22,6 @@ class ReportdsController extends Controller
         $data = $this->getDataWinLoss($request);
         $dataAmount = $this->getAmountUser($request);
 
-        $data = $this->getDataWinLossMember($data, $dataAmount, $username, $portfolio, $startDate, $endDate);
-        return view('reportds.index', [
-            'title' => 'Report',
-            'data' => $data,
-            'totalnote' => 0,
-            'username' => $username,
-            'portfolio' => $portfolio,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-        ]);
-    }
-
-    private function getDataWinLossMember($data, $dataAmount, $username)
-    {
         if ($data != null) {
             foreach ($data as &$element) {
                 $username = $element['username'];
@@ -60,7 +44,16 @@ class ReportdsController extends Controller
         } else {
             $data = [];
         }
-        return $data;
+
+        return view('reportds.index', [
+            'title' => 'Report',
+            'data' => $data,
+            'totalnote' => 0,
+            'username' => $username,
+            'portfolio' => $portfolio,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ]);
     }
 
     private function getDataWinLoss(Request $request)
@@ -71,7 +64,7 @@ class ReportdsController extends Controller
         $endDate = $request->query('endDate');
 
         $data = [
-            'username' => $username,
+            'username' => env('UNIX_CODE') . $username,
             'portfolio' => $portfolio,
             'startDate' => $startDate . 'T00:00:00.540Z',
             'endDate' => $endDate . 'T23:59:59.540Z',
@@ -95,7 +88,7 @@ class ReportdsController extends Controller
     {
         $username = $request->query('username');
         $data = [
-            'Username' => $username,
+            'Username' => env('UNIX_CODE') . $username,
             "CompanyKey" => env('COMPANY_KEY'),
             "ServerId" =>  env('SERVERID')
         ];
@@ -149,7 +142,7 @@ class ReportdsController extends Controller
 
         if ($username != '' && $refNo == '') {
             $data = $this->requestApi('get-bet-list-by-modify-date', [
-                'username' => $username,
+                'username' => env('UNIX_CODE') . $username,
                 'portfolio' => $portfolio,
                 'startDate' => $startDate . 'T00:00:00.540Z',
                 'endDate' => $endDate . 'T23:59:59.540Z',
@@ -243,43 +236,5 @@ class ReportdsController extends Controller
             'title' => 'Report',
             'totalnote' => 0,
         ]);
-    }
-
-    public function export(Request $request)
-    {
-        $username = $request->query('username');
-        $portfolio = $request->query('portfolio');
-        $startDate = $request->query('startDate');
-        $endDate = $request->query('endDate');
-
-        $data = $this->getDataWinLoss($request);
-        $dataAmount = $this->getAmountUser($request);
-
-        $data = $this->getDataWinLossMember($data, $dataAmount, $username, $portfolio, $startDate, $endDate);
-
-        // Assuming $data is an array of arrays here
-        $formattedData = [];
-        foreach ($data as $item) {
-            $formattedData[] = [
-                'username' => $item['username'],
-                'curr' => 'IDR',
-                'amount' => $item['amount'],
-                'valid_amount' => 0,
-                'gross_com' => 0,
-                'referral' => $item['referral'],
-                'winlose' => $item['winlose'],
-                'commission' => $item['commission'],
-                'wlcom' => $item['winlose'] + $item['commission'],
-                'creferral' => $item['referral'] * -1,
-                'cwinlose' => $item['winlose'] * -1,
-                'cwlcom' => ($item['winlose'] + $item['commission']) * -1,
-            ];
-        }
-
-        // Convert the formatted data into a collection
-        $dataCollection = collect($formattedData);
-
-        // Pass the collection to the export class
-        return Excel::download(new WinLossMemberExport($dataCollection), 'Memberlist.xlsx');
     }
 }

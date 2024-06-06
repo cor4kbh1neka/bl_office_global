@@ -34,7 +34,7 @@ class ApiBolaController extends Controller
     {
         $username = str_replace("G1bl_", "", $request->Username);
         $request->merge(['Username' => $username]);
-
+        return $request->Username;
         $validasiSBO = $this->validasiSBO($request);
         if ($validasiSBO) {
             return $validasiSBO;

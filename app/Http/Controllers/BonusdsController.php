@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CashbackRollinganExport;
+use App\Models\ListError;
 
 class BonusdsController extends Controller
 {
@@ -174,13 +175,13 @@ class BonusdsController extends Controller
                 $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
                 if ($bonus == 'cashback') {
                     if ($total <= ($mBonus->min * -1)) {
-                        $result->totalbonus = abs($total) * $mBonus->persentase;
+                        $result->totalbonus = (abs($total) * $mBonus->persentase) / 100;
                     } else {
                         unset($results[$key]);
                     }
                 } else {
                     if ($total >= $mBonus->min) {
-                        $result->totalbonus = $total * $mBonus->persentase;
+                        $result->totalbonus = ($total * $mBonus->persentase) / 100;
                     } else {
                         unset($results[$key]);
                     }
@@ -196,7 +197,7 @@ class BonusdsController extends Controller
     private function getApi($username, $portfolio, $gabungdari, $gabunghingga)
     {
         $data = [
-            "username" => $username,
+            "username" => env('UNIX_CODE') . $username,
             "portfolio" => $portfolio,
             "startDate" => $gabungdari . "T00:00:00.540Z",
             "endDate" => $gabunghingga . "T23:59:59.540Z",
@@ -267,7 +268,6 @@ class BonusdsController extends Controller
                     $attempt4404 = 0;
                     while ($prosesApiDepo["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
                         $txnid = $this->generateTxnid('D');
-                        $data["txnId"] = $txnid;
                         $resultsApi = $this->apiDepo($d['username'], $d['bonus'], $txnid);
                         if ($resultsApi["error"]["id"] === 0) {
                             // 2.create DepoWd DPM
@@ -285,6 +285,9 @@ class BonusdsController extends Controller
                             $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $d['bonus'], $prosesBalance["balance"]);
                         }
                         $attempt4404++;
+                    }
+
+                    if ($prosesApiDepo["error"]["id"] !== 0) {
                     }
                 }
             }
@@ -323,7 +326,7 @@ class BonusdsController extends Controller
     private function apiDepo($username, $amount, $txnid)
     {
         $data = [
-            "Username" => $username,
+            "Username" => env('UNIX_CODE') . $username,
             "TxnId" => $txnid,
             "Amount" => $amount,
             'companyKey' => env('COMPANY_KEY'),

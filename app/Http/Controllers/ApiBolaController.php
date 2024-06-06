@@ -32,6 +32,16 @@ class ApiBolaController extends Controller
 {
     public function GetBalance(Request $request)
     {
+        if ($request->Username != '') {
+            $username = explode(env('UNIX_CODE'), $request->Username);
+            if (isset($username[1])) {
+                $username = $username[1];
+            } else {
+                $username = $username[0];
+            }
+            $request->merge(['Username' => $username]);
+        }
+
         $validasiSBO = $this->validasiSBO($request);
         if ($validasiSBO) {
             return $validasiSBO;
@@ -49,6 +59,11 @@ class ApiBolaController extends Controller
 
     public function GetBetStatus(Request $request)
     {
+        if ($request->Username != '') {
+            $username = explode(env('UNIX_CODE'), $request->Username)[1];
+            $request->merge(['Username' => $username]);
+        }
+
         $validasiSBO = $this->validasiSBO($request);
         if ($validasiSBO) {
             return $validasiSBO;
@@ -81,6 +96,9 @@ class ApiBolaController extends Controller
 
     public function Deduct(Request $request)
     {
+        $username = explode(env('UNIX_CODE'), $request->Username)[1];
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];
@@ -93,6 +111,9 @@ class ApiBolaController extends Controller
 
     public function Settle(Request $request)
     {
+        $username = explode(env('UNIX_CODE'), $request->Username)[1];
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];
@@ -114,6 +135,9 @@ class ApiBolaController extends Controller
 
     public function Cancel(Request $request)
     {
+        $username = explode(env('UNIX_CODE'), $request->Username)[1];
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];
@@ -145,6 +169,9 @@ class ApiBolaController extends Controller
 
     public function Rollback(Request $request)
     {
+        $username = explode(env('UNIX_CODE'), $request->Username)[1];
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];
@@ -176,6 +203,9 @@ class ApiBolaController extends Controller
 
     public function Bonus(Request $request)
     {
+        $username = explode(env('UNIX_CODE'), $request->Username)[1];
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $saldo = Balance::where('username', $request->Username)->first()->amount + 0;
 
         $cekTransaction = Transactions::where('transfercode', $request->TransferCode)->first();
@@ -214,7 +244,7 @@ class ApiBolaController extends Controller
 
                 $saldo = $saldoMember;
                 return response()->json([
-                    'AccountName' => $request->Username,
+                    "AccountName" => $request->Username,
                     'Balance' => $saldo,
                     'ErrorCode' => 0,
                     'ErrorMessage' => 'No Error'
@@ -228,6 +258,9 @@ class ApiBolaController extends Controller
 
     public function ReturnStake(Request $request)
     {
+        $username = explode(env('UNIX_CODE'), $request->Username)[1];
+        $request->merge(['Username' => $username]);
+
         $saldoMember = Balance::where('username', $request->Username)->first()->amount + 0;
 
         $cekTransaction = Transactions::where('transactionid', $request->TransactionId)->first();
@@ -271,7 +304,7 @@ class ApiBolaController extends Controller
 
                     $saldo = $saldoMember;
                     return response()->json([
-                        'AccountName' => $request->Username,
+                        "AccountName" => $request->Username,
                         'Balance' => $saldo,
                         'ErrorCode' => 0,
                         'ErrorMessage' => 'No Error'
@@ -309,9 +342,9 @@ class ApiBolaController extends Controller
             return $this->errorResponse($request->Username, 3);
         }
 
-        $member = MemberAktif::where('username', $request->Username)->first();
+        $member = MemberAktif::where('Username', $request->Username)->first();
         if (!$member) {
-            $member = Member::where('username', $request->Username)->first();
+            $member = Member::where('Username', $request->Username)->first();
             if (!$member) {
                 return $this->errorResponse($request->Username, 1);
             }
@@ -398,7 +431,7 @@ class ApiBolaController extends Controller
 
                     $saldo = $saldoMember;
                     return response()->json([
-                        'AccountName' => $request->Username,
+                        "AccountName" => $request->Username,
                         'Balance' => $saldo,
                         'ErrorCode' => 0,
                         'ErrorMessage' => 'No Error'
@@ -687,7 +720,7 @@ class ApiBolaController extends Controller
 
             $saldo = $saldoMember;
             return response()->json([
-                'AccountName' => $request->Username,
+                "AccountName" => $request->Username,
                 'Balance' => $saldo,
                 'ErrorCode' => 0,
                 'ErrorMessage' => 'No Error'
@@ -882,7 +915,7 @@ class ApiBolaController extends Controller
 
                     $saldo = $saldoMember;
                     return [
-                        'AccountName' => $request->Username,
+                        "AccountName" => $request->Username,
                         'Balance' => $saldo,
                         'ErrorCode' => 0,
                         'ErrorMessage' => 'No Error'
@@ -913,7 +946,7 @@ class ApiBolaController extends Controller
                 $persentase = Persentase::where('jenis', $portfolio)->first();
                 $persentase = $persentase ? $persentase->persentase : 0;
 
-                $referralAmount = $amount * $persentase;
+                $referralAmount = $amount * $persentase / 100;
                 if ($referralAmount > 0) {
                     $depositReferral = $this->processBalance($dataAktif->referral, 'DP', $referralAmount);
                     if ($depositReferral["status"] === "success") {
@@ -1103,7 +1136,7 @@ class ApiBolaController extends Controller
 
                     $saldo = $saldoMember;
                     return [
-                        'AccountName' => $request->Username,
+                        "AccountName" => $request->Username,
                         'Balance' => $saldo,
                         'ErrorCode' => 0,
                         'ErrorMessage' => 'No Error'

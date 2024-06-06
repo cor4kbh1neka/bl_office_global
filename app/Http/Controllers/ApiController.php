@@ -51,7 +51,7 @@ class ApiController extends Controller
         }
 
         try {
-            $dataLogin['Username'] = $username;
+            $dataLogin['Username'] = env('UNIX_CODE') . $username;
             $dataLogin['CompanyKey'] = env('COMPANY_KEY');
             $dataLogin['Portfolio'] = env('PORTFOLIO');
             $dataLogin['IsWapSports'] = $iswap;
@@ -166,7 +166,7 @@ class ApiController extends Controller
 
         if ($responseCore["status"] === "success") {
             $data = [
-                "Username" => $request->Username,
+                "Username" => env('UNIX_CODE') . $request->Username,
                 "UserGroup" => "c",
                 "Agent" => env('AGENTID'),
                 "CompanyKey" => env('COMPANY_KEY'),
@@ -428,7 +428,7 @@ class ApiController extends Controller
                 if ($dataWD) {
                     Xdpwd::create($data);
                     $dataAPI = [
-                        "Username" => $dataWD->username,
+                        "Username" => env('UNIX_CODE') . $dataWD->username,
                         "TxnId" => $txnid,
                         "Amount" => $dataWD->amount,
                         "CompanyKey" => env('COMPANY_KEY'),
@@ -449,11 +449,17 @@ class ApiController extends Controller
                     $attempt4404 = 0;
                     while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
                         $txnid = $this->generateTxnid('W');
-                        $data["txnId"] = $txnid;
+                        $data["TxnId"] = $txnid;
                         $resultsApi = $this->requestApi('withdraw', $dataAPI);
                         if ($resultsApi["error"]["id"] === 0) {
                             DepoWd::where('id', $dataWD->id)->update([
                                 "txnid" => $txnid
+                            ]);
+                            $this->processBalance($dataWD->username, 'WD', $dataWD->amount);
+
+                            return response()->json([
+                                'status' => 'Success',
+                                'message' => 'Withdrawal sedang diproses'
                             ]);
                         }
                         $attempt4404++;
@@ -742,7 +748,7 @@ class ApiController extends Controller
         $endDate = $request->endDate;
 
         $data = [
-            'username' => $username,
+            'username' => env('UNIX_CODE') . $username,
             'portfolio' => $portfolio,
             'startDate' => $startDate . 'T00:00:00.540Z',
             'endDate' => $endDate . 'T23:59:59.540Z',

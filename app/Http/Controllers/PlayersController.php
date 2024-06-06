@@ -53,7 +53,7 @@ class PlayersController extends Controller
             try {
                 $dataAgent = Agents::where('id', $request->agentid)->first();
                 $dataRegisterPlayer = [
-                    "Username" => $request->username,
+                    "Username" => env('UNIX_CODE') . $request->username,
                     "UserGroup" => $request->usergroup,
                     "Agent" => $dataAgent->username,
                     "CompanyKey" => $dataAgent->companykey,

@@ -32,6 +32,9 @@ class ApiBolaController extends Controller
 {
     public function GetBalance(Request $request)
     {
+        $username = str_replace("G1bl_", "", $request->Username);
+        $request->merge(['Username' => $username]);
+
         $validasiSBO = $this->validasiSBO($request);
         if ($validasiSBO) {
             return $validasiSBO;
@@ -49,6 +52,9 @@ class ApiBolaController extends Controller
 
     public function GetBetStatus(Request $request)
     {
+        $username = str_replace("G1bl_", "", $request->Username);
+        $request->merge(['Username' => $username]);
+
         $validasiSBO = $this->validasiSBO($request);
         if ($validasiSBO) {
             return $validasiSBO;
@@ -81,6 +87,9 @@ class ApiBolaController extends Controller
 
     public function Deduct(Request $request)
     {
+        $username = str_replace("G1bl_", "", $request->Username);
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];
@@ -93,6 +102,9 @@ class ApiBolaController extends Controller
 
     public function Settle(Request $request)
     {
+        $username = str_replace("G1bl_", "", $request->Username);
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];
@@ -114,6 +126,9 @@ class ApiBolaController extends Controller
 
     public function Cancel(Request $request)
     {
+        $username = str_replace("G1bl_", "", $request->Username);
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];
@@ -145,6 +160,9 @@ class ApiBolaController extends Controller
 
     public function Rollback(Request $request)
     {
+        $username = str_replace("G1bl_", "", $request->Username);
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $this->GetBalance($request);
         if ($saldoMember["ErrorCode"] === 0) {
             $saldoMember = $saldoMember["Balance"];
@@ -176,6 +194,9 @@ class ApiBolaController extends Controller
 
     public function Bonus(Request $request)
     {
+        $username = str_replace("G1bl_", "", $request->Username);
+        $request->merge(['Username' => $username]);
+
         $saldoMember = $saldo = Balance::where('username', $request->Username)->first()->amount + 0;
 
         $cekTransaction = Transactions::where('transfercode', $request->TransferCode)->first();
@@ -228,6 +249,9 @@ class ApiBolaController extends Controller
 
     public function ReturnStake(Request $request)
     {
+        $username = str_replace("G1bl_", "", $request->Username);
+        $request->merge(['Username' => $username]);
+
         $saldoMember = Balance::where('username', $request->Username)->first()->amount + 0;
 
         $cekTransaction = Transactions::where('transactionid', $request->TransactionId)->first();
@@ -305,20 +329,20 @@ class ApiBolaController extends Controller
     /* ====================== Validasi SBO ======================= */
     private function validasiSBO(Request $request)
     {
-        if ($request->Username == '') {
-            return $this->errorResponse($request->Username, 3);
+        if ($request->username == '') {
+            return $this->errorResponse($request->username, 3);
         }
 
-        $member = MemberAktif::where('username', $request->Username)->first();
+        $member = MemberAktif::where('username', $request->username)->first();
         if (!$member) {
-            $member = Member::where('username', $request->Username)->first();
+            $member = Member::where('username', $request->username)->first();
             if (!$member) {
-                return $this->errorResponse($request->Username, 1);
+                return $this->errorResponse($request->username, 1);
             }
         }
 
         if ($request->CompanyKey != env('COMPANY_KEY')) {
-            return $this->errorResponse($request->Username, 4);
+            return $this->errorResponse($request->username, 4);
         }
 
         return;

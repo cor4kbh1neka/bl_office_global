@@ -1119,7 +1119,7 @@ class ApiBolaController extends Controller
                     //     'kredit' => 0,
                     //     'balance' => $saldoMember
                     // ]);
-                    dd('setp 9');
+                    dd('setp 8');
                     $this->addHistoryTranskasi($request->Username, '', $request->TransferCode, $portfolio, $portfolio, 'pemasangan', $request->Amount, 0, $saldoMember);
                     dd('setp 9');
                     /* Create Outstanding */

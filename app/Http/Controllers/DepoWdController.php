@@ -280,7 +280,7 @@ class DepoWdController extends Controller
                                 $attempt4404 = 0;
                                 while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
                                     $txnid = $this->generateTxnid('D');
-                                    $data["txnId"] = $txnid;
+                                    $data["TxnId"] = $txnid;
                                     $resultsApi = $this->requestApi('deposit', $dataAPI);
                                     if ($resultsApi["error"]["id"] === 0) {
                                         $dataDepo->update([
@@ -456,8 +456,8 @@ class DepoWdController extends Controller
                     $attempt4404 = 0;
                     while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
                         $txnid = $this->generateTxnid('W');
-                        $data["txnId"] = $txnid;
-                        $resultsApi = $this->requestApi('withdraw', $dataAPI);
+                        $dataAPI["TxnId"] = $txnid;
+                        $resultsApi = $this->requestApi('deposit', $dataAPI);
                         if ($resultsApi["error"]["id"] === 0) {
                             $updateStatusTransaction->update([
                                 "txnid" => $txnid
@@ -465,7 +465,7 @@ class DepoWdController extends Controller
                         }
                         $attempt4404++;
                     }
-                    dd($resultsApi["error"]["id"]);
+
                     if ($resultsApi["error"]["id"] !== 0 && $resultsApi["error"]["id"] !== 4404) {
                         $updateStatusTransaction->update([
                             'status' => 0,

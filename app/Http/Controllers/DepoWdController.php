@@ -224,6 +224,10 @@ class DepoWdController extends Controller
                 }
             }
 
+            if (empty($ids)) {
+                return back()->withInput()->with('error', 'tidak ada data yang dipilih');
+            }
+
             foreach ($ids as $id) {
                 $dataDepo = DepoWd::where('id', $id)->where('status', 0)->first();
                 $txnid = $this->generateTxnid('D');
@@ -416,6 +420,10 @@ class DepoWdController extends Controller
                 }
             }
 
+            if (empty($ids)) {
+                return back()->withInput()->with('error', 'tidak ada data yang dipilih');
+            }
+
             foreach ($ids as $id) {
                 //UPDATE STATUS CANCEL
                 $updateStatusTransaction = DepoWd::where('id', $id)->first();
@@ -432,7 +440,8 @@ class DepoWdController extends Controller
                     /* Proses Pengembalian Dana*/
                     $dataAPI = [
                         "Username" => $updateStatusTransaction->username,
-                        "TxnId" => $txnid,
+                        // "TxnId" => $txnid,
+                        "TxnId" => 'W3AIQBE32TA',
                         "Amount" => $updateStatusTransaction->amount,
                         "CompanyKey" => env('COMPANY_KEY'),
                         "ServerId" => env('SERVERID')
@@ -463,7 +472,7 @@ class DepoWdController extends Controller
                             'approved_by' => ''
                         ]);
 
-                        return back()->withInput()->with('error', $resultsApi["error"]["msg"]);
+                        return back()->withInput()->with('error', 'Rejected gagal');
                     }
                 }
             }
@@ -476,7 +485,7 @@ class DepoWdController extends Controller
 
             if ($jenis == 'DP') {
                 $url = '/depositds';
-                $info = 'Deposit';
+                $info = 'Rejected Deposit';
                 $message = 'Deposit berhasil dibatalkan';
                 return redirect($url)->with('success', [
                     'info' => $info,
@@ -484,7 +493,7 @@ class DepoWdController extends Controller
                 ]);
             } else {
                 $url = '/withdrawds';
-                $info = 'Withdraw';
+                $info = 'Rejecetd Withdraw';
                 $message = 'Withdrawal berhasil dibatalkan';
                 return redirect($url)->with('success', [
                     'info' => $info,

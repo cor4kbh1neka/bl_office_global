@@ -235,7 +235,7 @@ class ApiBolaController extends Controller
 
                 $saldo = $saldoMember;
                 return response()->json([
-                    'AccountName' => $request->Username,
+                    "AccountName" => env('UNIX_CODE') . $request->Username,
                     'Balance' => $saldo,
                     'ErrorCode' => 0,
                     'ErrorMessage' => 'No Error'
@@ -295,7 +295,7 @@ class ApiBolaController extends Controller
 
                     $saldo = $saldoMember;
                     return response()->json([
-                        'AccountName' => $request->Username,
+                        "AccountName" => env('UNIX_CODE') . $request->Username,
                         'Balance' => $saldo,
                         'ErrorCode' => 0,
                         'ErrorMessage' => 'No Error'
@@ -422,7 +422,7 @@ class ApiBolaController extends Controller
 
                     $saldo = $saldoMember;
                     return response()->json([
-                        'AccountName' => $request->Username,
+                        "AccountName" => env('UNIX_CODE') . $request->Username,
                         'Balance' => $saldo,
                         'ErrorCode' => 0,
                         'ErrorMessage' => 'No Error'
@@ -711,7 +711,7 @@ class ApiBolaController extends Controller
 
             $saldo = $saldoMember;
             return response()->json([
-                'AccountName' => $request->Username,
+                "AccountName" => env('UNIX_CODE') . $request->Username,
                 'Balance' => $saldo,
                 'ErrorCode' => 0,
                 'ErrorMessage' => 'No Error'
@@ -906,7 +906,7 @@ class ApiBolaController extends Controller
 
                     $saldo = $saldoMember;
                     return [
-                        'AccountName' => $request->Username,
+                        "AccountName" => env('UNIX_CODE') . $request->Username,
                         'Balance' => $saldo,
                         'ErrorCode' => 0,
                         'ErrorMessage' => 'No Error'
@@ -1127,7 +1127,7 @@ class ApiBolaController extends Controller
 
                     $saldo = $saldoMember;
                     return [
-                        'AccountName' => $request->Username,
+                        "AccountName" => env('UNIX_CODE') . $request->Username,
                         'Balance' => $saldo,
                         'ErrorCode' => 0,
                         'ErrorMessage' => 'No Error'

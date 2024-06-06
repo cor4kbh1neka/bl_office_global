@@ -946,7 +946,7 @@ class ApiBolaController extends Controller
                 $persentase = Persentase::where('jenis', $portfolio)->first();
                 $persentase = $persentase ? $persentase->persentase : 0;
 
-                $referralAmount = $amount * $persentase;
+                $referralAmount = $amount * $persentase / 100;
                 if ($referralAmount > 0) {
                     $depositReferral = $this->processBalance($dataAktif->referral, 'DP', $referralAmount);
                     if ($depositReferral["status"] === "success") {
@@ -1356,7 +1356,6 @@ class ApiBolaController extends Controller
             'balance' => $balance
         ];
 
-        // HistoryTransaksi::create($historyData);
         AddHistoryJob::dispatch($historyData);
 
         return;

@@ -1357,7 +1357,7 @@ class ApiBolaController extends Controller
         ];
 
 
-        dd($historyData);
+        // dd($historyData);
 
         AddHistoryJob::dispatch($historyData);
 

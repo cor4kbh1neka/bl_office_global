@@ -47,6 +47,7 @@ class AddWinlossStakeJob implements ShouldQueue
                 } else {
                     $results['username'] = $username[0];
                 }
+
                 $username = $results['username'];
                 $amount = $results['stake'];
 

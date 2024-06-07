@@ -44,16 +44,11 @@ class ReportdsController extends Controller
         } else {
             $data = [];
         }
-
+        
         if($username != ''){
-            $username = explode(env('UNIX_CODE'), $username);
-            if (isset($username[1])) {
-                $username = $username[1];
-            } else {
-                $username = $username[0];
+            if(!empty($data)){
+                $data[0]['username'] = $username;
             }
-
-            $data[0]['username'] = $username;
         }
         
         return view('reportds.index', [

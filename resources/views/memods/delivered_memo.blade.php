@@ -22,7 +22,7 @@
                     <a href="/memods/delivered" class="tombol grey active">
                         <span class="texttombol">delivered</span>
                     </a>
-                    <a href="/memods/viewinbox" class="tombol grey">
+                    {{-- <a href="/memods/viewinbox" class="tombol grey">
                         <span class="texttombol">inbox</span>
                         <span class="unreadmessage">2</span>
                     </a>
@@ -35,7 +35,7 @@
                             </g>
                         </svg>
                         <span class="texttombol">archive</span>
-                    </a>
+                    </a> --}}
                 </div>
                 <div class="groupdatamemo inbox">
                     <div class="headfilter">
@@ -89,12 +89,13 @@
                                         $startNumber = ($currentPage - 1) * $perPage + 1;
                                     @endphp
                                     @foreach ($data as $index => $d)
+                                    {{-- @dd($d) --}}
                                         <tr>
                                             <td>{{ $startNumber + $index }}</td>
                                             <td>DV{{ sprintf('%06d', $d['idmemo']) }}</td>
                                             <td>{{ $d['statuspriority'] == 1 ? 'All Member' : 'Only VIP' }}</td>
                                             <td>{{ $d['subject'] }}</td>
-                                            <td class="ganti">{{ $d['created_at'] }}</td>
+                                            <td class="ganti">{{ $d['created_at'] == null ? date('Y-m-d') : $d['created_at'] }}</td>
                                             <td>ADMIN GLOBAL BOLA</td>
                                             <td>
                                                 <div class="kolom_action">

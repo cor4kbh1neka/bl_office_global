@@ -44,7 +44,13 @@ class ReportdsController extends Controller
         } else {
             $data = [];
         }
-
+        
+        if($username != ''){
+            if(!empty($data)){
+                $data[0]['username'] = $username;
+            }
+        }
+        
         return view('reportds.index', [
             'title' => 'Report',
             'data' => $data,

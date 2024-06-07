@@ -37,9 +37,17 @@ class AddWinlossStakeJob implements ShouldQueue
             $jenis = $this->data['jenis'];
 
             $response = $this->getApi($transfercode, $portfolio);
-
+            
             if ($response["error"]["id"] === 0) {
                 $results = $response["result"][0];
+
+                $username = explode(env('UNIX_CODE'), $results['username']);
+                if (isset($username[1])) {
+                    $results['username'] = $username[1];
+                } else {
+                    $results['username'] = $username[0];
+                }
+
                 $username = $results['username'];
                 $amount = $results['stake'];
 

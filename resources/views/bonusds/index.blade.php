@@ -153,9 +153,9 @@
                                                     data-winloss= "{{ $d->totalwinloss }}">
                                             </td>
                                             <td class="username">{{ $d->username }}</td>
-                                            <td class="datacc" data-get="{{ $d->totalstake * 1000 }}"></td>
-                                            <td class="datacc" data-get="{{ $d->totalwinloss * 1000 }}"></td>
-                                            <td class="datacc" data-get="{{ $d->totalbonus * 1000 }}"></td>
+                                            <td class="datacc" data-get="{{ $d->totalstake }}"></td>
+                                            <td class="datacc" data-get="{{ $d->totalwinloss }}"></td>
+                                            <td class="datacc" data-get="{{ $d->totalbonus }}"></td>
                                         </tr>
                                     @endforeach
                                 </tbody>

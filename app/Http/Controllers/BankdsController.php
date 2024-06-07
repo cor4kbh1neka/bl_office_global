@@ -265,10 +265,12 @@ class BankdsController extends Controller
 
     public function setgroupbank($groupbank)
     {
-        $response = Http::get(env('DOMAIN') . '/banks/group');
+
+        // $response = Http::get(env('DOMAIN') . '/banks/group');
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/banks/group');
+
         $results = $response->json()["data"];
 
         if (isset($results[$groupbank])) {
@@ -328,7 +330,7 @@ class BankdsController extends Controller
         $responseByGroup = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->get(env('DOMAIN') . '/banks/v2/' . $groupbank);
-
+        // dd(env('DOMAIN') . '/banks/v2/' . $groupbank);
         $resultsGroup = $responseByGroup->json()["data"];
 
         $filteredGroups = [];
@@ -344,7 +346,6 @@ class BankdsController extends Controller
                 }
             }
         }
-
         // $responseBank = Http::get(env('DOMAIN') . '/banks/master');
         $responseBank = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
@@ -396,7 +397,6 @@ class BankdsController extends Controller
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->post($apiUrl, $validatedData);
-        dd($response);
 
         if ($response->successful()) {
             return redirect('/bankds/listbank/0/0')->with('success', 'Set Bank berhasil ditambahkan');
@@ -882,12 +882,31 @@ class BankdsController extends Controller
 
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
-        ])->delete(env('DOMAIN') . '/banks/v2/' . $idbank . '/' . $bankname_old, $data);
+        ])->put(env('DOMAIN') . '/banks/v2/' . $idbank . '/' . $bankname_old, $data);
 
         if ($response->successful()) {
             return redirect('/bankds/listbank/0/0')->with('success', 'Data berhasil diupdate');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
+        }
+    }
+
+    public function deletedetailbank(Request $request)
+    {
+        $dataReq = $request->all();
+
+        $idbank = $dataReq['idbank'];
+        $bank = $dataReq['bank'];
+
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->delete(env('DOMAIN') . '/banks/' . $idbank . '/' . $bank);
+        return env('DOMAIN') . '/banks/' . $idbank . '/' . $bank;
+        if ($response->successful()) {
+            return response()->json(['success' => true, 'message' => 'Data berhasil dihapus']);
+        } else {
+            $errorMessage = $response->json()["message"] ?? 'Terjadi kesalahan saat menghapus data.';
+            return response()->json(['success' => false, 'message' => $errorMessage]);
         }
     }
 }

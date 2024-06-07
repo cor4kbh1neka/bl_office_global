@@ -116,6 +116,15 @@ class HistorygamedsController extends Controller
             });
         }
 
+        foreach ($data as &$d) {
+            $username = explode(env('UNIX_CODE'), $d["username"]);
+            if (isset($username[1])) {
+                $d["username"] = $username[1];
+            } else {
+                $d["username"] = $username[0];
+            }
+        }
+
         return [
             'data' => $data,
             'Message' => $Message,

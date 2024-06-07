@@ -89,8 +89,8 @@
                                             <span class="waktu">{{ $parts[1] }}</span>
                                         </div>
                                     </td>
-                                    <td class="valuenominal">{{ number_format($d->amount * 1000, 2, '.', ',') }}</td>
-                                    <td class="valuenominal">{{ number_format($d->balance * 1000, 2, '.', ',') }}</td>
+                                    <td class="valuenominal">{{ number_format($d->amount * 1000, 0, '.', ',') }}</td>
+                                    <td class="valuenominal">{{ number_format($d->balance * 1000, 0, '.', ',') }}</td>
                                     <td class="valuebank">{{ $d->mbank }}, {{ $d->mnamarek }}, {{ $d->mnorek }}
                                     </td>
                                 </tr>
@@ -165,7 +165,7 @@
                                             <span class="waktu">{{ $time }}</span>
                                         </div>
                                     </td>
-                                    <td>{{ number_format($dataTrans->amount * 1000, 2, '.', ',') }}</td>
+                                    <td>{{ number_format($dataTrans->amount * 1000, 0, '.', ',') }}</td>
                                     <td>{{ $dataTrans->approved_by }}</td>
                                     <td class="hsjenistrans" data-proses="{{ $dataTrans->status }}">
                                         Withdraw</td>

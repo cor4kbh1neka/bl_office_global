@@ -45,6 +45,16 @@ class ReportdsController extends Controller
             $data = [];
         }
 
+
+        $username = explode(env('UNIX_CODE'), $username);
+        if (isset($username[1])) {
+            $username = $username[1];
+        } else {
+            $username = $username[0];
+        }
+
+        $data[0]['username'] = $username;
+        
         return view('reportds.index', [
             'title' => 'Report',
             'data' => $data,

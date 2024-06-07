@@ -45,7 +45,7 @@ use App\Models\Notes;
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect()->intended('memberlistds');
+        return redirect()->intended('depositds');
     }
     abort(404);
 });

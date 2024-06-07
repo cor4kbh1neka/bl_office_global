@@ -96,7 +96,7 @@
                                             <td>{{ $d['statuspriority'] == 1 ? 'All Member' : 'Only VIP' }}</td>
                                             <td>{{ $d['subject'] }}</td>
                                             <td class="ganti">{{ $d['created_at'] == null ? date('Y-m-d') : $d['created_at'] }}</td>
-                                            <td>ADMIN GLOBAL BOLA</td>
+                                            <td>ADMIN</td>
                                             <td>
                                                 <div class="kolom_action">
                                                     <div class="dot_action">

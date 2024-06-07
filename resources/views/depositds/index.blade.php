@@ -97,10 +97,10 @@
                                             <span class="waktu">{{ $parts[1] }}</span>
                                         </div>
                                     </td>
-                                    <td class="valuenominal">{{ $d->amount }}</td>
+                                    <td class="valuenominal">{{ number_format($d->amount * 1000, 0, '.', ',') }}</td>
                                     <td class="valuebank">{{ $d->mbank }}, {{ $d->mnamarek }}, {{ $d->mnorek }}
                                     </td>
-                                    <td class="valuenominal">{{ $d->balance }}</td>
+                                    <td class="valuenominal">{{ number_format($d->balance * 1000, 0, '.', ',') }}</td>
                                     <td class="valuebank">{{ $d->bank }}, {{ $d->namarek }}, {{ $d->norek }}
                                     </td>
                                     <td>{{ $d->keterangan }}</td>
@@ -171,11 +171,12 @@
                                     <td>{{ $dataTrans->username }}</td>
                                     <td>
                                         <div class="splitcollum">
-                                            <span class="tanggal">{{ $dataTrans->date }} </span>
-                                            <span class="waktu">{{ $dataTrans->time }}</span>
+                                            @php list($date, $time) = explode(' ', $dataTrans->updated_at); @endphp
+                                            <span class="tanggal">{{ $date }} </span>
+                                            <span class="waktu">{{ $time }}</span>
                                         </div>
                                     </td>
-                                    <td>{{ $dataTrans->amount }}</td>
+                                    <td>{{ number_format($dataTrans->amount * 1000, 0, '.', ',') }}</td>
                                     <td>{{ $dataTrans->approved_by }}</td>
                                     <td class="hsjenistrans" data-proses="{{ $dataTrans->status }}">Deposit</td>
                                 </tr>

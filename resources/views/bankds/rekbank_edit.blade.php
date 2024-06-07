@@ -57,6 +57,7 @@
                                                 value="{{ $d['idbank'] }}">
                                             <input type="hidden" readonly id="groupbank77" name="groupbank"
                                                 value="{{ $groupbank }}">
+                                                
                                             <select id="bankmaster" name="bankmaster" value="bca">
                                                 @foreach ($dataBank as $db)
                                                     <option value="{{ $db['bnkmstrxyxyx'] }}"
@@ -131,9 +132,10 @@
                                     </div>
                                 </div>
                                 <div class="listgroupplayerinfo right">
-                                    <a href="/bankds/addgroupbank" class="tombol proses">
+                                    <a href="#" class="tombol cancel delete-bank-button"
+                                        data-idbank="{{ $d['idbank'] }}" data-bank="{{ $bank }}">
                                         <span class="texttombol">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                            {{-- <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                                                 viewBox="0 0 48 48">
                                                 <defs>
                                                     <mask id="ipSAdd0">
@@ -146,8 +148,8 @@
                                                     </mask>
                                                 </defs>
                                                 <path fill="currentColor" d="M0 0h48v48H0z" mask="url(#ipSAdd0)" />
-                                            </svg>
-                                            REKENING BANK
+                                            </svg> --}}
+                                            DELETE BANK
                                         </span>
                                     </a>
                                     <button class="tombol primary">
@@ -233,6 +235,69 @@
                     .replace(/^(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
                     .replace(/^(\d{3})(\d{4})/, '$1-$2');
                 $(this).val(formattedNomorRek);
+            });
+        });
+
+        $(document).ready(function() {
+            $('.delete-bank-button').on('click', function(e) {
+                e.preventDefault();
+
+                let idbank = $(this).data('idbank');
+                let bank = $(this).data('bank');
+
+                Swal.fire({
+                    title: 'Anda yakin?',
+                    text: "Anda tidak akan bisa mengembalikan ini!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/bankds/deletedetailbank',
+                            type: 'POST',
+                            data: {
+                                idbank: idbank,
+                                bank: bank,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Berhasil!',
+                                        text: response.message,
+                                        icon: 'success',
+                                        timer: 3000,
+                                        showConfirmButton: true
+                                    }).then(() => {
+                                        window.location.href =
+                                            '/bankds/listbank/0/0';
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Gagal!',
+                                        text: response.message,
+                                        icon: 'error',
+                                        timer: 3000,
+                                        showConfirmButton: true
+                                    });
+                                }
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: 'Gagal!',
+                                    text: 'Terjadi kesalahan: ' + xhr
+                                        .responseText,
+                                    icon: 'error',
+                                    timer: 3000,
+                                    showConfirmButton: true
+                                });
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>

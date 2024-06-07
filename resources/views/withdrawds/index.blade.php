@@ -167,7 +167,7 @@
                                     <td>{{ $dataTrans->amount }}</td>
                                     <td>{{ $dataTrans->approved_by }}</td>
                                     <td class="hsjenistrans" data-proses="{{ $dataTrans->status }}">
-                                        {{ ucfirst($dataTrans->status) }} Deposit</td>
+                                        Deposit</td>
                                 </tr>
                             @endforeach
                         </tbody>

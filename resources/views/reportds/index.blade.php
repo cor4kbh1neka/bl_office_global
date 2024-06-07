@@ -153,6 +153,7 @@
                                     </tr>
 
                                     @foreach ($data as $i => $d)
+                                    
                                         <tr>
                                             <td>{{ $i + 1 }}</td>
                                             <td>{{ $d['username'] }}</td>

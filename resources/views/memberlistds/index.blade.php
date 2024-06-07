@@ -274,7 +274,7 @@
         $(document).ready(function() {
             $('.koinasli').each(function() {
                 var nilaiAsli = parseFloat($(this).text());
-                var nilaiKonversi = nilaiAsli * 1000;
+                var nilaiKonversi = Math.round(nilaiAsli * 1000);
                 var nilaiFormat = formatRupiah(nilaiKonversi);
                 $(this).next('.cointorp').text(nilaiFormat);
             });

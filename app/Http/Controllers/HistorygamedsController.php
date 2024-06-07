@@ -141,13 +141,11 @@ class HistorygamedsController extends Controller
             'language' => 'en',
             'serverId' => env('SERVERID')
         ]);
-
         if (!empty($data['result'])) {
             $data = $data['result'][0];
         } else {
             $data = $data['result'];
         }
-
         return view('historygameds.detail', [
             'title' => 'detail invoice',
             'totalnote' => 0,
@@ -163,6 +161,8 @@ class HistorygamedsController extends Controller
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
         ])->post($url, $data);
+
+        $responseData = $response->json();
 
         if ($response->successful()) {
             $responseData = $response->json();

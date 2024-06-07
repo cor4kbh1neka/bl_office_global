@@ -161,6 +161,21 @@
                 }).then((result) => {
 
                     if (result.isConfirmed) {
+                        let jenis = $('#jenis').val();
+                        let nominal = parseFloat($('#nominal').val());
+
+                        // Kondisi jika jenis adalah 'DPM' dan nominal lebih dari 20,000
+                        if (jenis === 'DPM' && nominal > 20000) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Nominal tidak boleh lebih dari 20,000',
+                                showConfirmButton: true
+                            }).then(() => {
+                                $('#nominal').val(''); // Kosongkan nominal setelah modal ditutup
+                            });
+                            return;
+                        }
+
                         if ($('#jenis').val() == 'WDM') {
                             if (parseFloat($('#saldo').val()) < parseFloat($('#nominal').val())) {
                                 Swal.fire({
@@ -210,5 +225,24 @@
                 });
             });
         });
+
+        $(document).ready(function() {
+            $('#nominal').on('input', function() {
+                let nominal = parseFloat($(this).val());
+                let jenis = $('#jenis').val();
+
+                if (jenis === 'DPM' && nominal > 20000) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Nominal tidak boleh lebih dari 20,000',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        $('#nominal').val('');
+                    });
+                }
+            });
+        });
+        
     </script>
 @endsection

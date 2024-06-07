@@ -168,7 +168,7 @@
                                     <td>{{ number_format($dataTrans->amount * 1000, 2, '.', ',') }}</td>
                                     <td>{{ $dataTrans->approved_by }}</td>
                                     <td class="hsjenistrans" data-proses="{{ $dataTrans->status }}">
-                                        Deposit</td>
+                                        Withdraw</td>
                                 </tr>
                             @endforeach
                         </tbody>

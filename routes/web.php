@@ -277,6 +277,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bankds/setbank/{id}/{groupbank}', [BankdsController::class, 'setbank'])->name('bankds.setbank');
         Route::post('/bankds/updatelistbank/{jenis?}', [BankdsController::class, 'updatelistbank']);
         Route::post('/bankds/updatedetailbank', [BankdsController::class, 'updatedetailbank']);
+        Route::post('/bankds/deletedetailbank', [BankdsController::class, 'deletedetailbank']);
         Route::delete('/bankds/deletelistbank/{id}/{groupbank}', [BankdsController::class, 'deletelistbank']);
         Route::get('/bankds/addbank', [BankdsController::class, 'addbank']);
         Route::post('/storebank', [BankdsController::class, 'storebank']);

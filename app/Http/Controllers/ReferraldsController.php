@@ -78,6 +78,9 @@ class ReferraldsController extends Controller
             }
 
             if (isset($gabungdari) && isset($gabunghingga)) {
+                $gabungdari = $gabungdari . ' 00:00:00';
+                $gabunghingga = $gabunghingga . ' 23:59:59';
+
                 $filterDepo .= " AND A1.created_at >= '$gabungdari' AND A1.created_at <= '$gabunghingga'";
                 $filterAktif .= " AND A1.created_at >= '$gabungdari' AND A1.created_at <= '$gabunghingga'";
             }

@@ -1,6 +1,11 @@
 @extends('layouts.index')
 
 @section('container')
+    <style>
+        .red-text {
+            color: var(--red-color);
+    }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
     <div class="sec_table">
@@ -109,7 +114,7 @@
                             </div>
                             <div class="listtotalbonus">
                                 <span class="textbonus">Total W/L :</span>
-                                <span class="nominalbonus" data-bonus="{{ $total_wl }}"></span>
+                                <span class="nominalbonus2 {{ $total_wl < 0 ? 'red-text' : '' }}" data-bonus="{{ $total_wl }}"></span>
                             </div>
                         </div>
                         <div class="tabelproses">
@@ -207,6 +212,13 @@
             var formattedValue = formatCurrency(value);
             $('.nominalbonus').text(formattedValue);
         });
+
+        $(document).ready(function() {
+            var value = parseFloat($('.nominalbonus2').attr('data-bonus'));
+            var formattedValue = formatCurrency(value);
+            $('.nominalbonus2').text(formattedValue);
+        });
+
 
         function formatCurrency(amount) {
             var parts = amount.toFixed(2).split('.');

@@ -23,6 +23,9 @@
                     <a href="/reportds/winlosematch" class="tombol grey">
                         <span class="texttombol">WIN LOSE MATCH</span>
                     </a>
+                    <a href="/reportds/towl" class="tombol grey">
+                        <span class="texttombol">TURN OVER & WIN LOSE</span>
+                    </a>
                     {{-- <a href="/reportds/memberstatement" class="tombol grey">
                         <span class="texttombol">STATEMENT</span>
                     </a> --}}
@@ -153,6 +156,7 @@
                                     </tr>
 
                                     @foreach ($data as $i => $d)
+                                    
                                         <tr>
                                             <td>{{ $i + 1 }}</td>
                                             <td>{{ $d['username'] }}</td>
@@ -178,7 +182,7 @@
                                 </tbody>
                             </table>
                             <div class="grouppagination" style="padding: 25px;">
-
+                                
                             </div>
                         </div>
                     </div>
@@ -220,31 +224,5 @@
         function numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
-
-        $('.exportdata').click(function() {
-            Swal.fire({
-                icon: 'question',
-                title: 'Konfirmasi',
-                text: 'Apakah ingin mendownload data ini?',
-                showCancelButton: true,
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Batal',
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    var username = $('#username').val();
-                    var portfolio = $('#portfolio').val();
-                    var startDate = $('#startDate').val();
-                    var endDate = $('#endDate').val();
-
-                    var url = '/reportds/export?username=' + encodeURIComponent(username) +
-                        '&portfolio=' + encodeURIComponent(portfolio) +
-                        '&startDate=' + encodeURIComponent(startDate) +
-                        '&endDate=' + encodeURIComponent(endDate);
-
-                    // Redirect ke URL
-                    window.location.href = url;
-                }
-            });
-        });
     </script>
 @endsection

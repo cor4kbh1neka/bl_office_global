@@ -254,6 +254,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reportds', [ReportdsController::class, 'index']);
         Route::get('/reportds/winlosematch', [ReportdsController::class, 'winlosematch']);
         Route::get('/reportds/memberstatement', [ReportdsController::class, 'memberstatement']);
+        Route::get('/reportds/towl', [ReportdsController::class, 'index_towl']);
         Route::get('/reportds/export', [ReportdsController::class, 'export']);
     });
     /*-- Referralds --*/

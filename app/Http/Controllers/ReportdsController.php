@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Settings;
-use App\Models\Companys;
-// use App\Models\Xreferral;
+use App\Models\WinlossbetDay;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class ReportdsController extends Controller
 {
@@ -80,7 +77,7 @@ class ReportdsController extends Controller
         $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-customer-report-by-win-lost-date.aspx';
         $response = Http::post($apiUrl, $data);
         $results = $response->json();
-
+        
         if ($results["error"]["id"] == 0) {
             $result = $results["result"];
         } else {
@@ -242,5 +239,52 @@ class ReportdsController extends Controller
             'title' => 'Report',
             'totalnote' => 0,
         ]);
+    }
+
+    public function index_towl(Request $request)
+    {
+        $portfolio = $request->input('portfolio');
+        $gabungdari = $request->input('gabungdari') != null ? date('Y-m-d', strtotime($request->input('gabungdari'))) : '';
+        $gabunghingga =  $request->input('gabunghingga') != null ? date('Y-m-d', strtotime($request->input('gabunghingga'))) : '';
+        $username = $request->input('username');
+        
+        $results = $this->getDataBonus($portfolio, $gabungdari, $gabunghingga, $username);
+        
+        return view('reportds.to_wl', [
+            'title' => 'TURN OVER & WINLOSE',
+            'data' => $results,
+            'totalnote' => 0,
+            'portfolio' => $portfolio,
+            'gabungdari' => $gabungdari,
+            'gabunghingga' => $gabunghingga,
+            'username' => $username,
+            'totaluser' => $results->count(),
+            'total_to' => $results->sum('totalstake'),
+            'total_wl' => $results->sum('totalwinloss')
+        ]);
+    }
+
+    private function getDataBonus($portfolio = null, $gabungdari = null, $gabunghingga = null, $username = null)
+    {   
+        if($gabungdari && $gabunghingga){
+            $query = WinlossbetDay::query()
+                ->when($portfolio, function ($query) use ($portfolio) {
+                    return $query->where('portfolio', $portfolio);
+                })
+                ->when($gabungdari && $gabunghingga, function ($query) use ($gabungdari, $gabunghingga) {
+                    return $query->whereBetween('created_at', [$gabungdari . ' 00:00:00', $gabunghingga . ' 23:59:59']);
+                })
+                ->when($username, function ($query) use ($username) {
+                    return $query->where('username', $username);
+                })
+                ->select('username', DB::raw('SUM(stake) as totalstake'), DB::raw('SUM(winloss) as totalwinloss'))
+                ->groupBy('username');
+
+            $results = $query->get();
+        }else{
+            $results = collect();
+        }
+
+        return $results;
     }
 }

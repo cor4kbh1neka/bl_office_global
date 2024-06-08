@@ -23,6 +23,9 @@
                     <a href="/reportds/winlosematch" class="tombol grey">
                         <span class="texttombol">WIN LOSE MATCH</span>
                     </a>
+                    <a href="/reportds/towl" class="tombol grey">
+                        <span class="texttombol">TURN OVER & WIN LOSE</span>
+                    </a>
                     {{-- <a href="/reportds/memberstatement" class="tombol grey">
                         <span class="texttombol">STATEMENT</span>
                     </a> --}}
@@ -153,6 +156,7 @@
                                     </tr>
 
                                     @foreach ($data as $i => $d)
+                                    
                                         <tr>
                                             <td>{{ $i + 1 }}</td>
                                             <td>{{ $d['username'] }}</td>

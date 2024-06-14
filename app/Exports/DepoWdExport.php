@@ -25,17 +25,14 @@ class DepoWdExport implements FromCollection, WithHeadings, WithStyles, WithColu
         return $this->data->map(function ($item) {
             $itemArray = $item->toArray();
             unset($itemArray['id']); // Menghilangkan kolom "id"
-            switch ($itemArray['status']) {
-                case 1:
-                    $itemArray['status'] = 'ACCEPTED';
-                    break;
-                case 2:
-                    $itemArray['status'] = 'REJECTED';
-                    break;
-                default:
-                    $itemArray['status'] = 0;
-                    break;
+            if($itemArray['status'] == 1){
+                $itemArray['status'] = 'ACCEPTED';
+            } else if($itemArray['status'] == 2){
+                $itemArray['status'] = 'REJECTED';
+            } else {
+                $itemArray['status'] = '';
             }
+            return $itemArray;
         });
     }
 

@@ -138,7 +138,7 @@
                                     <td>
                                         <div class="statusmember">{{ $startNumber + $index }}</div>
                                     </td>
-                                    <td>{{ $d->refno }}</td>
+                                    <td class="refnodetail">{{ $d->refno }}</td>
                                     <td>{{ $d->created_at }}</td>
                                     <td>
                                         @if ($d->status == 'menang' || $d->status == 'pemasangan' || $d->status == 'cashout')

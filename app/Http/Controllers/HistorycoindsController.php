@@ -32,7 +32,12 @@ class HistorycoindsController extends Controller
                 WHEN 'DPM' THEN 'deposit manual'
                 WHEN 'WDM' THEN 'withdraw manual'
                 ELSE jenis
-            END as jenis_temp")
+            END as jenis_temp"),
+            DB::raw("CASE status
+                WHEN '1' THEN 'ACCEPTED'
+                WHEN '2' THEN 'REJECTED'
+                ELSE 0
+            END as status"),
             );
 
         $query->whereIn('status', [1, 2]);

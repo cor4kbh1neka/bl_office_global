@@ -117,7 +117,7 @@
                                     <td>{{ $startNumber + $i }}</td>
                                     <td>{{ $d['username'] }}</td>
                                     <td>{{ date('d-m-Y H:i:s', strtotime($d['orderTime'])) }}</td>
-                                    <td class="data refNo">{{ $d['refNo'] }}</td>
+                                    <td class="data refNo refnodetail">{{ $d['refNo'] }}</td>
                                     <td>
                                         @if($portfolio == 'SeamlessGame')
                                             <a href="/historygameds/detail/{{ $d['refNo'] }}/{{ $portfolio }}"

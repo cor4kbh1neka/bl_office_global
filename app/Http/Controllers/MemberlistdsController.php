@@ -21,6 +21,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MemberListExport;
+use Illuminate\Support\Facades\DB;
 
 class MemberlistdsController extends Controller
 {
@@ -461,7 +462,22 @@ class MemberlistdsController extends Controller
     public function export(Request $request)
     {
         $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
-            ->select('member.*', 'balance.amount')->orderByDesc('created_at')->get();
+            ->select('member.username', 'member.referral',
+            DB::raw("CONCAT(member.bank, ', ', member.namarek, ', ', member.norek) as bank"),
+            'balance.amount as balance', 
+            DB::raw("
+                CASE 
+                    WHEN member.status = 9 THEN 'NEW MEMBER'
+                    WHEN member.status = 1 THEN 'DEFAULT'
+                    WHEN member.status = 2 THEN 'VVIP'
+                    WHEN member.status = 3 THEN 'BANDAR'
+                    WHEN member.status = 4 THEN 'WARNING'
+                    WHEN member.status = 5 THEN 'SUSPEND'
+                    ELSE 'UNKNOWN'
+                END as status_label
+            "),
+            'member.keterangan as informasi', 'member.created_at as tglgabung', 'member.lastlogin'
+            )->orderByDesc('member.created_at')->get();
         $proses = $this->filterAndPaginate($query, 20000);
         $data = $proses->getCollection();
         return Excel::download(new MemberListExport($data), 'Memberlist.xlsx');

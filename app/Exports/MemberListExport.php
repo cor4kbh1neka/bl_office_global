@@ -35,26 +35,11 @@ class MemberListExport implements FromCollection, WithHeadings, WithStyles, With
             "Username",
             "Referral",
             "Bank",
-            "Namarek",
-            "Norek",
-            "Nohp",
             "Balance",
-            "Keterangan",
-            "IP Register",
-            "IP Login",
-            "Lastlogin",
-            "Domain",
-            "Lastlogin2",
-            "Domain2",
-            "Lastlogin3",
-            "Domain3",
-            "Min_bet",
-            "Max_bet",
             "Status",
-            "Is_notnew",
-            "created_at",
-            "updated_at",
-            "Amount",
+            "Information",
+            "Tgl Gabung",
+            "Last Login",
         ];
     }
 
@@ -68,29 +53,14 @@ class MemberListExport implements FromCollection, WithHeadings, WithStyles, With
     public function columnWidths(): array
     {
         return [
-            'A' => 20,
-            'B' => 20,
-            'C' => 15,
+            'A' => 30,
+            'B' => 30,
+            'C' => 60,
             'D' => 30,
-            'E' => 10,
-            'F' => 20,
-            'G' => 20,
-            'H' => 25,
-            'I' => 25,
-            'J' => 20,
-            'K' => 25,
-            'L' => 25,
-            'M' => 25,
-            'N' => 15,
-            'O' => 10,
-            'P' => 20,
-            'Q' => 20,
-            'R' => 20,
-            'S' => 20,
-            'T' => 20,
-            'U' => 30,
-            'V' => 30,
-            'W' => 20,
+            'E' => 30,
+            'F' => 30,
+            'G' => 30,
+            'H' => 30,
         ];
     }
 
@@ -98,7 +68,7 @@ class MemberListExport implements FromCollection, WithHeadings, WithStyles, With
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $cellRange = 'A1:R' . (count($this->data) + 1);
+                $cellRange = 'A1:H' . (count($this->data) + 1);
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray([
                     'borders' => [
                         'allBorders' => [

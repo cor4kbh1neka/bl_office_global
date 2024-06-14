@@ -119,7 +119,14 @@
                                     <td>{{ date('d-m-Y H:i:s', strtotime($d['orderTime'])) }}</td>
                                     <td class="data refNo">{{ $d['refNo'] }}</td>
                                     <td>
-                                        @if ($portfolio != 'Games')
+                                        @if($portfolio == 'SeamlessGame')
+                                            <a href="/historygameds/detail/{{ $d['refNo'] }}/{{ $portfolio }}"
+                                                target="_blank" class="detailbetingan">
+                                                <span
+                                                    class="texttypebet sportsType">{{  $d['gameType'] }}</span>
+                                                <span class="klikdetail">(selengkapnya)</span>
+                                            </a>
+                                        @elseif ($portfolio != 'Games')
                                             <a href="/historygameds/detail/{{ $d['refNo'] }}/{{ $portfolio }}"
                                                 target="_blank" class="detailbetingan">
                                                 <span
@@ -132,7 +139,7 @@
                                         @endif
                                     </td>
                                     <td class="valuenominal odds"
-                                        data-odds="{{ $portfolio !== 'Games' ? $d['odds'] : 0.1 }}"></td>
+                                        data-odds="{{ $portfolio !== 'Games' && $portfolio !== 'SeamlessGame' ? $d['odds'] : 0.1 }}"></td>
                                     <td class="valuenominal stake" data-stake="{{ $d['stake'] }}"></td>
                                     <td class="valuenominal winLost" data-winLost="{{ $d['winLost'] }}"
                                         data-status="{{ $d['status'] }}"></td>

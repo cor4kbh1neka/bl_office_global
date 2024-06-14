@@ -102,7 +102,7 @@ class HistorycoindsController extends Controller
         $tglsampai = $request->input('tglsampai');
 
         // if ($tgldari >= $semingguYangLalu && $tgldari <= $hariIni && $tglsampai >= $semingguYangLalu && $tglsampai <= $hariIni && $tgldari <= $tglsampai) {
-            $crot = $this->filterAndPaginate(10);
+            $crot = $this->filterAndPaginate(9999999999999999);
             $data = $crot->getCollection();
             return Excel::download(new DepoWdExport($data), 'Historycoin.xlsx');
         // } else {

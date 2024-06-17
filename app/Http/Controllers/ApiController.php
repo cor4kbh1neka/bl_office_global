@@ -589,6 +589,7 @@ class ApiController extends Controller
 
     public function getLastStatusTransaction(Request $request)
     {
+        // Validasi Bearer Token
         $validasiBearer = $this->validasiBearer($request);
         if ($validasiBearer !== true) {
             return $validasiBearer;
@@ -597,38 +598,62 @@ class ApiController extends Controller
         $jenis = $request->jenis;
         $username = $request->username;
 
+        // Validasi jenis transaksi
         if ($jenis == 'DP') {
             $tipe = "Deposit";
-        } else if ($jenis == 'WD') {
+        } elseif ($jenis == 'WD') {
             $tipe = "Withdrawal";
         } else {
             return response()->json([
                 'status' => 'Fail',
-                'message' => 'Status transaksi tidak falid!'
+                'message' => 'Status transaksi tidak valid!'
             ]);
         }
 
-        $dataLastDepo = DepoWd::where('username', $username)->where('jenis', $jenis)->orderBy('created_at', 'desc')->first();
+        // Check status maintenance & suspend
+        $apiMt = $this->apiStatusMaintenance();
+        $is_maintenance = $apiMt->stsmtncnc == '2';
 
+        $statusMember = Member::where('username', $username)->first();
+        $is_suspend = $statusMember && $statusMember->status == 5;
+
+        if ($is_maintenance || $is_suspend) {
+            return response()->json([
+                'status' => 'Fail',
+                'message' => $is_maintenance ? 'Server sedang maintenance' : 'Akun anda ditangguhkan',
+                'is_maintenance' => $is_maintenance,
+                'is_suspend' => $is_suspend
+            ]);
+        }
+
+        // Mengambil data transaksi terakhir
+        $dataLastDepo = DepoWd::where('username', $username)
+                            ->where('jenis', $jenis)
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+
+        // Mengecek status transaksi terakhir
         if ($dataLastDepo) {
-            if ($dataLastDepo->status == 1) {
-                return response()->json([
-                    'status' => 'Success',
-                    'message' => $tipe . ' berhasil diporses!'
-                ]);
-            } else if ($dataLastDepo->status == 2) {
-                return response()->json([
-                    'status' => 'Fail',
-                    'message' => $tipe . ' gagal diproses!'
-                ]);
-            } else if ($dataLastDepo->status == 0) {
-                return response()->json([
-                    'status' => 'Waitting',
-                    'message' => $tipe . ' sedang diproses!'
-                ]);
+            switch ($dataLastDepo->status) {
+                case 1:
+                    return response()->json([
+                        'status' => 'Success',
+                        'message' => $tipe . ' berhasil diproses!'
+                    ]);
+                case 2:
+                    return response()->json([
+                        'status' => 'Fail',
+                        'message' => $tipe . ' gagal diproses!'
+                    ]);
+                case 0:
+                    return response()->json([
+                        'status' => 'Waiting',
+                        'message' => $tipe . ' sedang diproses!'
+                    ]);
             }
         }
 
+        // Jika tidak ada transaksi
         return response()->json([
             'status' => 'None',
             'message' => 'Tidak ada status ' . $tipe . '!'

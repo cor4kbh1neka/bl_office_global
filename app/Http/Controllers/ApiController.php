@@ -57,7 +57,7 @@ class ApiController extends Controller
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
             $getLogin = $this->requestApiLogin($dataLogin);
-
+           
 
 
             if ($getLogin["url"] !== "") {
@@ -73,6 +73,11 @@ class ApiController extends Controller
                 $getLogin["is_maintenance"] = true;
             } else {
                 $getLogin["is_maintenance"] = false;
+            }
+
+            $statusMember = Member::where('username', $username)->first();
+            if($statusMember) {
+                $getLogin["is_suspend"] = $statusMember->status == 5 ? true : false;
             }
 
             return $getLogin;

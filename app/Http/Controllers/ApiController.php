@@ -128,7 +128,7 @@ class ApiController extends Controller
 
         $username = $request->username;
         $ipaddress = $request->ipaddress;
-
+        return $request->all();
         try {
             $member = Member::where('username', $username)->firstOrFail();
             $member->update([
@@ -136,7 +136,7 @@ class ApiController extends Controller
                 'lastlogin' => now(),
                 'domain' => $request->getHost()
             ]);
-            return $member;
+            
             
             return response()->json(['message' => 'Log berhasil tersimpan!']);
         } catch (\Exception $e) {

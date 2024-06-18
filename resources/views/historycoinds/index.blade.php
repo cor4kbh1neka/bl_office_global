@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="sechistoryds">
-            <div class="grouphistoryds">
+            <div class="grouphistoryds memberlist">
                 <form method="GET" action="/historycoinds" class="groupheadhistoryds" id="searchForm">
                     <div class="listheadhistoryds top">
                         <input type="hidden" name="jenis" id="jenis" value="{{ request('jenis') }}">
@@ -83,8 +83,9 @@
                                 {{-- <th class="check_box">
                                     <input type="checkbox" id="myCheckbox" name="myCheckbox">
                                 </th> --}}
-                                <th class="baguser">Username</th>
+                                <th class="baguser">username</th>
                                 <th class="bagnominal">nominal</th>
+                                <th class="bagbank">bank</th>
                                 <th class="agentdata">agent</th>
                                 <th class="typetrans">type transaksi</th>
                                 <th class="statustrans">status</th>
@@ -103,7 +104,11 @@
                                             data-id=" c93a3488-cd97-4350-9835-0138e6a04aa9">
                                     </td> --}}
                                     <td>{{ $d->username }}</td>
-                                    <td class="valuenominal">{{ $d->amount }}</td>
+                                    <td class="valuenominal">
+                                        <span class="koinasli">{{ $d->amount }}</span>
+                                        <span class="cointorp"></span>
+                                    </td>
+                                    <td>{{ $d->mbank . ', ' . $d->mnamarek . ', ' . $d->mnorek }}</td>
                                     <td>{{ $d->approved_by }}</td>
                                     <td class="texttype">{{ $d->jenis }}</td>
                                     <td class="hsjenistrans" data-proses="{{ $d->status == 1 ? 'accept' : 'cancel' }}">
@@ -152,6 +157,32 @@
                 }
             });
 
+        });
+
+         // convert nominal
+         $(document).ready(function() {
+            $('.koinasli').each(function() {
+                var nilaiAsli = parseFloat($(this).text());
+                var nilaiKonversi = Math.round(nilaiAsli * 1000);
+                var nilaiFormat = formatRupiah(nilaiKonversi);
+                $(this).next('.cointorp').text(nilaiFormat);
+            });
+
+            function formatRupiah(nilai) {
+                var bilangan = nilai.toString().replace(/[^,\d]/g, '');
+                var bilanganSplit = bilangan.split(',');
+                var sisa = bilanganSplit[0].length % 3;
+                var rupiah = bilanganSplit[0].substr(0, sisa);
+                var ribuan = bilanganSplit[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    var separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = bilanganSplit[1] !== undefined ? rupiah + ',' + bilanganSplit[1] : rupiah;
+                return 'Rp' + rupiah;
+            }
         });
 
 

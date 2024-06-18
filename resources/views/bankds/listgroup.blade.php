@@ -95,7 +95,6 @@
                                                     </td>
                                                     <td>
                                                         <div class="kolom_action">
-                                                            @if ($d->group !== 'groupbank1')
                                                                 <div class="dot_action">
                                                                     <span>•</span>
                                                                     <span>•</span>
@@ -120,6 +119,7 @@
                                                                             <span>Edit</span>
                                                                         </div>
                                                                     </a>
+                                                                    @if ($d->group !== 'groupbank1')
                                                                     <a href="#"
                                                                         onclick="confirmDelete('{{ $d->group }}')">
                                                                         <div class="list_action">
@@ -132,6 +132,7 @@
                                                                             <span>delete</span>
                                                                         </div>
                                                                     </a>
+                                                                    @endif
 
                                                                     {{-- <form id="deleteForm"
                                                                         action="/deletelistgroup/{{ $d->group }}"
@@ -157,7 +158,6 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            @endif
                                         @endforeach
                                         <tr>
                                             <td>6</td>
@@ -233,7 +233,6 @@
                                                 </td>
                                                 <td>
                                                     <div class="kolom_action">
-                                                        @if ($d->group !== 'groupbankwd1')
                                                             <div class="dot_action">
                                                                 <span>•</span>
                                                                 <span>•</span>
@@ -257,6 +256,7 @@
                                                                         <span>Edit</span>
                                                                     </div>
                                                                 </a>
+                                                                @if ($d->group !== 'groupbankwd1')
                                                                 <a href="#"
                                                                     onclick="confirmDeleteWd('{{ $d->group }}')">
                                                                     <div class="list_action">
@@ -269,8 +269,8 @@
                                                                         <span>delete</span>
                                                                     </div>
                                                                 </a>
+                                                                @endif
                                                             </div>
-                                                        @endif
                                                     </div>
                                                 </td>
                                             </tr>

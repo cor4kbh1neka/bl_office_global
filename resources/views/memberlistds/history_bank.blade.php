@@ -56,7 +56,7 @@
                                     </td>
                                     <td>{{ $d->approved_by }}</td>
                                     <td>{{ $d->amount }}</td>
-                                    <td>{{ $d->balance }}</td>
+                                    <td>{{ $d->status == 1 ? $d->balance + $d->amount : $d->balance }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

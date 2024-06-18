@@ -25,7 +25,7 @@ class HistorytransaksidsController extends Controller
     {
         $data = [];
         if ($request->getQueryString() && request('username')) {
-            $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 20);
+            $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
         }
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
@@ -193,7 +193,7 @@ class HistorytransaksidsController extends Controller
 
     public function export(Request $request)
     {
-        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
+        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 0);
 
         $data = collect($data);
         return Excel::download(new HistoryTransaksiExport($data), 'Historycoin.xlsx');

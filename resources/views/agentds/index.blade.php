@@ -42,18 +42,18 @@
                                 ADD AGENT
                             </span>
                         </a>
-                        <div class="groupsearchagentds">
+                        <form action="/agentds" method="GET" class="groupsearchagentds">
                             <div class="grubsearchnav">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                     <path fill="currentColor"
                                         d="m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14" />
                                 </svg>
-                                <input type="text" placeholder="Cari Tabel..." id="searchTabel">
+                                <input type="text" placeholder="Cari User Agent ..." id="searchTabel" name="search" value="{{ $search }}">
                             </div>
                             <button class="tombol primary">
                                 <span class="texttombol">search</span>
                             </button>
-                        </div>
+                        </form>
                     </div>
                 </div>
                 <div class="groupdatasecagentds">
@@ -102,9 +102,15 @@
                                                     class="tombol grey openviewport">
                                                     <span class="texttombol">EDIT</span>
                                                 </a>
-                                                <button class="tombol cancel border">
-                                                    <span class="texttombol">suspend</span>
-                                                </button>
+                                                @if($d->status == 1)
+                                                    <button class="tombol cancel border" onclick="changeStatus('{{ $d->id }}', 3)">
+                                                        <span class="texttombol">suspend</span>
+                                                    </button>
+                                                @else
+                                                    <button class="tombol primary border" onclick="changeStatus('{{ $d->id }}', 1)">
+                                                        <span class="texttombol">active</span>
+                                                    </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -192,6 +198,58 @@
                 }
             });
         });
+
+
+        function changeStatus(userId, status) {
+            let token = '{{ csrf_token() }}';
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda akan mengganti status agent.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, ganti status!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/agentds/changestatus',
+                        type: 'POST',
+                        data: {
+                            _token: token,
+                            user_id: userId,
+                            status: status
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: 'Status agent telah diubah.',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    window.location.href = '/agentds';
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Gagal!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire(
+                                'Gagal!',
+                                'Terjadi kesalahan: ' + xhr.responseText,
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
     </script>
     @if (session('success'))
         <script>

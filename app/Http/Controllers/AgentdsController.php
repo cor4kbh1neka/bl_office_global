@@ -17,12 +17,26 @@ use Illuminate\Support\Str;
 
 class AgentdsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = User::paginate(20);
+        $search = $request->search;
+    
+        $query = User::query();
+        
+        if ($search) {
+            $query->where('username', 'LIKE', '%' . $search . '%');
+        }
+        
+        if (auth()->user()->divisi != 'superadmin') {
+            $query->where('divisi', '!=', 'superadmin');
+        }
+        
+        $data = $query->paginate(20);
+
         return view('agentds.index', [
             'title' => 'Agent',
             'data' => $data,
+            'search' => $search,
             'totalnote' => 0,
         ]);
     }
@@ -61,6 +75,11 @@ class AgentdsController extends Controller
     public function agentupdate($id)
     {
         $data = User::where('id', $id)->first();
+        
+        if (auth()->user()->divisi != 'superadmin' && $data->divisi == 'superadmin') {
+            abort(403);
+        }
+
         $dataAccess = UserAccess::get();
         return view('agentds.agent_update', [
             'title' => 'Update Agent',
@@ -77,6 +96,10 @@ class AgentdsController extends Controller
             'divisi' => 'required',
             'newpassword' => 'nullable',
         ]);
+
+        if (auth()->user()->divisi != 'superadmin' && $request->divisi == 'superadmin') {
+            abort(403);
+        }
 
         $user = User::findOrFail($request->id);
         if ($request->filled('newpassword')) {
@@ -304,5 +327,23 @@ class AgentdsController extends Controller
         }
 
         return $result;
+    }
+
+    public function changeStatus(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (auth()->user()->divisi != 'superadmin' && $user->divisi == 'superadmin') {
+            abort(403);
+        }
+
+        if ($user) {
+            $user->status = $request->status;
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'Status agent telah diubah.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Pengguna tidak ditemukan.']);
+        }
     }
 }

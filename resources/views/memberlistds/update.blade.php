@@ -19,6 +19,7 @@
         });
     </script> --}}
 </head>
+
 <div class="sec_table newwindow">
     <div class="secgrouptitle">
         <h2>{{ $title }} </h2>
@@ -28,7 +29,7 @@
         <div class="groupseceditmemberds">
             <spann class="titleeditmemberds">player information</spann>
             <form action="/memberlistds/updateuser/{{ $id }}" method="POST" class="groupplayerinfo"
-                data-statusakun="9" id="form-user">
+                data-statusakun="{{ $data->status }}" id="form-user">
                 @csrf
                 <div class="listgroupplayerinfo left">
                     <div class="listplayerinfo">
@@ -80,15 +81,15 @@
                         </div>
                     </div>
                     <div class="listplayerinfo">
-                        <label for="xyx11xuser_mailxxyy">xyx11xuser_mailxxyy</label>
+                        <label for="xyx11xuser_mailxxyy">Email</label>
                         <input class="nosabel" readonly type="text" id="xyx11xuser_mailxxyy"
                             name="xyx11xuser_mailxxyy"
-                            value="{{ substr_replace($datauser['xyx11xuser_mailxxyy'], str_repeat('*', 5), 0, 5) }}">
+                            value="{{ auth()->user()->divisi == 'superadmin' ? $datauser['xyx11xuser_mailxxyy'] : substr_replace($datauser['xyx11xuser_mailxxyy'], str_repeat('*', 5), 0, 5) }}">
                     </div>
                     <div class="listplayerinfo">
                         <label for="xynumbphonexyyy">nomor hp</label>
                         <input class="nosabel" readonly type="text" id="xynumbphonexyyy" name="xynumbphonexyyy"
-                            value="{{ substr_replace($datauser['xynumbphonexyyy'], str_repeat('*', 5), 0, 5) }}">
+                            value="{{ auth()->user()->divisi == 'superadmin' ? $datauser['xynumbphonexyyy'] : substr_replace($datauser['xynumbphonexyyy'], str_repeat('*', 5), 0, 5) }}">
                     </div>
                     <div class="listplayerinfogrp">
                         <div class="datalistplayerinfogrp">
@@ -96,14 +97,10 @@
                             <select name="group" id="group">
                                 <option value="" place="" style="color: #838383; font-style: italic;"
                                     disabled="">pilih group</option>
-                                <option value="groupbank1" {{ $datauser['group'] == 'groupbank1' ? 'selected' : '' }}>
-                                    groupbank1</option>
-                                <option value="groupbank2" {{ $datauser['group'] == 'groupbank2' ? 'selected' : '' }}>
-                                    groupbank2</option>
-                                <option value="groupbank3" {{ $datauser['group'] == 'groupbank3' ? 'selected' : '' }}>
-                                    groupbank3</option>
-                                <option value="groupbank4" {{ $datauser['group'] == 'groupbank4' ? 'selected' : '' }}>
-                                    groupbank4</option>
+                                @foreach($dataGroupDp as $dgd)
+                                <option value="{{ $dgd }}" {{ $datauser['group'] == $dgd ? 'selected' : '' }}>
+                                    {{ $dgd }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="datalistplayerinfogrp">
@@ -111,30 +108,24 @@
                             <select name="groupwd" id="groupwd">
                                 <option value="" place="" style="color: #838383; font-style: italic;"
                                     disabled="">pilih group</option>
-                                <option value="groupbank1"
-                                    {{ $datauser['groupwd'] == 'groupbank1' ? 'selected' : '' }}>
-                                    groupbank1</option>
-                                <option value="groupbank2"
-                                    {{ $datauser['groupwd'] == 'groupbank2' ? 'selected' : '' }}>groupbank2
-                                </option>
-                                <option value="groupbank3"
-                                    {{ $datauser['groupwd'] == 'groupbank3' ? 'selected' : '' }}>groupbank3
-                                </option>
-                                <option value="groupbank4"
-                                    {{ $datauser['groupwd'] == 'groupbank4' ? 'selected' : '' }}>groupbank4
-                                </option>
+                                @foreach($dataGroupWd as $dgw)
+                                    <option value="{{ $dgw }}"
+                                        {{ $datauser['groupwd'] == $dgw ? 'selected' : '' }}>
+                                        {{ $dgw }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
                 </div>
-                <div class="listgroupplayerinfo right">
-                    <button class="tombol cancel" type="button" id="suspend">
-                        <span class="texttombol">SUSPEND PLAYER</span>
-                    </button>
-                    <button class="tombol primary" type="submit">
-                        <span class="texttombol">SAVE DATA</span>
-                    </button>
-                </div>
+                
+                    <div class="listgroupplayerinfo right">
+                        <button class="{{ $data->status != 5 ? 'tombol cancel' : 'tombol primary' }}" type="button" id="suspend" data-username = '{{ $datauser['xyusernamexxy'] }}' data-status = '{{ $data->status == 5 ? 1 : 5 }}'>
+                            <span class="texttombol">{{ $data->status == 5 ? 'UNSUSPEND PLAYER' : 'SUSPEND PLAYER' }}</span>
+                        </button>
+                        <button class="tombol primary" type="submit">
+                            <span class="texttombol">SAVE DATA</span>
+                        </button>
+                    </div>
             </form>
             <spann class="titleeditmemberds change">cange data player</spann>
             <div class="groupchangedataplayer">
@@ -176,7 +167,7 @@
                             <option value="5" {{ $data->status == 5 ? 'selected' : '' }}>suspend</option>
                         </select>
                     </div>
-                    <div class="groupdatbetpl">
+                    {{-- <div class="groupdatbetpl">
                         <span class="labelbetpl">BET</span>
                         <div class="groupdatabet">
                             <label for="minbet">minimal</label>
@@ -188,7 +179,7 @@
                             <input type="number" id="maxbet" name="maxbet"
                                 value={{ $data->min_bet == '' ? 50000 : $data->min_bet }}>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="groupbuttonplayer">
                         <button class="tombol primary" type="submit">
                             <span class="texttombol">SAVE DATA</span>
@@ -259,23 +250,55 @@
 
     $(document).ready(function() {
         $("#suspend").click(function() {
+            var username = $(this).data('username');
+            var status = $(this).data('status');
+            let token = '{{ csrf_token() }}';
+            
+            // Tentukan teks berdasarkan status
+            let confirmButtonText = status != 5 ? 'Ya, aktifkan!' : 'Ya, nonaktifkan!';
+            let successMessage = status != 5 ? 'Member berhasil diaktifkan.' : 'Member berhasil disuspend.';
+            let titleText = status != 5 ? 'Konfirmasi Unsuspend' : 'Konfirmasi Suspend';
+            let actionText = status != 5 ? 'unsuspend' : 'suspend';
+
             Swal.fire({
-                title: 'Konfirmasi',
-                text: "Anda yakin ingin menonaktifkan pemain?",
+                title: titleText,
+                text: `Anda yakin ingin ${actionText} member?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, nonaktifkan!',
+                confirmButtonText: confirmButtonText,
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Lakukan tindakan nonaktifkan pemain di sini
-                    Swal.fire(
-                        'Nonaktifkan!',
-                        'Pemain telah dinonaktifkan.',
-                        'success'
-                    );
+                    $.ajax({
+                        url: '/memberlistds/updatestatus',
+                        method: 'POST',
+                        data: {
+                            _token: token,
+                            username: username,
+                            status: status
+                        },
+                        success: function(response) {
+                            Swal.fire(
+                                status != 5 ? 'Aktifkan!' : 'Nonaktifkan!',
+                                successMessage,
+                                'success'
+                            ).then((result) => {
+                                if (result.isConfirmed || result.isDismissed) {
+                                    // Refresh halaman
+                                    location.reload();
+                                }
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire(
+                                'Error',
+                                'Terjadi kesalahan saat memperbarui status member.',
+                                'error'
+                            );
+                        }
+                    });
                 }
             });
         });

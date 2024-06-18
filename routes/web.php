@@ -238,6 +238,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/seamless/addmember', [MemberlistdsController::class, 'addmember']);
         Route::post('/memberlistds/store', [MemberlistdsController::class, 'store']);
         Route::get('/memberlistds/export', [MemberlistdsController::class, 'export']);
+        Route::post('/memberlistds/updatestatus', [MemberlistdsController::class, 'updatestatus']);
     });
     /*-- Historygameds --*/
     Route::middleware('history_game')->group(function () {
@@ -291,6 +292,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bankds/listbank/{group}/{groupwd}', [BankdsController::class, 'listbank']);
         Route::get('/getGroupBank/{bank}/{jenis}', [BankdsController::class, 'getGroupBank']);
         Route::get('/bankds/xdata', [BankdsController::class, 'xdata']);
+        Route::get('/bankds/export', [BankdsController::class, 'export']);
     });
 
     Route::middleware('refeerral_bonus')->group(function () {
@@ -324,6 +326,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/agentds/accessdelete/{id}', [AgentdsController::class, 'destroy_access']);
         Route::post('/agentds/accessupdate/update', [AgentdsController::class, 'update_access']);
         Route::post('/agentds/storesetting', [AgentdsController::class, 'storesetting']);
+        Route::post('/agentds/changestatus', [AgentdsController::class, 'changestatus']);
     });
     /*-- Eventds --*/
     // Route::get('/eventds', [EventdsController::class, 'index']);

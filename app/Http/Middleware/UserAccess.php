@@ -18,7 +18,7 @@ class UserAccess
     {
         $user = $this->userAndUserAccess();
         if (!$user) {
-            abort(403, 'Mau Ngapain Coba2?');
+            abort(403, 'Unauthorized');
         }
 
         if ($this->superadminBawaan($user) === true && $user['name'] === 'admin L21' && $user['username'] === env('XUSRADXE')) {

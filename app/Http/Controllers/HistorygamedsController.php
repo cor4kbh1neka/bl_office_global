@@ -8,12 +8,12 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HistoryGameExport;
+use Carbon\Carbon;
 
 class HistorygamedsController extends Controller
 {
     public function index(Request $request)
     {
-
         $username = $request->query('username');
         $portfolio = $request->query('portfolio');
         $startDate = $request->query('startDate');
@@ -141,11 +141,19 @@ class HistorygamedsController extends Controller
             'language' => 'en',
             'serverId' => env('SERVERID')
         ]);
+
         if (!empty($data['result'])) {
             $data = $data['result'][0];
+
+            if (isset($data['subBet'][0]['kickOffTime'])) {
+                $data['subBet'][0]['kickOffTime'] = Carbon::parse($data['subBet'][0]['kickOffTime'])->addHours(11)->toDateTimeString();
+            }
+
+            $data['orderTime'] = Carbon::parse($data['orderTime'])->addHours(11)->toDateTimeString();
         } else {
             $data = $data['result'];
         }
+
         return view('historygameds.detail', [
             'title' => 'detail invoice',
             'totalnote' => 0,
@@ -175,8 +183,18 @@ class HistorygamedsController extends Controller
 
         return $responseData;
     }
+
     public function filterAndPaginate($data, $page) // ini versi yang lengkap
     {
+        $data = $data->map(function ($item) {
+            $item['orderTime'] = Carbon::createFromFormat("Y-m-d\TH:i:s.u", $item['orderTime'])
+                ->addHours(11)
+                ->toDateTimeString();
+    
+            return $item;
+        });
+        $data = $data->sortByDesc('orderTime');
+
         $query = collect($data);
         $parameter = [
             'username'
@@ -214,6 +232,7 @@ class HistorygamedsController extends Controller
                 $paginatedItems->appends($isiSearch, request($isiSearch));
             }
         }
+
         return $paginatedItems;
     }
 

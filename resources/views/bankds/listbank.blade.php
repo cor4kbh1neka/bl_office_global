@@ -518,7 +518,7 @@
                 name="myCheckboxDeposit-${counter}" data-id="" checked onclick="return false;">
         </td>
         <td>
-            <button id="hapusKolom" class="tombol cancel">
+            <button id="hapusKolom" class="tombol danger cancel">
                 <span class="texttombol"> X </span>
             </button>
         </td>
@@ -582,7 +582,7 @@
                 name="myCheckboxWithdraw-${counterWd}" data-id="" checked onclick="return false;">
         </td>
         <td>
-            <button id="hapusKolom" class="tombol cancel">
+            <button id="hapusKolom" class="tombol danger cancel">
                 <span class="texttombol"> X </span>
             </button>
         </td>

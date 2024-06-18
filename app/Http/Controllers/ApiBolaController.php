@@ -491,7 +491,7 @@ class ApiBolaController extends Controller
                                 // ]);
 
                                 $this->addHistoryTranskasi($request->Username, $txnid, $request->TransferCode, $portfolio, $portfolio, 'cancel', $dataTransactions->amount, 0, $saldoMember);
-                                $this->addWinlossStake($request->TransferCode, $portfolio, $dataTransactions->amount, 'cancel');
+                                $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, $dataTransactions->amount, 'cancel');
                             }
                         }
                     } else {
@@ -517,7 +517,7 @@ class ApiBolaController extends Controller
 
                                 $this->addHistoryTranskasi($dataReferral->username, $txnid, $request->TransferCode, 'Bonus', $portfolio, 'cancel', $dataReferral->kredit, 0, $porcessBalance["balance"]);
                                 $dataTransactionsS2 = TransactionSaldo::where('transtatus_id', $last2ndStatus->id)->orderBy('created_at', 'DESC')->orderBy('urutan', 'DESC')->first();
-                                $this->addWinlossStake($request->TransferCode, $portfolio, ($dataTransactionsS2->amount * -1), 'cancel');
+                                $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, ($dataTransactionsS2->amount * -1), 'cancel');
                             }
                         }
                     }
@@ -765,7 +765,7 @@ class ApiBolaController extends Controller
                     // ]);
 
                     $this->addHistoryTranskasi($request->Username, '', $request->TransferCode, $portfolio, $portfolio, 'cancel', $dataTransactions->amount, 0, $saldoMember);
-                    $this->addWinlossStake($request->TransferCode, $portfolio, ($dataTransactions->amount * -1), 'rollback');
+                    $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, ($dataTransactions->amount * -1), 'rollback');
                 }
             } else {
                 /* Cancel Referral */
@@ -795,7 +795,7 @@ class ApiBolaController extends Controller
 
                         /* Win Loss */
                         $dataTransactionsS2 = TransactionSaldo::where('transtatus_id', $last2ndStatus->id)->orderBy('created_at', 'DESC')->orderBy('urutan', 'DESC')->first();
-                        $this->addWinlossStake($request->TransferCode, $portfolio, ($dataTransactionsS2->amount * -1), 'rollback');
+                        $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, ($dataTransactionsS2->amount * -1), 'rollback');
                     }
                 }
             }
@@ -899,11 +899,11 @@ class ApiBolaController extends Controller
                             // ]);
 
                             $this->addHistoryTranskasi($request->Username, $txnid, $request->TransferCode, $portfolio, $portfolio, $request->IsCashOut === true ? 'cashout' : 'menang', 0, $WinLoss, $saldoMember);
-                            $this->addWinlossStake($request->TransferCode, $portfolio, $WinLoss, 'settle');
+                            $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, $WinLoss, 'settle');
                         }
                     } else {
                         $WinLoss = TransactionSaldo::where('transtatus_id', $dataStatusTransaction->id)->orderBy('urutan', 'asc')->first()->amount;
-                        $this->addWinlossStake($request->TransferCode, $portfolio, ($WinLoss * -1), 'settle');
+                        $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, ($WinLoss * -1), 'settle');
                         /* Referral */
                         $this->execReferral($request, $WinLoss);
                     }
@@ -937,89 +937,96 @@ class ApiBolaController extends Controller
         if (!$dataAktif) {
             $dataAktif = Member::where('username', $request->Username)->first();
         }
-
-        if ($dataAktif) {
-            if ($dataAktif->referral !== '' && $dataAktif->referral !== null) {
-                $portfolio = ProductType::where('id', $request->ProductType)->first();
-                $portfolio = $portfolio ? $portfolio->portfolio : 'SportsBook';
-
-                $persentase = Persentase::where('jenis', $portfolio)->first();
-                $persentase = $persentase ? $persentase->persentase : 0;
-
-                $referralAmount = $amount * $persentase / 100;
-                if ($referralAmount > 0) {
-                    $depositReferral = $this->processBalance($dataAktif->referral, 'DP', $referralAmount);
-                    if ($depositReferral["status"] === "success") {
-
-                        if ($dataAktif->referral !== null && $dataAktif->referral !== '') {
-                            $dataReferral = [
-                                'upline' => $dataAktif->referral,
-                                'downline' => $request->Username,
-                                'portfolio' => $portfolio,
-                                'amount' => $referralAmount
-                            ];
-
-                            if (preg_match('/^[a-e]/i', $dataAktif->referral)) {
-                                $refAktif = ReferralAktif1::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
-                                if ($refAktif) {
-
-                                    $refAktif->increment('amount', $referralAmount);
-                                } else {
-                                    ReferralAktif1::create($dataReferral);
-                                }
-                            } elseif (preg_match('/^[f-j]/i', $dataAktif->referral)) {
-                                $refAktif = ReferralAktif2::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
-                                if ($refAktif) {
-
-                                    $refAktif->increment('amount', $referralAmount);
-                                } else {
-                                    ReferralAktif2::create($dataReferral);
-                                }
-                            } elseif (preg_match('/^[k-o]/i', $dataAktif->referral)) {
-                                $refAktif = ReferralAktif3::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
-                                if ($refAktif) {
-
-                                    $refAktif->increment('amount', $referralAmount);
-                                } else {
-                                    ReferralAktif3::create($dataReferral);
-                                }
-                            } elseif (preg_match('/^[p-t]/i', $dataAktif->referral)) {
-                                $refAktif = ReferralAktif4::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
-                                if ($refAktif) {
-
-                                    $refAktif->increment('amount', $referralAmount);
-                                } else {
-                                    ReferralAktif4::create($dataReferral);
-                                }
-                            } elseif (preg_match('/^[u-z]/i', $dataAktif->referral)) {
-                                $refAktif = ReferralAktif5::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
-                                if ($refAktif) {
-
-                                    $refAktif->increment('amount', $referralAmount);
-                                } else {
-                                    ReferralAktif5::create($dataReferral);
-                                }
-                            }
+    
+        if ($dataAktif && !empty($dataAktif->referral)) {
+            $portfolio = ProductType::where('id', $request->ProductType)->first();
+            $portfolio = $portfolio ? $portfolio->portfolio : 'SportsBook';
+    
+            $persentase = Persentase::where('jenis', $portfolio)->first();
+            $persentase = $persentase ? $persentase->persentase : 0;
+    
+            $referralAmount = $amount * $persentase / 100;
+            if ($referralAmount > 0) {
+                $txnid = $this->generateTxnid('D');
+    
+                $dataDepo = [
+                    "Username" => env('UNIX_CODE') . $dataAktif->referral,
+                    "TxnId" => $txnid,
+                    "Amount" => $referralAmount,
+                    "CompanyKey" => env('COMPANY_KEY'),
+                    "ServerId" => env('SERVERID')
+                ];
+    
+                $responseDepoRef = $this->requestApi('deposit', $dataDepo);
+                if ($responseDepoRef["error"]["id"] === 0) {
+                    $this->execBalance($request, $portfolio, $dataAktif, $referralAmount);
+                } else {
+                    // Handle error 4404 with retry logic and generating new txnId
+                    $maxAttempts4404 = 10;
+                    $attempt4404 = 0;
+                    while ($responseDepoRef["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
+                        $txnid = $this->generateTxnid('D');
+                        $dataDepo["TxnId"] = $txnid;
+                        $responseDepoRef = $this->requestApi('deposit', $dataDepo);
+    
+                        if ($responseDepoRef["error"]["id"] === 0) {
+                            return $this->execBalance($request, $portfolio, $dataAktif, $referralAmount);
+                            // break;
                         }
-
-                        /* Create History Transaksi */
-                        $saldoMember = Balance::where('username', $dataAktif->referral)->first()->amount;
-                        // HistoryTransaksi::create([
-                        //     'username' => $dataAktif->referral,
-                        //     'invoice' =>  '',
-                        //     'refno' => $request->TransferCode,
-                        //     'keterangan' => 'Bonus',
-                        //     'portfolio' => $portfolio,
-                        //     'status' => 'referral',
-                        //     'debit' => 0,
-                        //     'kredit' => $referralAmount,
-                        //     'balance' => $saldoMember
-                        // ]);
-
-                        $this->addHistoryTranskasi($dataAktif->referral, '', $request->TransferCode, 'Bonus', $portfolio, 'referral', 0, $referralAmount, $saldoMember);
+                        $attempt4404++;
+                    }
+    
+                    if ($responseDepoRef["error"]["id"] !== 0) {
+                        return response()->json([
+                            'status' => 'Error',
+                            'message' => $responseDepoRef["error"]["msg"]
+                        ], 500);
                     }
                 }
             }
+        }
+    }
+
+    private function execBalance($request, $portfolio, $dataAktif, $referralAmount)
+    {
+        $depositReferral = $this->processBalance($dataAktif->referral, 'DP', $referralAmount);
+        if ($depositReferral["status"] === "success") {
+            $dataReferral = [
+                'upline' => $dataAktif->referral,
+                'downline' => $request->Username,
+                'portfolio' => $portfolio,
+                'amount' => $referralAmount
+            ];
+    
+            if (preg_match('/^[a-e]/i', $dataAktif->referral)) {
+                $refAktif = ReferralAktif1::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
+                $this->updateOrCreateReferral($refAktif, ReferralAktif1::class, $dataReferral, $referralAmount);
+            } elseif (preg_match('/^[f-j]/i', $dataAktif->referral)) {
+                $refAktif = ReferralAktif2::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
+                $this->updateOrCreateReferral($refAktif, ReferralAktif2::class, $dataReferral, $referralAmount);
+            } elseif (preg_match('/^[k-o]/i', $dataAktif->referral)) {
+                $refAktif = ReferralAktif3::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
+                $this->updateOrCreateReferral($refAktif, ReferralAktif3::class, $dataReferral, $referralAmount);
+            } elseif (preg_match('/^[p-t]/i', $dataAktif->referral)) {
+                $refAktif = ReferralAktif4::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
+                $this->updateOrCreateReferral($refAktif, ReferralAktif4::class, $dataReferral, $referralAmount);
+            } elseif (preg_match('/^[u-z]/i', $dataAktif->referral)) {
+                $refAktif = ReferralAktif5::where('downline', $request->Username)->whereDate('created_at', date('Y-m-d'))->first();
+                $this->updateOrCreateReferral($refAktif, ReferralAktif5::class, $dataReferral, $referralAmount);
+            }
+    
+            // Create History Transaksi
+            $saldoMember = Balance::where('username', $dataAktif->referral)->first()->amount;
+            $this->addHistoryTranskasi($dataAktif->referral, '', $request->TransferCode, 'Bonus', $portfolio, 'referral', 0, $referralAmount, $saldoMember);
+        }
+    }
+    
+    private function updateOrCreateReferral($refAktif, $referralModel, $dataReferral, $referralAmount)
+    {
+        if ($refAktif) {
+            $refAktif->increment('amount', $referralAmount);
+        } else {
+            $referralModel::create($dataReferral);
         }
     }
 
@@ -1305,17 +1312,29 @@ class ApiBolaController extends Controller
         ];
     }
 
-    private function addWinlossStake($transfercode, $portfolio, $amount, $jenis)
+    private function addWinlossStake($username, $transaction_id, $transfercode, $portfolio, $amount, $jenis)
     {
+        $amount_bet = 0;
+        $dataStatusTransaction = TransactionStatus::where('trans_id', $transaction_id)->orderBy('created_at', 'ASC')->orderBy('urutan', 'ASC')->first();
+        if($dataStatusTransaction) {
+            $dataSaldoTransaction = TransactionSaldo::where('transtatus_id', $dataStatusTransaction->id)->orderBy('created_at', 'ASC')->orderBy('urutan', 'ASC')->first();
+            if($dataSaldoTransaction) {
+                $amount_bet = $dataSaldoTransaction->amount;
+            }
+        }
+        
         $winlossData = [
+            'username' => $username,
             'transfercode' => $transfercode,
             'portfolio' => $portfolio,
             'amount' => $amount,
+            'amount_bet' => $amount_bet,
             'jenis' => $jenis
         ];
 
         AddWinlossStakeJob::dispatch($winlossData);
     }
+
 
     // private function getApi($refNos, $portfolio)
     // {
@@ -1359,5 +1378,23 @@ class ApiBolaController extends Controller
         AddHistoryJob::dispatch($historyData);
 
         return;
+    }
+
+    function generateTxnid($jenis)
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomString = '';
+
+        if ($jenis == 'D') {
+            $length = 17;
+        } else {
+            $length = 10;
+        }
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        $randomString = $jenis . $randomString;
+        return $randomString;
     }
 }

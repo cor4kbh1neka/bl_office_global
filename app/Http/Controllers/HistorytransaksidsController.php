@@ -25,7 +25,7 @@ class HistorytransaksidsController extends Controller
     {
         $data = [];
         if ($request->getQueryString() && request('username')) {
-            $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 20);
+            $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
         }
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
@@ -33,21 +33,21 @@ class HistorytransaksidsController extends Controller
         ]);
     }
 
-    private function getApiBetList()
-    {
-        $data = [
-            "username" => "abangpoorgas",
-            "portfolio" => "SportsBook",
-            "startDate" => "2024-04-01T00:00:00.540Z",
-            "endDate" => "2024-05-30T23:59:59.540Z",
-            "companyKey" => "C441C721B2214E658A6D2A72C41D2063",
-            "language" => "en",
-            "serverId" => "YY-TEST"
-        ];
-        $response = Http::withTokenHeader()->post(env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
+    // private function getApiBetList()
+    // {
+    //     $data = [
+    //         "username" => "abangpoorgas",
+    //         "portfolio" => "SportsBook",
+    //         "startDate" => "2024-04-01T00:00:00.540Z",
+    //         "endDate" => "2024-05-30T23:59:59.540Z",
+    //         "companyKey" => "C441C721B2214E658A6D2A72C41D2063",
+    //         "language" => "en",
+    //         "serverId" => "YY-TEST"
+    //     ];
+    //     $response = Http::withTokenHeader()->post(env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
 
-        return $response->json();
-    }
+    //     return $response->json();
+    // }
 
 
     public function transaksilama(Request $request)
@@ -193,7 +193,7 @@ class HistorytransaksidsController extends Controller
 
     public function export(Request $request)
     {
-        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->get(), 0);
+        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 0);
 
         $data = collect($data);
         return Excel::download(new HistoryTransaksiExport($data), 'Historycoin.xlsx');

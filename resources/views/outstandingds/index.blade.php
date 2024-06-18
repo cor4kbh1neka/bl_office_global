@@ -95,9 +95,9 @@
                                         <td>{{ $startNumber + $i }}</td>
                                         <td>{{ $d->username }}</td>
                                         <td>{{ date('Y-m-d H:i:s', strtotime($d->created_at)) }}</td>
-                                        <td class="data refNo">{{ $d->transactionid }}</td>
+                                        <td class="data refNo">{{ $d->transfercode }}</td>
                                         <td>
-                                            <a href="/historygameds/detail/{{ $d->transactionid }}/{{ $d->portfolio }}"
+                                            <a href="/historygameds/detail/{{ $d->transfercode }}/{{ $d->portfolio }}"
                                                 target="_blank" class="detailbetingan">
                                                 <span class="texttypebet sportsType">{{ $d->gametype }}</span>
                                                 <span class="klikdetail">(selengkapnya)</span>

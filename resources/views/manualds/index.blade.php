@@ -150,6 +150,20 @@
             $('#form').on('submit', function(event) {
                 event.preventDefault();
 
+                 // Validasi input keterangan
+                let keterangan = $('#keterangan').val();
+                if (keterangan.length > 20) {
+                    Swal.fire({
+                        title: 'Warning',
+                        text: 'Keterangan tidak boleh lebih dari 20 karakter!',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        $(this).val('');
+                    });
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
                     text: "Pastikan data yang dimasukkan sudah benar.",
@@ -161,6 +175,20 @@
                 }).then((result) => {
 
                     if (result.isConfirmed) {
+                        let jenis = $('#jenis').val();
+                        let nominal = parseFloat($('#nominal').val());
+
+                        if (jenis === 'DPM' && nominal > 20000) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Nominal tidak boleh lebih dari 20,000',
+                                showConfirmButton: true
+                            }).then(() => {
+                                $('#nominal').val(''); 
+                            });
+                            return;
+                        }
+
                         if ($('#jenis').val() == 'WDM') {
                             if (parseFloat($('#saldo').val()) < parseFloat($('#nominal').val())) {
                                 Swal.fire({
@@ -192,14 +220,25 @@
                                     'Berhasil!',
                                     'Data telah diproses.',
                                     'success'
-                                );
+                                ).then(() => {
+                                    $('#username').val('').focus();
+                                    $('#saldo').val('');
+                                    $('#keterangan').val('');
+                                    $('#jenis').val('');
+                                    $('#nominal').val('');
+                                });
 
                                 $('.tombol.proses').prop('disabled', false);
                             },
                             error: function(response) {
+                                let errorMessage = 'Terjadi kesalahan saat memproses data.';
+                                if (response.responseJSON && response.responseJSON.message) {
+                                    errorMessage = response.responseJSON.message.join(', ');
+                                }
+
                                 Swal.fire(
-                                    'Gagal!',
-                                    'Username tidak tersedia.',
+                                    'Error!',
+                                    errorMessage,
                                     'error'
                                 );
 
@@ -210,5 +249,41 @@
                 });
             });
         });
+
+        $(document).ready(function() {
+            $('#nominal').on('input', function() {
+                let nominal = parseFloat($(this).val());
+                let jenis = $('#jenis').val();
+
+                if (jenis === 'DPM' && nominal > 20000) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Nominal tidak boleh lebih dari 20,000',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        $('#nominal').val('');
+                    });
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            $("#keterangan").on('input', function() {
+                var inputLength = $(this).val().length;
+                
+                if (inputLength > 20) {
+                    Swal.fire({
+                        title: 'Warning',
+                        text: 'Keterangan tidak boleh lebih dari 20 karakter!',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        $(this).val('');
+                    });
+                }
+            });
+        });
+        
     </script>
 @endsection

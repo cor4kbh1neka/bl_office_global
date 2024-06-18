@@ -93,7 +93,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="listplayerinfo">
+                                    <input type="hidden" readonly id="namarek" name="namarek"
+                                    value="{{ $d['xynamarekx'] }}">
+                                    <input type="hidden" readonly id="nomorrek" name="nomorrek"
+                                    value="{{ $d['norekxyxy'] }}">
+                                    {{-- <div class="listplayerinfo">
                                         <label for="namarek">nama rekening</label>
                                         <div class="groupeditinput">
                                             <input type="text" readonly id="namarek" name="namarek"
@@ -104,8 +108,8 @@
                                                     d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
                                             </svg>
                                         </div>
-                                    </div>
-                                    <div class="listplayerinfo">
+                                    </div> --}}
+                                    {{-- <div class="listplayerinfo">
                                         <label for="nomorrek">nomor rekening</label>
                                         <div class="groupeditinput">
                                             <input type="text" readonly id="nomorrek" name="nomorrek"
@@ -116,7 +120,7 @@
                                                     d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
                                             </svg>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="listplayerinfo">
                                         <label for="urlbarcode">url barcode</label>
                                         <div class="groupeditinput">
@@ -133,7 +137,7 @@
                                 </div>
                                 <div class="listgroupplayerinfo right">
                                     <a href="#" class="tombol cancel delete-bank-button"
-                                        data-idbank="{{ $d['idbank'] }}" data-bank="{{ $bank }}">
+                                        data-idbank="{{ $d['idbank'] }}" data-bank="{{ $d['namebankxxyy'] }}">
                                         <span class="texttombol">
                                             {{-- <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                                                 viewBox="0 0 48 48">

@@ -128,12 +128,12 @@ class ApiController extends Controller
 
         $username = $request->username;
         $ipaddress = $request->ipaddres;
-
+        
         try {
             $member = Member::where('username', $username)->firstOrFail();
             $member->update([
                 'ip_log' => $ipaddress,
-                'lastlogin' => Carbon::now(),
+                'lastlogin' => Carbon::now()->format('Y-m-d H:i:s'),
                 'domain' => $request->getHost()
             ]);
             

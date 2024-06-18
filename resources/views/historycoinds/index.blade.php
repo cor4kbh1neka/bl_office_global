@@ -54,17 +54,23 @@
                                     gl0b4l#21</option>
                             </select>
                         </div>
+                        @php
+                            use Carbon\Carbon;
+
+                            $hariIni = Carbon::now()->format('Y-m-d');
+                        @endphp
                         <div class="listheadhistoryds bottom two">
-                            @if (request('tgldari') && request('tglsampai') === date('Y-m-d'))
+                            @if(request('tgldari') ===  $hariIni && request('tglsampai') ===  $hariIni)
+                                <input type="date" id="tgldari" name="tgldari" value="{{ $hariIni }}">
+                                <input type="date" id="tglsampai" name="tglsampai" value="{{ $hariIni }}">
+                            @else
                                 <input type="date" id="tgldari" name="tgldari" value="{{ request('tgldari') }}">
                                 <input type="date" id="tglsampai" name="tglsampai" value="{{ request('tglsampai') }}">
-                            @else
-                                <input type="date" id="tgldari" name="tgldari" value="{{ date('Y-m-d') }}">
-                                <input type="date" id="tglsampai" name="tglsampai" value="{{ date('Y-m-d') }}">
                             @endif
                             <button type="submit" class="tombol primary" id="searchbutton">
                                 <span class="texttombol">SUBMIT</span>
                             </button>
+                        </div>
                         </div>
                         <div class="exportdata">
                             <span class="textdownload">download</span>

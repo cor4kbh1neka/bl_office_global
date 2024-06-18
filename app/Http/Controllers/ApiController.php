@@ -57,7 +57,7 @@ class ApiController extends Controller
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
             $getLogin = $this->requestApiLogin($dataLogin);
-           
+
 
 
             if ($getLogin["url"] !== "") {
@@ -76,7 +76,7 @@ class ApiController extends Controller
             }
 
             $statusMember = Member::where('username', $username)->first();
-            if($statusMember) {
+            if ($statusMember) {
                 $getLogin["is_suspend"] = $statusMember->status == 5 ? true : false;
             }
 
@@ -128,7 +128,7 @@ class ApiController extends Controller
 
         $username = $request->username;
         $ipaddress = $request->ipaddres;
-        
+
         try {
             $member = Member::where('username', $username)->firstOrFail();
             $member->update([
@@ -136,7 +136,7 @@ class ApiController extends Controller
                 'lastlogin' => Carbon::now()->format('Y-m-d H:i:s'),
                 'domain' => $request->getHost()
             ]);
-            
+
             return response()->json(['message' => 'Log berhasil tersimpan!']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Terjadi kesalahan saat menyimpan log.'], 500);
@@ -151,7 +151,7 @@ class ApiController extends Controller
         }
 
         $ipaddress = $request->ipadress;
-        
+
         $dataCore = [
             "xyusernamexxy" => $request->Username,
             "password" => $request->Password,
@@ -320,7 +320,7 @@ class ApiController extends Controller
         if ($validasiBearer !== true) {
             return $validasiBearer;
         }
-    
+
         $apiMt = $this->apiStatusMaintenance();
         if ($apiMt->stsmtncnc == '2') {
             return response()->json([
@@ -331,8 +331,8 @@ class ApiController extends Controller
         }
 
         $statusMember = Member::where('username', $request->username)->first();
-        if($statusMember) {
-            if($statusMember->status == 5) {
+        if ($statusMember) {
+            if ($statusMember->status == 5) {
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Akun Anda telah ditangguhkan. Silakan hubungi dukungan pelanggan untuk informasi lebih lanjut.',
@@ -340,15 +340,15 @@ class ApiController extends Controller
                 ], 200);
             }
         }
-    
+
         try {
             DB::beginTransaction();
             // Cek Status DP
             $dataDepoWd = DepoWd::where('username', strtolower($request->username))
-                                ->where('jenis', 'DP')
-                                ->where('status', '0')
-                                ->lockForUpdate()
-                                ->first();
+                ->where('jenis', 'DP')
+                ->where('status', '0')
+                ->lockForUpdate()
+                ->first();
             if ($dataDepoWd) {
                 DB::rollBack();
                 return response()->json([
@@ -356,19 +356,19 @@ class ApiController extends Controller
                     'message' => 'Deposit anda sedang dalam proses'
                 ], 400);
             }
-    
+
             // Update Member status
             $dataMember = Member::where('username', strtolower($request->username))
-                                ->where('status', 0)
-                                ->lockForUpdate()
-                                ->first();
+                ->where('status', 0)
+                ->lockForUpdate()
+                ->first();
             if ($dataMember) {
                 $dataMember->update([
                     'status' => '9',
                     'is_notnew' => true,
                 ]);
             }
-    
+
             // Prepare data for DepoWd and Xdpwd
             $data = $request->all();
             $data["username"] = strtolower($data["username"]);
@@ -376,7 +376,7 @@ class ApiController extends Controller
             $data["txnid"] = null;
             $data["status"] = 0;
             $data["approved_by"] = null;
-    
+
             // Create DepoWd
             $dataDepoWd = DepoWd::create($data);
             if (!$dataDepoWd) {
@@ -386,7 +386,7 @@ class ApiController extends Controller
                     'message' => 'Gagal membuat data deposit'
                 ], 500);
             }
-    
+
             // Create Xdpwd
             $dataXdpwd = Xdpwd::create($data);
             if (!$dataXdpwd) {
@@ -396,7 +396,7 @@ class ApiController extends Controller
                     'message' => 'Gagal menyimpan data ke Xdpwd'
                 ], 500);
             }
-    
+
             DB::commit();
             return response()->json([
                 'status' => 'Success',
@@ -417,7 +417,7 @@ class ApiController extends Controller
         if ($validasiBearer !== true) {
             return $validasiBearer;
         }
-        
+
         $apiMt = $this->apiStatusMaintenance();
         if ($apiMt->stsmtncnc == '2') {
             return response()->json([
@@ -450,10 +450,10 @@ class ApiController extends Controller
 
             // Cek Status WD
             $dataDepoWd = DepoWd::where('username', strtolower($request->username))
-                                ->where('jenis', 'WD')
-                                ->where('status', '0')
-                                ->lockForUpdate()
-                                ->first();
+                ->where('jenis', 'WD')
+                ->where('status', '0')
+                ->lockForUpdate()
+                ->first();
             if ($dataDepoWd) {
                 DB::rollBack();
                 return response()->json([
@@ -481,7 +481,7 @@ class ApiController extends Controller
                     'status' => 'error',
                     'message' => 'Gagal membuat data penarikan'
                 ], 500);
-            } 
+            }
 
             $dataXdpwd = Xdpwd::create($data);
             if (!$dataXdpwd) {
@@ -529,7 +529,7 @@ class ApiController extends Controller
         while ($resultsApi["error"]["id"] === 9720 && $attempt9720 < $maxAttempts9720) {
             sleep(6);
             $resultsApi = $this->requestApi('withdraw', $dataAPI);
-            if($resultsApi["error"]["id"] === 0){
+            if ($resultsApi["error"]["id"] === 0) {
                 return response()->json([
                     'status' => 'Success',
                     'message' => 'Withdrawal sedang diproses'
@@ -708,9 +708,9 @@ class ApiController extends Controller
 
         // Mengambil data transaksi terakhir
         $dataLastDepo = DepoWd::where('username', $username)
-                            ->where('jenis', $jenis)
-                            ->orderBy('created_at', 'desc')
-                            ->first();
+            ->where('jenis', $jenis)
+            ->orderBy('created_at', 'desc')
+            ->first();
 
         // Mengecek status transaksi terakhir
         if ($dataLastDepo) {
@@ -727,7 +727,7 @@ class ApiController extends Controller
                     ]);
                 case 0:
                     return response()->json([
-                        'status' => 'Waitting',
+                        'status' => 'Waiting',
                         'message' => $tipe . ' sedang diproses!'
                     ]);
             }
@@ -1083,7 +1083,7 @@ class ApiController extends Controller
             ->union($DataReferral4)
             ->union($DataReferral5)->toArray();
 
-        usort($allData, function($a, $b) {
+        usort($allData, function ($a, $b) {
             return strtotime($b['created_at']) - strtotime($a['created_at']);
         });
 

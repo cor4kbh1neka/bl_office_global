@@ -32,7 +32,7 @@ class AddWinlossStakeJob implements ShouldQueue
     {
         try {
             $username = $this->data['username'];
-            Log::info('username:', ['username' => $username]);
+            // Log::info('username:', ['username' => $username]);
             $transfercode = $this->data['transfercode'];
             $portfolio = $this->data['portfolio'];
             $amountWL = $this->data['amount'];
@@ -50,11 +50,11 @@ class AddWinlossStakeJob implements ShouldQueue
             //         $responseWL = $this->createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis);
             //     }
             // } else {
-                $username = $this->convertUsername($username);
-                $responseWL = $this->createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis);
+            $username = $this->convertUsername($username);
+            $responseWL = $this->createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis);
             // }
 
-            Log::info('cc:', ['data' => $responseWL]);
+            // Log::info('cc:', ['data' => $responseWL]);
         } catch (\Exception $e) {
             Log::error('Failed to process AddWinlossStakeJob: ' . $e->getMessage());
         }
@@ -76,7 +76,7 @@ class AddWinlossStakeJob implements ShouldQueue
 
     private function createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis)
     {
-        if($amountWL > 0) {
+        if ($amountWL > 0) {
             $amountWL = $amountWL - $amount;
         }
 

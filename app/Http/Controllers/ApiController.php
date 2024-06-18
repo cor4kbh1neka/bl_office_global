@@ -127,8 +127,8 @@ class ApiController extends Controller
         }
 
         $username = $request->username;
-        $ipaddress = $request->ipaddress;
-        return $request->all();
+        $ipaddress = $request->ipaddres;
+        
         try {
             $member = Member::where('username', $username)->firstOrFail();
             $member->update([

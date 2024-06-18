@@ -136,7 +136,8 @@ class ApiController extends Controller
                 'lastlogin' => now(),
                 'domain' => $request->getHost()
             ]);
-
+            return $member;
+            
             return response()->json(['message' => 'Log berhasil tersimpan!']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Terjadi kesalahan saat menyimpan log.'], 500);

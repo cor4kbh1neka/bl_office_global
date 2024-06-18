@@ -77,7 +77,9 @@
                                                         {{ $checkgroupbank == 'on' ? 'checked' : '' }}>
                                                 </div>
                                             </label>
+                                            
                                             <select id="groupbank" name="groupbank">
+                                                <option value="">All</option>
                                                 @foreach ($listgroupbank as $gb)
                                                     <option value="{{ $gb }}"
                                                         {{ $gb == $groupbank ? 'selected' : '' }}>{{ $gb }}
@@ -89,26 +91,17 @@
                                             <label for="status">
                                                 bank
                                                 <div class="check_box">
-                                                    <input type="checkbox" id="checkbank" name="checkbank">
+                                                    <input type="checkbox" id="checkbank" name="checkbank"
+                                                        {{ $checkbank == 'on' ? 'checked' : '' }}>
                                                 </div>
                                             </label>
                                             <select id="bank" name="bank">
-                                                <option value="bca">bca</option>
-                                                <option value="bni">bni</option>
-                                                <option value="bri">bri</option>
-                                                <option value="mandiri">mandiri</option>
-                                                <option value="cimb">cimb</option>
-                                                <option value="danamon">danamon</option>
-                                                <option value="panin">panin</option>
-                                                <option value="cimb">cimb</option>
-                                                <option value="permata">permata</option>
-                                                <option value="bsi">bsi</option>
-                                                <option value="dana">dana</option>
-                                                <option value="gopay">gopay</option>
-                                                <option value="ovo">ovo</option>
-                                                <option value="pulsa">pulsa</option>
-                                                <option value="linkaja">linkaja</option>
-                                                <option value="qris">qris</option>
+                                                <option value="">All</option>
+                                                @foreach ($listbank as $b)
+                                                    <option value="{{ $b }}"
+                                                        {{ $b == $bank ? 'selected' : '' }}>{{ $b }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -117,7 +110,8 @@
                                             <label for="gabungdari">
                                                 tanggal dari
                                                 <div class="check_box">
-                                                    <input type="checkbox" id="checktgldari" name="checktgldari">
+                                                    <input type="checkbox" id="checktgldari" name="checktgldari"
+                                                        {{ $checktgldari == 'on' ? 'checked' : '' }}>
                                                 </div>
                                             </label>
                                             <input type="date" id="gabungdari" name="gabungdari"
@@ -127,17 +121,19 @@
                                             <label for="gabunghingga">
                                                 tanggal hingga
                                                 <div class="check_box">
-                                                    <input type="checkbox" id="checktglhingga" name="checktglhingga">
+                                                    <input type="checkbox" id="checktglhingga" name="checktglhingga"
+                                                        {{ $checktglhingga == 'on' ? 'checked' : '' }}>
                                                 </div>
                                             </label>
-                                            <input type="date" id="gabunghingga" name="tanggal gabung hingga"
+                                            <input type="date" id="gabunghingga" name="gabunghingga"
                                                 placeholder="nama rekening">
                                         </div>
                                         <div class="listinputmember">
                                             <label for="xmincount">
                                                 x data minimal
                                                 <div class="check_box">
-                                                    <input type="checkbox" id="checkxmincount" name="checkxmincount">
+                                                    <input type="checkbox" id="checkxmincount" name="checkxmincount"
+                                                        {{ $checkxmincount == 'on' ? 'checked' : '' }}>
                                                 </div>
                                             </label>
                                             <input type="number" id="xmincount" name="xmincount"
@@ -147,13 +143,21 @@
                                             <label for="xmaxcount">
                                                 x data maksimal
                                                 <div class="check_box">
-                                                    <input type="checkbox" id="checkxmaxcount" name="checkxmaxcount">
+                                                    <input type="checkbox" id="checkxmaxcount" name="checkxmaxcount"
+                                                        {{ $checkxmaxcount == 'on' ? 'checked' : '' }}>
                                                 </div>
                                             </label>
                                             <input type="number" id="xmaxcount" name="xmaxcount"
                                                 placeholder="x data maksimal">
                                         </div>
                                         <div class="listinputmember">
+                                            <label for="xmaxcount">
+                                                Check All
+                                                <div class="check_box">
+                                                    <input type="checkbox" id="checkall" name="checkall"
+                                                        {{ $checkall == 'on' ? 'checked' : '' }}>
+                                                </div>
+                                            </label>
                                             <button class="tombol primary">
                                                 <span class="texttombol">SUBMIT</span>
                                             </button>
@@ -170,7 +174,7 @@
                                 </form>
                             </div>
                             <div class="totalcountxdata">
-                                <span class="countxdata">120</span> users dari total <span class="totaluser">12000</span>
+                                <span class="countxdata">{{ $totaluser }}</span> users dari total <span class="totaluser">{{ $totalmo }}</span>
                                 users aktif
                             </div>
                             <div class="tabelproses">
@@ -192,7 +196,7 @@
                                                     <div class="splitcollum">
                                                         <span>
                                                             {{ $d->username }}
-                                                            <a href="/memberlistds/edit" class="iconprofile openviewport"
+                                                            <a href="/memberlistds/edit/{{ $d->username  }}" class="iconprofile openviewport"
                                                                 target="_blank">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em"
                                                                     height="1em" viewBox="0 0 24 24">
@@ -203,16 +207,16 @@
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td>{{ $typexdata == 'xdeposit' ? $d->sum_dp : $d->sum_wd }}</td>
+                                                <td>{{ $d->amount }}</td>
                                                 <td>{{ $d->updated_at }}</td>
                                                 <td>{{ $d->groupbank }}</td>
-                                                <td>{{ $typexdata == 'xdeposit' ? $d->count_dp : $d->count_wd }}</td>
+                                                <td>{{ $d->xdata }}</td>
                                                 <td>{{ $d->bank }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <div class="grouppagination">
+                                {{-- <div class="grouppagination">
                                     <div class="grouppaginationcc">
                                         <div class="trigger left">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
@@ -246,6 +250,9 @@
                                         <span class="numberpage">...</span>
                                         <span class="numberpage">12</span>
                                     </div>
+                                </div> --}}
+                                <div class="grouppagination" style="padding: 25px;">
+                                    {{ $data->links('vendor.pagination.customdashboard') }}
                                 </div>
                             </div>
                         </div>
@@ -290,6 +297,67 @@
 
                 window.open(url, "_blank", "width=" + windowWidth + ", height=" + windowHeight + ", left=" +
                     windowLeft + ", top=" + windowTop);
+            });
+        });
+
+        $(document).ready(function () {
+            $('#checkall').change(function () {
+                var isChecked = $(this).is(':checked');
+                $('input[type="checkbox"]').not(this).prop('checked', isChecked);
+            });
+        });
+
+        $('.exportdata').click(function() {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi',
+                text: 'Apakah ingin mendownload data ini?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    // Mendapatkan nilai dari input
+                    var checkusername = $('#checkusername').val();
+                    var username = $('#username').val();
+                    var typexdata = $('#typexdata').val();
+                    var checkgroupbank = $('#checkgroupbank').val();
+                    var groupbank = $('#groupbank').val();
+                    var checkbank = $('#checkbank').val();
+                    var bank = $('#bank').val();
+                    var checktgldari = $('#checktgldari').val();
+                    var gabungdari = $('#gabungdari').val();
+                    var checktglhingga = $('#checktglhingga').val();
+                    var gabunghingga = $('#gabunghingga').val();
+                    var checkxmincount = $('#checkxmincount').val();
+                    var xmincount = $('#xmincount').val();
+                    var checkxmaxcount = $('#checkxmaxcount').val();
+                    var xmaxcount = $('#xmaxcount').val();
+                    var checkall = $('#checkall').val();
+                   
+
+                    // Membuat URL dengan parameter dinamis
+                    var url = '/bankds/export?' +
+                        '&checkusername=' + encodeURIComponent(checkusername) +
+                        '&username=' + encodeURIComponent(username) +
+                        '&typexdata=' + encodeURIComponent(typexdata) +
+                        '&checkgroupbank=' + encodeURIComponent(checkgroupbank) +
+                        '&groupbank=' + encodeURIComponent(groupbank) +
+                        '&checkbank=' + encodeURIComponent(checkbank);
+                        '&bank=' + encodeURIComponent(bank);
+                        '&checktgldari=' + encodeURIComponent(checktgldari);
+                        '&gabungdari=' + encodeURIComponent(gabungdari);
+                        '&checktglhingga=' + encodeURIComponent(checktglhingga);
+                        '&gabunghingga=' + encodeURIComponent(gabunghingga);
+                        '&checkxmincount=' + encodeURIComponent(checkxmincount);
+                        '&xmincount=' + encodeURIComponent(xmincount);
+                        '&checkxmaxcount=' + encodeURIComponent(checkxmaxcount);
+                        '&xmaxcount=' + encodeURIComponent(xmaxcount);
+                        '&checkall=' + encodeURIComponent(checkall);
+
+                    // Redirect ke URL
+                    window.location.href = url;
+                }
             });
         });
     </script>

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset('/assets/css/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 </head>
 
 <body>
@@ -27,17 +28,22 @@
                         @endif
 
                         @if (session()->has('loginError'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                {{ session('loginError') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
+                            <script>
+                                $(document).ready(function() {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Login Error',
+                                        text: '{{ session('loginError') }}',
+                                        confirmButtonText: 'OK'
+                                    });
+                                });
+                            </script>
                         @endif
                         <h1>LOGIN</h1>
                         <p>Enter your username & password to login</p>
                     </div>
                     <div class="listformlogin">
-                        <form role="form" action="/R3xTe2kss9D1" method="post">
+                        <form role="form" action="/x314cz9kc141DDX" method="post">
                             @csrf
 
                         </form>

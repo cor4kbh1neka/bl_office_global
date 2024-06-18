@@ -28,14 +28,21 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $user->last_login = date('Y-m-d H:i:s');
+
+            if ($user->status != 1) {
+                Auth::logout();
+                return back()->with('loginError', 'Akun Anda telah di Suspend. Silakan hubungi admin.');
+            }
+
+            $user->last_login = now(); 
             $user->ip_login = $request->getClientIp();
             $user->save();
 
             $request->session()->regenerate();
             return redirect()->intended('/');
         }
-        return back()->with('loginError', 'log in failed !');
+
+        return back()->with('loginError', 'Log in failed!');
     }
 
     /**
@@ -94,6 +101,6 @@ class LoginController extends Controller
 
         request()->session()->regenerateToken();
 
-        return redirect('/R3xTe2kss9D1');
+        return redirect('/x314cz9kc141DDX');
     }
 }

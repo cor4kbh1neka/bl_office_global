@@ -112,7 +112,6 @@ class DepoWdController extends Controller
             'keterangan' => 'nullable|max:20',
             'amount' => 'required|numeric',
         ]);
-
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()->all()], 400);
         } else {
@@ -236,173 +235,19 @@ class DepoWdController extends Controller
                     $updateDepo = $dataDepo->update(['status' => 1, 'approved_by' => Auth::user()->username]);
                     if ($updateDepo) {
 
-                        if ($dataDepo->jenis !== 'WD') {
-                            $dataAPI = [
-                                "Username" => env('UNIX_CODE') . $dataDepo->username,
-                                "TxnId" => $txnid,
-                                "Amount" => $dataDepo->amount,
-                                "CompanyKey" => env('COMPANY_KEY'),
-                                "ServerId" => env('SERVERID')
-                            ];
-
-                            if ($dataDepo->jenis == 'DP') {
-                                $resultsApi = $this->requestApi('deposit', $dataAPI);
-
-                                if ($resultsApi["error"]["id"] === 0) {
-                                    $prosesBalance = $this->processBalance($dataDepo->username, 'DP', $dataDepo->amount);
-
-                                    /* Create History Depo */
-                                    $this->addDataHistory($dataDepo->username, $txnid, '', 'deposit', 'deposit', 0, $dataDepo->amount, $prosesBalance["balance"]);
-
-                                    /* Win Loss DP */
-                                    $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "deposit");
-
-                                    /* Delete Notif */
-                                    $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
-                                    if ($dataToDelete) {
-                                        $dataToDelete->delete();
-                                    }
-
-                                    DepoWd::where('id', $id)->update(['txnid' => $txnid]);
-                                    $dataMember = Member::where('username', $dataDepo->username)
-                                        ->where('status', 9)
-                                        ->where('is_notnew', true)
-                                        ->first();
-
-                                    if ($dataMember) {
-                                        $dataMember->update([
-                                            'status' => 1
-                                        ]);
-                                    }
-                                }
-
-                                $maxAttempts4404 = 10;
-                                $attempt4404 = 0;
-                                while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
-                                    $txnid = $this->generateTxnid('D');
-                                    $dataAPI["TxnId"] = $txnid;
-                                    $resultsApi = $this->requestApi('deposit', $dataAPI);
-                                    if ($resultsApi["error"]["id"] === 0) {
-                                        $dataDepo->update([
-                                            "txnid" => $txnid
-                                        ]);
-
-                                        $prosesBalance = $this->processBalance($dataDepo->username, 'DP', $dataDepo->amount);
-
-                                        /* Create History Depo */
-                                        $this->addDataHistory($dataDepo->username, $txnid, '', 'deposit', 'deposit', 0, $dataDepo->amount, $prosesBalance["balance"]);
-
-                                        /* Win Loss DP */
-                                        $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "deposit");
-
-                                        /* Delete Notif */
-                                        $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
-                                        if ($dataToDelete) {
-                                            $dataToDelete->delete();
-                                        }
-
-                                        DepoWd::where('id', $id)->update(['txnid' => $txnid]);
-                                        $dataMember = Member::where('username', $dataDepo->username)
-                                            ->where('status', 9)
-                                            ->where('is_notnew', true)
-                                            ->first();
-
-                                        if ($dataMember) {
-                                            $dataMember->update([
-                                                'status' => 1
-                                            ]);
-                                        }
-                                    }
-                                    $attempt4404++;
-                                }
-
-                                if ($resultsApi["error"]["id"] !== 0 && $resultsApi["error"]["id"] === 4404) {
-                                    $dataDepo->update(['status' => 0, 'approved_by' => '']);
-
-                                    return back()->withInput()->with('error', $resultsApi["error"]["msg"]);
-                                }
-                            } else {
-                                return back()->withInput()->with('error', 'Gagal melakukan transaksi!');
+                        if ($dataDepo->jenis == 'DP') {
+                            $prosesDepo = $this->prosesDeposit($id, $dataDepo, $txnid);
+                            if($prosesDepo !== true) {
+                                $dataDepo->update(['status' => 0, 'approved_by' => '']);
+                                return back()->withInput()->with('error', $prosesDepo);
                             }
-
-                            // if ($resultsApi["error"]["id"] !== 0) {
-                            //     DepoWd::where('id', $id)->update(['status' => 0, 'approved_by' => null]);
-                            //     return back()->withInput()->with('error', $resultsApi["error"]["msg"]);
-                            // }
+                        } else if ($dataDepo->jenis == 'WD'){
+                            $this->prosesWithdraw($dataDepo, $txnid);
                         } else {
-                            /* Delete Notif */
-                            $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
-                            if ($dataToDelete) {
-                                $dataToDelete->delete();
-                            }
-
-                            /* Create History WD */
-                            $balance = Balance::where('username', $dataDepo->username)->first()->amount;
-                            $this->addDataHistory($dataDepo->username, $txnid, '', 'withdraw', 'withdraw', $dataDepo->amount, 0, $balance);
-
-                            /* Win Loss WD */
-                            $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "withdraw");
+                            return back()->withInput()->with('error', 'Transkasi tidak valid');
                         }
-
-                        /* Cek Data Member */
-                        $dataMember = MemberAktif::where('username', $dataDepo->username)->first();
-                        if (!$dataMember) {
-                            $dataMember = Member::where('username', $dataDepo->username)->first();
-                        }
-
-                        if ($dataMember) {
-                            /* Create Depo Downline */
-                            if ($dataMember->referral !== null && $dataMember->referral !== '') {
-                                $this->addDataDepoDownline($dataMember->referral, $dataDepo->username, $dataDepo->amount);
-                            }
-
-                            /* Create Member Aktif */
-                            if ($dataMember->referral != '' || $dataMember->referral != null) {
-                                $dataMemberAktif = MemberAktif::where('username', $dataDepo->username)->first();
-                                if (!$dataMemberAktif) {
-                                    MemberAktif::create([
-                                        'username' => $dataDepo->username,
-                                        'referral' => $dataMember->referral
-                                    ]);
-                                }
-                            }
-
-                            /* count xdepo wd */
-                            $dataXtrans = Xtrans::where('username', $dataDepo->username)->where('bank', $dataDepo->bank)->first();
-                            if (!$dataXtrans) {
-                                if ($dataDepo->jenis == 'WD') {
-                                    Xtrans::create([
-                                        'bank' => $dataDepo->bank,
-                                        'username' => $dataDepo->username,
-                                        'count_wd' => 1,
-                                        'sum_wd' => $dataDepo->amount,
-                                        'count_dp' => 0,
-                                        'sum_dp' => 0,
-                                        'groupbank' => $dataDepo->groupbank
-                                    ]);
-                                } else {
-                                    Xtrans::create([
-                                        'bank' => $dataDepo->bank,
-                                        'username' => $dataDepo->username,
-                                        'count_wd' => 0,
-                                        'sum_wd' => 0,
-                                        'count_dp' => 1,
-                                        'sum_dp' => $dataDepo->amount,
-                                        'groupbank' => $dataDepo->groupbank
-                                    ]);
-                                }
-                            } else {
-                                if ($dataDepo->jenis == 'WD') {
-                                    $dataXtrans->increment('count_wd');
-                                    $dataXtrans->increment('sum_wd', $dataDepo->amount);
-                                    $dataXtrans->save();
-                                } else {
-                                    $dataXtrans->increment('count_dp');
-                                    $dataXtrans->increment('sum_dp', $dataDepo->amount);
-                                    $dataXtrans->save();
-                                }
-                            }
-                        }
+                        
+                        $this->updateMemberData($dataDepo);
                     }
                 }
             }
@@ -424,6 +269,219 @@ class DepoWdController extends Controller
             }
         } catch (\Exception $e) {
             return back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    private function seamlessApiTransaction($jenis, $dataAPI)
+    {
+        if ($jenis == 'DP') {
+            $resultsApi = $this->requestApi('deposit', $dataAPI);
+        } elseif ($jenis == 'WD') {
+            $dataAPI["IsFullAmount"] = false;
+            $resultsApi = $this->requestApi('withdraw', $dataAPI);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal melakukan transaksi!'
+            ], 400);
+        }
+        
+        return $resultsApi;
+    }
+    
+    private function prosesDeposit($id, $dataDepo, $txnid)
+    {
+        $dataAPI = [
+            "Username" => env('UNIX_CODE') . $dataDepo->username,
+            "TxnId" => $txnid,
+            "Amount" => $dataDepo->amount,
+            "CompanyKey" => env('COMPANY_KEY'),
+            "ServerId" => env('SERVERID')
+        ];
+
+        $resultsApi = $this->seamlessApiTransaction('DP', $dataAPI);
+        if ($resultsApi["error"]["id"] === 0) {
+            $prosesBalance = $this->processBalance($dataDepo->username, 'DP', $dataDepo->amount);
+
+            /* Create History Depo */
+            $this->addDataHistory($dataDepo->username, $txnid, '', 'deposit', 'deposit', 0, $dataDepo->amount, $prosesBalance["balance"]);
+
+            /* Win Loss DP */
+            $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "deposit");
+
+            /* Delete Notif */
+            $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
+            if ($dataToDelete) {
+                $dataToDelete->delete();
+            }
+
+            DepoWd::where('id', $id)->update(['txnid' => $txnid]);
+            $dataMember = Member::where('username', $dataDepo->username)
+                ->where('status', 9)
+                ->where('is_notnew', true)
+                ->first();
+
+            if ($dataMember) {
+                $dataMember->update([
+                    'status' => 1
+                ]);
+            }
+            return true;
+        } else {
+            if($resultsApi["error"]["id"] === 4404){
+                $error4404 = $this->deposit4404($dataAPI, $dataDepo, $txnid);
+                if($error4404 !== true){
+                   return $error4404;
+                }
+            } else {
+                return $resultsApi;
+            }
+        }
+    }
+
+    private function deposit4404($dataAPI, $dataDepo, $txnid)
+    {
+        $maxAttempts4404 = 10;
+        $attempt4404 = 0;
+        $resultsApi = []; // Initialize $resultsApi
+
+        while ($attempt4404 < $maxAttempts4404) {
+            $txnid = $this->generateTxnid('D');
+            $dataAPI["TxnId"] = $txnid;
+            $resultsApi = $this->requestApi('deposit', $dataAPI);
+
+            if ($resultsApi["error"]["id"] === 0) {
+                $dataDepo->update(["txnid" => $txnid]);
+
+                $prosesBalance = $this->processBalance($dataDepo->username, 'DP', $dataDepo->amount);
+
+                // Create History Depo
+                $this->addDataHistory($dataDepo->username, $txnid, '', 'deposit', 'deposit', 0, $dataDepo->amount, $prosesBalance["balance"]);
+
+                // Win Loss DP
+                $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "deposit");
+
+                // Delete Notif
+                $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
+                if ($dataToDelete) {
+                    $dataToDelete->delete();
+                }
+
+                DepoWd::where('id', $dataDepo->id)->update(['txnid' => $txnid]);
+
+                // Update status new member
+                $dataMember = Member::where('username', $dataDepo->username)
+                    ->where('status', 9)
+                    ->where('is_notnew', true)
+                    ->first();
+
+                if ($dataMember) {
+                    $dataMember->update(['status' => 1]);
+                }
+
+                return true; // Keluar dari fungsi dan kembalikan true jika berhasil
+            } elseif ($resultsApi["error"]["id"] !== 4404) {
+                return $resultsApi; // Kembalikan pesan error jika bukan error 4404
+            }
+
+            $attempt4404++;
+        }
+
+        // Jika mencapai batas maksimum percobaan dan masih belum berhasil
+        if ($attempt4404 === $maxAttempts4404) {
+            return $resultsApi;
+        }
+
+        return true; // Default kembalikan true jika tidak ada kasus khusus
+    }
+
+    private function prosesWithdraw($dataDepo, $txnid)
+    {
+        // $dataAPI = [
+        //     "Username" => env('UNIX_CODE') . $dataDepo->username,
+        //     "TxnId" => $txnid,
+        //     "Amount" => $dataDepo->amount,
+        //     "CompanyKey" => env('COMPANY_KEY'),
+        //     "ServerId" => env('SERVERID')
+        // ];
+
+        // $resultsApi = $this->seamlessApiTransaction('WD', $dataAPI);
+        // if ($resultsApi["error"]["id"] === 0) {
+            $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
+            if ($dataToDelete) {
+                $dataToDelete->delete();
+            }
+
+            $balance = Balance::where('username', $dataDepo->username)->first()->amount;
+            $this->addDataHistory($dataDepo->username, $txnid, '', 'withdraw', 'withdraw', $dataDepo->amount, 0, $balance);
+            $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "withdraw");
+            return true;
+        // } else {
+        //     if($resultsApi["error"]["id"] === 9720){
+        //         $withdraw9720 = $this->withdraw9720($resultsApi, $dataAPI);
+        //     }
+        // }
+    }
+
+    // private function withdraw9720($resultsApi, $dataAPI){
+    //     $maxAttempts9720 = 10;
+    //     $attempt9720 = 0;
+    //     while ($resultsApi["error"]["id"] === 9720 && $attempt9720 < $maxAttempts9720) {
+    //         sleep(6);
+    //         $resultsApi = $this->seamlessApiTransaction('WD', $dataAPI);
+    //         if($resultsApi["error"]["id"] === 0){
+    //             return true;
+    //         }
+    //         $attempt9720++;
+    //     }
+
+    //     return $resultsApi;
+    // }
+
+    private function updateMemberData($dataDepo)
+    {
+        $dataMember = MemberAktif::where('username', $dataDepo->username)->first();
+        if (!$dataMember) {
+            $dataMember = Member::where('username', $dataDepo->username)->first();
+        }
+
+        if ($dataMember) {
+            if ($dataMember->referral !== null && $dataMember->referral !== '') {
+                $this->addDataDepoDownline($dataMember->referral, $dataDepo->username, $dataDepo->amount);
+            }
+
+            if ($dataMember->referral != '' || $dataMember->referral != null) {
+                $dataMemberAktif = MemberAktif::where('username', $dataDepo->username)->first();
+                if (!$dataMemberAktif) {
+                    MemberAktif::create([
+                        'username' => $dataDepo->username,
+                        'referral' => $dataMember->referral
+                    ]);
+                }
+            }
+
+            $dataXtrans = Xtrans::where('username', $dataDepo->username)->where('bank', $dataDepo->bank)->first();
+            if (!$dataXtrans) {
+                Xtrans::create([
+                    'bank' => $dataDepo->bank,
+                    'username' => $dataDepo->username,
+                    'count_wd' => $dataDepo->jenis == 'WD' ? 1 : 0,
+                    'sum_wd' => $dataDepo->jenis == 'WD' ? $dataDepo->amount : 0,
+                    'count_dp' => $dataDepo->jenis == 'DP' ? 1 : 0,
+                    'sum_dp' => $dataDepo->jenis == 'DP' ? $dataDepo->amount : 0,
+                    'groupbank' => $dataDepo->jenis == 'DP' ? '' : $dataDepo->groupbank,
+                    'groupbankwd' => $dataDepo->jenis == 'WD' ? '' : $dataDepo->groupbank
+                ]);
+            } else {
+                if ($dataDepo->jenis == 'WD') {
+                    $dataXtrans->increment('count_wd');
+                    $dataXtrans->increment('sum_wd', $dataDepo->amount);
+                } else {
+                    $dataXtrans->increment('count_dp');
+                    $dataXtrans->increment('sum_dp', $dataDepo->amount);
+                }
+                $dataXtrans->save();
+            }
         }
     }
 
@@ -494,13 +552,18 @@ class DepoWdController extends Controller
 
                         return back()->withInput()->with('error', 'Rejected gagal');
                     }
+                } else {
+                    $dataMember = Member::where('username', $updateStatusTransaction->username)->first();
+                    $dataMember->update([
+                        'status' => '0'
+                    ]);
                 }
-            }
 
-            /* delete transaction Xdpwd */
-            $dataToDelete = Xdpwd::where('username', $updateStatusTransaction->username)->where('jenis', $updateStatusTransaction->jenis)->first();
-            if ($dataToDelete) {
-                $dataToDelete->delete();
+                /* delete transaction Xdpwd */
+                $dataToDelete = Xdpwd::where('username', $updateStatusTransaction->username)->where('jenis', $updateStatusTransaction->jenis)->first();
+                if ($dataToDelete) {
+                    $dataToDelete->delete();
+                }
             }
 
             if ($jenis == 'DP') {

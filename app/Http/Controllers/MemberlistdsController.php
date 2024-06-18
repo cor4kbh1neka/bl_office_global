@@ -52,13 +52,49 @@ class MemberlistdsController extends Controller
             $dataUser = [];
         }
 
+        $dataGroupDp = $this->getApiDataGroupBank()["groupdp"];
+        $dataGroupWd = $this->getApiDataGroupBank()["groupwd"];
+
         return view('memberlistds.update', [
             'title' => 'Edit Member',
             'data' => $data,
             'id' => $id,
             'datauser' => $dataUser,
+            'dataGroupDp' => $dataGroupDp,
+            'dataGroupWd' => $dataGroupWd,
             'totalnote' => 0,
         ]);
+    }
+
+    private function getApiDataGroupBank()
+    {
+        
+        $url = env('DOMAIN') . '/banks/group';
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'x-customblhdrs' => env('XCUSTOMBLHDRS'),
+        ])->get($url);
+        $response = $response->json();
+        $groupdp = [];
+        $groupwd = [];
+        if($response['status'] == 'success') {
+            foreach($response['data'] as $i => $d){
+                if($i != 'nongroup' && $i != 'nongroupwd'){
+                   if($d['grouptype'] == 1){
+                    $groupdp[] = $i;
+                   } else {
+                    $groupwd[] = $i;
+                   };
+                }
+            }
+        }
+
+        $data = [
+            'groupdp' => $groupdp,
+            'groupwd' => $groupwd
+        ];
+
+        return $data;   
     }
 
     private function getApiUser($username)
@@ -83,7 +119,6 @@ class MemberlistdsController extends Controller
             'groupwd' => 'required',
             'xxybanknumberxy' => 'required',
         ]);
-
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         } else {
@@ -96,11 +131,10 @@ class MemberlistdsController extends Controller
                     "xxybanknumberxy" => $request->xxybanknumberxy,
                 ];
                 $updateUser = $this->reqApiUpdateUser($data, $request->xyusernamexxy);
-
+               
                 if ($updateUser["status"] === 'success') {
 
                     $this->updateIsVerif($request->xyusernamexxy, $request->isverified);
-
                     Member::where('username', $request->xyusernamexxy)->update([
                         'bank' => $request->xybanknamexyy,
                         'namarek' => $request->xybankuserxy,
@@ -174,19 +208,22 @@ class MemberlistdsController extends Controller
     public function updateMember(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'minbet' => 'required|numeric|min:0',
-            'maxbet' => 'required|numeric|min:0',
             'status' => 'required',
         ]);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         } else {
             try {
-                Member::where('id', $id)->update([
+                $dataMember = Member::where('id', $id)->first();
+                if(!$dataMember){
+                    $dataMember = Member::where('username', $id)->first();
+                }
+
+                $dataMember->update([
                     'keterangan' => $request->informasiplayer,
                     'status' => $request->status,
-                    'max_bet' => $request->minbet,
-                    'min_bet' => $request->maxbet
+                    'max_bet' => 0,
+                    'min_bet' => 0
                 ]);
 
                 return redirect('/memberlistds/edit/' . $id)->with('success', 'Update informasi member berhasil.');
@@ -461,6 +498,9 @@ class MemberlistdsController extends Controller
     }
     public function export(Request $request)
     {
+        // $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
+        //     ->select('member.*', 'balance.amount')->orderByDesc('created_at')->get();
+
         $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
             ->select('member.username', 'member.referral',
             DB::raw("CONCAT(member.bank, ', ', member.namarek, ', ', member.norek) as bank"),
@@ -478,8 +518,46 @@ class MemberlistdsController extends Controller
             "),
             'member.keterangan as informasi', 'member.created_at as tglgabung', 'member.lastlogin'
             )->orderByDesc('member.created_at')->get();
-        $proses = $this->filterAndPaginate($query, 20000);
+        $proses = $this->filterAndPaginate($query, 999999999999999);
         $data = $proses->getCollection();
         return Excel::download(new MemberListExport($data), 'Memberlist.xlsx');
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $username = $request->input('username');
+        $status = $request->input('status');
+
+        $member = Member::where('username', $username)->first();
+        if ($member) {
+            $data = [
+                "Username" => env('UNIX_CODE') . $username,
+                "Status" => "Active",
+                "CompanyKey" => env('COMPANY_KEY'),
+                "ServerId" => env('SERVERID')
+            ];
+    
+            $url = env('BODOMAIN') . '/web-root/restricted/player/update-player-status.aspx';
+    
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json; charset=UTF-8'
+            ])->post($url, $data);
+    
+            $responseData = $response->json();
+            if ($responseData["error"]["id"] === 0) {
+                $member->update([
+                    'status' => $status
+                ]);
+                
+                return response()->json(['success' => true, 'message' => 'Pemain telah dinonaktifkan.']);
+            } else {
+                return response()->json(['success' => false, 'message' => $responseData["error"]["msg"]], 400);
+            }
+
+          
+        } else {
+            return response()->json(['success' => false, 'message' => 'Pemain tidak ditemukan.'], 404);
+        }
+        
     }
 }

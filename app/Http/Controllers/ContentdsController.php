@@ -40,7 +40,7 @@ class ContentdsController extends Controller
             'pkrl' => $raw['urlapk'],
             'rnntxt' => $raw['runningtext'],
         ];
-        $url = env('DOMAIN') . '/content/ctgeneral/' . $id;
+        $url = env('DOMAIN') . '/content/ctgeneral/1';
         $response = Http::withTokenHeader()->put($url, $validatedData);
         if ($response->successful()) {
             return redirect('/contentds')->with('success', 'Data Berhasil di Edit!');

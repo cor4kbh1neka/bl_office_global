@@ -243,7 +243,7 @@
             $('tr').each(function() {
 
                 var odds = $(this).find('.valuenominal.odds').attr('data-odds');
-                odds = (parseFloat(odds) * 10).toFixed(2);
+                odds = (parseFloat(odds)).toFixed(2);
                 $(this).find('.valuenominal.odds').text(odds);
 
                 var stake = $(this).find('.valuenominal.stake').attr('data-stake');

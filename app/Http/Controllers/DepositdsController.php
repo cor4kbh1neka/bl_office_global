@@ -45,11 +45,11 @@ class DepositdsController extends Controller
         $dataBank = $allDataBank;
         // dd($dataBank);
         /* History transkasi */
-        $dataTransaksi = DepoWd::whereIn('status', [1, 2])->where('jenis', $jenis)->orderBy('updated_at', 'DESC')->get();
+        $dataTransaksi = DepoWd::whereIn('status', [1, 2])->where('jenis', $jenis)->orderBy('updated_at', 'DESC')->limit(50)->get();
 
         /* Data depo wd */
         $dataDepoWd = DepoWd::with('member:username,status')->where('status', 0)->where('jenis', $jenis)->orderBy('created_at', 'ASC')->get();
-
+        
         if ($jenis == 'WD') {
             /* Data master bank */
             $mbankData = $dataDepoWd->pluck('mbank');

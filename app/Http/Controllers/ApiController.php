@@ -133,10 +133,9 @@ class ApiController extends Controller
             $member = Member::where('username', $username)->firstOrFail();
             $member->update([
                 'ip_log' => $ipaddress,
-                'lastlogin' => now(),
+                'lastlogin' => Carbon::now(),
                 'domain' => $request->getHost()
             ]);
-            return $member;
             
             return response()->json(['message' => 'Log berhasil tersimpan!']);
         } catch (\Exception $e) {

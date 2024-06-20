@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -24,11 +25,18 @@ class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, Wit
     {
         return $this->data->map(function ($item) {
             if (is_array($item)) {
+                if (isset($item['orderTime'])) {
+                    $item['orderTime'] = Carbon::parse($item['orderTime'])->addHours(11)->format('Y-m-d H:i:s');
+                }
                 return $item;
             }
 
             $itemArray = $item->toArray();
             unset($itemArray['id']); // Menghilangkan kolom "id"
+
+            if (isset($itemArray['orderTime'])) {
+                $itemArray['orderTime'] = Carbon::parse($itemArray['orderTime'])->addHours(11)->format('Y-m-d H:i:s');
+            }
 
             return $itemArray;
         });

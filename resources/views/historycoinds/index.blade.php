@@ -60,7 +60,7 @@
                             $hariIni = Carbon::now()->format('Y-m-d');
                         @endphp
                         <div class="listheadhistoryds bottom two">
-                            @if(request('tgldari') ===  $hariIni && request('tglsampai') ===  $hariIni)
+                            @if (request('tgldari') === $hariIni && request('tglsampai') === $hariIni)
                                 <input type="date" id="tgldari" name="tgldari" value="{{ $hariIni }}">
                                 <input type="date" id="tglsampai" name="tglsampai" value="{{ $hariIni }}">
                             @else
@@ -70,7 +70,6 @@
                             <button type="submit" class="tombol primary" id="searchbutton">
                                 <span class="texttombol">SUBMIT</span>
                             </button>
-                        </div>
                         </div>
                         <div class="exportdata">
                             <span class="textdownload">download</span>
@@ -165,8 +164,8 @@
 
         });
 
-         // convert nominal
-         $(document).ready(function() {
+        // convert nominal
+        $(document).ready(function() {
             $('.koinasli').each(function() {
                 var nilaiAsli = parseFloat($(this).text());
                 var nilaiKonversi = Math.round(nilaiAsli * 1000);

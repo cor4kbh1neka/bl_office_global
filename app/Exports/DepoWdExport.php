@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -33,14 +34,15 @@ class DepoWdExport implements FromCollection, WithHeadings, WithStyles, WithColu
                 $itemArray['status'] = '';
             }
 
-            // Format ulang created_at dan updated_at
+            // Handle date formatting for objects
             if (isset($itemArray['created_at'])) {
-                $itemArray['created_at'] = \Carbon\Carbon::parse($itemArray['created_at'])->format('Y-m-d H:i:s');
+                $itemArray['created_at'] = Carbon::parse($itemArray['created_at'])->addHours(7)->format('Y-m-d H:i:s');
             }
 
             if (isset($itemArray['updated_at'])) {
-                $itemArray['updated_at'] = \Carbon\Carbon::parse($itemArray['updated_at'])->format('Y-m-d H:i:s');
+                $itemArray['updated_at'] = Carbon::parse($itemArray['updated_at'])->addHours(7)->format('Y-m-d H:i:s');
             }
+
             return $itemArray;
         });
     }

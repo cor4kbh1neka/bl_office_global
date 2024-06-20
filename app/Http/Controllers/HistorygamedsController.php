@@ -190,7 +190,7 @@ class HistorygamedsController extends Controller
             $item['orderTime'] = Carbon::createFromFormat("Y-m-d\TH:i:s.u", $item['orderTime'])
                 ->addHours(11)
                 ->toDateTimeString();
-    
+
             return $item;
         });
         $data = $data->sortByDesc('orderTime');
@@ -254,8 +254,8 @@ class HistorygamedsController extends Controller
                 "username" => $d["username"],
                 "orderTime" => $d["orderTime"],
                 "refNo" => $d["refNo"],
-                "detail" => $portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType'],
-                "odds" => $portfolio !== 'Games' ? $d['odds'] : 0.1,
+                "detail" => $portfolio == 'SportsBook' ? $d['sportsType'] : ($portfolio == 'SeamlessGame' ? $d['gameType'] : $d['productType']),
+                "odds" => $portfolio !== 'Games' && $portfolio !== 'SeamlessGame' ? $d['odds'] : 0.0,
                 "stake" => $d['stake'],
                 "winloss" => $d['winLost'],
                 "status" => $d['status'],

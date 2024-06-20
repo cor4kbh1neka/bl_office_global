@@ -248,6 +248,7 @@ class HistorygamedsController extends Controller
 
         $data = $this->getDataHistoryGame($username, $portfolio, $startDate, $endDate, $refNo, $sportsType, $status);
         $data = $data["data"];
+        $data = $this->filterAndPaginate(collect($data), 999999999999);
         $allData = [];
         foreach ($data as $i => $d) {
             $allData[] = [

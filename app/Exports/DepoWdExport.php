@@ -25,12 +25,21 @@ class DepoWdExport implements FromCollection, WithHeadings, WithStyles, WithColu
         return $this->data->map(function ($item) {
             $itemArray = $item->toArray();
             unset($itemArray['id']); // Menghilangkan kolom "id"
-            if($itemArray['status'] == 1){
+            if ($itemArray['status'] == 1) {
                 $itemArray['status'] = 'ACCEPTED';
-            } else if($itemArray['status'] == 2){
+            } else if ($itemArray['status'] == 2) {
                 $itemArray['status'] = 'REJECTED';
             } else {
                 $itemArray['status'] = '';
+            }
+
+            // Format ulang created_at dan updated_at
+            if (isset($itemArray['created_at'])) {
+                $itemArray['created_at'] = \Carbon\Carbon::parse($itemArray['created_at'])->format('Y-m-d H:i:s');
+            }
+
+            if (isset($itemArray['updated_at'])) {
+                $itemArray['updated_at'] = \Carbon\Carbon::parse($itemArray['updated_at'])->format('Y-m-d H:i:s');
             }
             return $itemArray;
         });

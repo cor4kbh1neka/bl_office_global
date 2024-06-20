@@ -30,6 +30,11 @@ class MemberOutstandingExport implements FromCollection, WithHeadings, WithStyle
             $itemArray = $item->toArray();
             unset($itemArray['id']); // Menghilangkan kolom "id"
 
+            if (isset($itemArray['created_at'])) {
+                $itemArray['created_at'] = \Carbon\Carbon::parse($itemArray['created_at'])->format('Y-m-d H:i:s');
+            }
+
+
             return $itemArray;
         });
     }

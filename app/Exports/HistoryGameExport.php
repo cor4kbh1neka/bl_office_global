@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Carbon\Carbon;
 
 class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithEvents
 {
@@ -24,11 +25,18 @@ class HistoryGameExport implements FromCollection, WithHeadings, WithStyles, Wit
     {
         return $this->data->map(function ($item) {
             if (is_array($item)) {
+                if (isset($item['orderTime'])) {
+                    $item['orderTime'] = Carbon::parse($item['orderTime'])->format('Y-m-d H:i:s');
+                }
                 return $item;
             }
 
             $itemArray = $item->toArray();
             unset($itemArray['id']); // Menghilangkan kolom "id"
+
+            if (isset($itemArray['orderTime'])) {
+                $itemArray['orderTime'] = Carbon::parse($itemArray['orderTime'])->format('Y-m-d H:i:s');
+            }
 
             return $itemArray;
         });

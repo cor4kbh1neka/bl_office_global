@@ -37,7 +37,10 @@
                             <option value="DPM">Deposit Manual</option>
                             <option value="WDM">Withdraw Manual</option>
                         </select>
-                        <input type="number" name="amount" id="nominal" placeholder="masukan nominal" required>
+                        {{-- <input type="number" name="amount" id="nominal" placeholder="masukan nominal" required> --}}
+                        <input type="number" name="amount" id="nominal" placeholder="masukan nominal" required
+                            step="0.01">
+
                         <button class="tombol proses" type="submit">
                             <span class="texttombol">PROSES</span>
                         </button>
@@ -150,7 +153,7 @@
             $('#form').on('submit', function(event) {
                 event.preventDefault();
 
-                 // Validasi input keterangan
+                // Validasi input keterangan
                 let keterangan = $('#keterangan').val();
                 if (keterangan.length > 20) {
                     Swal.fire({
@@ -184,7 +187,7 @@
                                 title: 'Nominal tidak boleh lebih dari 20,000',
                                 showConfirmButton: true
                             }).then(() => {
-                                $('#nominal').val(''); 
+                                $('#nominal').val('');
                             });
                             return;
                         }
@@ -231,9 +234,12 @@
                                 $('.tombol.proses').prop('disabled', false);
                             },
                             error: function(response) {
-                                let errorMessage = 'Terjadi kesalahan saat memproses data.';
-                                if (response.responseJSON && response.responseJSON.message) {
-                                    errorMessage = response.responseJSON.message.join(', ');
+                                let errorMessage =
+                                    'Terjadi kesalahan saat memproses data.';
+                                if (response.responseJSON && response.responseJSON
+                                    .message) {
+                                    errorMessage = response.responseJSON.message.join(
+                                        ', ');
                                 }
 
                                 Swal.fire(
@@ -271,7 +277,7 @@
         $(document).ready(function() {
             $("#keterangan").on('input', function() {
                 var inputLength = $(this).val().length;
-                
+
                 if (inputLength > 20) {
                     Swal.fire({
                         title: 'Warning',
@@ -284,6 +290,5 @@
                 }
             });
         });
-        
     </script>
 @endsection

@@ -143,7 +143,7 @@
                                     </tr>
                                     @foreach ($data as $i => $d)
                                         <tr>
-                                            <td>1</td>
+                                            <td>{{ $i + 1 }}</td>
                                             <td class="check_box">
                                                 <input type="checkbox" id="myCheckbox-{{ $i }}"
                                                     name="myCheckbox-{{ $i }}"

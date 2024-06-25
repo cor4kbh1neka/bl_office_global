@@ -375,7 +375,7 @@ class ReferraldsController extends Controller
         $gabunghingga = $request->input('gabunghingga', date('Y-m-d'));
 
         if ($jenis == 'totaldownline') {
-            $data = $this->getTotalDownline($upline, $portfolio, $gabungdari . "T00:00:00", $gabunghingga . "T23:59:59");
+            $data = $this->getTotalDeposit($upline, $portfolio, $gabungdari . "T00:00:00", $gabunghingga . "T23:59:59");
         } else if ($jenis == 'deposit') {
             $data = $this->getDeposit($upline, $portfolio, $gabungdari . "T00:00:00", $gabunghingga . "T23:59:59");
         } else if ($jenis == 'belumdeposit') {
@@ -543,9 +543,11 @@ class ReferraldsController extends Controller
     private function getBelumDeposit($upline, $portfolio, $gabungdari, $gabunghingga)
     {
         if (preg_match('/^[a-e]/i', $upline)) {
-            $dataReferral = ReferralDepo1::where('upline', $upline)
-                ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->pluck('downline')->toArray();
+            $dataReferral = ReferralDepo1::where('ref_depo_ae.upline', $upline)
+                ->whereBetween('ref_depo_ae.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'ref_depo_ae.downline', '=', 'balance.username')
+                ->pluck('ref_depo_ae.downline')
+                ->toArray();
 
             $data = Referral1::where('upline', $upline)
                 ->whereNotIn('downline', $dataReferral)
@@ -557,9 +559,11 @@ class ReferraldsController extends Controller
                 }
             }
         } elseif (preg_match('/^[f-j]/i', $upline)) {
-            $dataReferral = ReferralDepo2::where('upline', $upline)
-                ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->pluck('downline')->toArray();
+            $dataReferral = ReferralDepo2::where('ref_depo_fj.upline', $upline)
+                ->whereBetween('ref_depo_fj.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'ref_depo_fj.downline', '=', 'balance.username')
+                ->pluck('ref_depo_fj.downline')
+                ->toArray();
 
             $data = Referral2::where('upline', $upline)
                 ->whereNotIn('downline', $dataReferral)
@@ -571,9 +575,11 @@ class ReferraldsController extends Controller
                 }
             }
         } elseif (preg_match('/^[k-o]/i', $upline)) {
-            $dataReferral = ReferralDepo3::where('upline', $upline)
-                ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->pluck('downline')->toArray();
+            $dataReferral = ReferralDepo3::where('ref_depo_ko.upline', $upline)
+                ->whereBetween('ref_depo_ko.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'ref_depo_ko.downline', '=', 'balance.username')
+                ->pluck('ref_depo_ko.downline')
+                ->toArray();
 
             $data = Referral3::where('upline', $upline)
                 ->whereNotIn('downline', $dataReferral)
@@ -585,9 +591,11 @@ class ReferraldsController extends Controller
                 }
             }
         } elseif (preg_match('/^[p-t]/i', $upline)) {
-            $dataReferral = ReferralDepo4::where('upline', $upline)
-                ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->pluck('downline')->toArray();
+            $dataReferral = ReferralDepo4::where('ref_depo_pt.upline', $upline)
+                ->whereBetween('ref_depo_pt.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'ref_depo_pt.downline', '=', 'balance.username')
+                ->pluck('ref_depo_pt.downline')
+                ->toArray();
 
             $data = Referral4::where('upline', $upline)
                 ->whereNotIn('downline', $dataReferral)
@@ -599,9 +607,11 @@ class ReferraldsController extends Controller
                 }
             }
         } elseif (preg_match('/^[u-z]/i', $upline)) {
-            $dataReferral = ReferralDepo5::where('upline', $upline)
-                ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->pluck('downline')->toArray();
+            $dataReferral = ReferralDepo5::where('ref_depo_uz.upline', $upline)
+                ->whereBetween('ref_depo_uz.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'ref_depo_uz.downline', '=', 'balance.username')
+                ->pluck('ref_depo_uz.downline')
+                ->toArray();
 
             $data = Referral5::where('upline', $upline)
                 ->whereNotIn('downline', $dataReferral)
@@ -621,32 +631,37 @@ class ReferraldsController extends Controller
         if (preg_match('/^[a-e]/i', $upline)) {
             $data = ReferralDepo1::where('upline', $upline)
                 ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->select('upline', 'downline', DB::raw('SUM(amount) as total_amount_referral'))
-                ->groupBy('upline', 'downline')
+                ->leftJoin('balance', 'ref_depo_ae.downline', '=', 'balance.username')
+                ->select('ref_depo_ae.upline', 'ref_depo_ae.downline', DB::raw('SUM(ref_depo_ae.amount) as total_amount_referral2'), 'balance.amount as total_amount_referral')
+                ->groupBy('ref_depo_ae.upline', 'ref_depo_ae.downline', 'balance.amount')
                 ->get();
         } elseif (preg_match('/^[f-j]/i', $upline)) {
             $data = ReferralDepo2::where('upline', $upline)
                 ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->select('upline', 'downline', DB::raw('SUM(amount) as total_amount_referral'))
-                ->groupBy('upline', 'downline')
+                ->leftJoin('balance', 'ref_depo_fj.downline', '=', 'balance.username')
+                ->select('ref_depo_fj.upline', 'ref_depo_fj.downline', DB::raw('SUM(ref_depo_fj.amount) as total_amount_referral2'), 'balance.amount as total_amount_referral')
+                ->groupBy('ref_depo_fj.upline', 'ref_depo_fj.downline', 'balance.amount')
                 ->get();
         } elseif (preg_match('/^[k-o]/i', $upline)) {
             $data = ReferralDepo3::where('upline', $upline)
                 ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->select('upline', 'downline', DB::raw('SUM(amount) as total_amount_referral'))
-                ->groupBy('upline', 'downline')
+                ->leftJoin('balance', 'ref_depo_ko.downline', '=', 'balance.username')
+                ->select('ref_depo_ko.upline', 'ref_depo_ko.downline', DB::raw('SUM(ref_depo_ko.amount) as total_amount_referral2'), 'balance.amount as total_amount_referral')
+                ->groupBy('ref_depo_ko.upline', 'ref_depo_ko.downline', 'balance.amount')
                 ->get();
         } elseif (preg_match('/^[p-t]/i', $upline)) {
             $data = ReferralDepo4::where('upline', $upline)
                 ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->select('upline', 'downline', DB::raw('SUM(amount) as total_amount_referral'))
-                ->groupBy('upline', 'downline')
+                ->leftJoin('balance', 'ref_depo_pt.downline', '=', 'balance.username')
+                ->select('ref_depo_pt.upline', 'ref_depo_pt.downline', DB::raw('SUM(ref_depo_pt.amount) as total_amount_referral2'), 'balance.amount as total_amount_referral')
+                ->groupBy('ref_depo_pt.upline', 'ref_depo_pt.downline', 'balance.amount')
                 ->get();
         } elseif (preg_match('/^[u-z]/i', $upline)) {
-            $data = ReferralDepo5::where('upline', $upline)
-                ->whereBetween('created_at', [$gabungdari, $gabunghingga])
-                ->select('upline', 'downline', DB::raw('SUM(amount) as total_amount_referral'))
-                ->groupBy('upline', 'downline')
+            $data = ReferralDepo5::where('ref_depo_uz.upline', $upline)
+                ->whereBetween('ref_depo_uz.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'ref_depo_uz.downline', '=', 'balance.username')
+                ->select('ref_depo_uz.upline', 'ref_depo_uz.downline', DB::raw('SUM(ref_depo_uz.amount) as total_amount_referral2'), 'balance.amount as total_amount_referral')
+                ->groupBy('ref_depo_uz.upline', 'ref_depo_uz.downline', 'balance.amount')
                 ->get();
         }
         return $data;
@@ -698,6 +713,57 @@ class ReferraldsController extends Controller
                 ->whereBetween('created_at', [$gabungdari, $gabunghingga])
                 ->select('upline', 'downline', DB::raw('SUM(amount) as total_amount_referral'))
                 ->groupBy('upline', 'downline')
+                ->get();
+        }
+        return $data;
+    }
+
+    private function getTotalDeposit($upline, $portfolio, $gabungdari, $gabunghingga)
+    {
+        if (preg_match('/^[a-e]/i', $upline)) {
+            $data = Referral1::where('upline', $upline)
+                ->when($portfolio != '', function ($query) use ($portfolio) {
+                    return $query->where('portfolio', $portfolio);
+                })
+                ->whereBetween('referral_ae.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'referral_ae.downline', '=', 'balance.username')
+                ->select('referral_ae.upline', 'referral_ae.downline', 'balance.amount as total_amount_referral')
+                ->get();
+        } elseif (preg_match('/^[f-j]/i', $upline)) {
+            $data = Referral2::where('upline', $upline)
+                ->when($portfolio != '', function ($query) use ($portfolio) {
+                    return $query->where('portfolio', $portfolio);
+                })
+                ->whereBetween('referral_fj.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'referral_fj.downline', '=', 'balance.username')
+                ->select('referral_fj.upline', 'referral_fj.downline', 'balance.amount as total_amount_referral')
+                ->get();
+        } elseif (preg_match('/^[k-o]/i', $upline)) {
+            $data = Referral3::where('upline', $upline)
+                ->when($portfolio != '', function ($query) use ($portfolio) {
+                    return $query->where('portfolio', $portfolio);
+                })
+                ->whereBetween('referral_ko.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'referral_ko.downline', '=', 'balance.username')
+                ->select('referral_ko.upline', 'referral_ko.downline', 'balance.amount as total_amount_referral')
+                ->get();
+        } elseif (preg_match('/^[p-t]/i', $upline)) {
+            $data = Referral4::where('upline', $upline)
+                ->when($portfolio != '', function ($query) use ($portfolio) {
+                    return $query->where('portfolio', $portfolio);
+                })
+                ->whereBetween('referral_pt.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'referral_pt.downline', '=', 'balance.username')
+                ->select('referral_pt.upline', 'referral_pt.downline', 'balance.amount as total_amount_referral')
+                ->get();
+        } elseif (preg_match('/^[u-z]/i', $upline)) {
+            $data = Referral5::where('upline', $upline)
+                ->when($portfolio != '', function ($query) use ($portfolio) {
+                    return $query->where('portfolio', $portfolio);
+                })
+                ->whereBetween('referral_uz.created_at', [$gabungdari, $gabunghingga])
+                ->leftJoin('balance', 'referral_uz.downline', '=', 'balance.username')
+                ->select('referral_uz.upline', 'referral_uz.downline', 'balance.amount as total_amount_referral')
                 ->get();
         }
         return $data;

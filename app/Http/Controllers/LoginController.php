@@ -34,7 +34,7 @@ class LoginController extends Controller
                 return back()->with('loginError', 'Akun Anda telah di Suspend. Silakan hubungi admin.');
             }
 
-            $user->last_login = now(); 
+            $user->last_login = now();
             $user->ip_login = $request->getClientIp();
             $user->save();
 
@@ -101,6 +101,6 @@ class LoginController extends Controller
 
         request()->session()->regenerateToken();
 
-        return redirect('/x314cz9kc141DDX');
+        return redirect('/R3xTe2kss9D1');
     }
 }

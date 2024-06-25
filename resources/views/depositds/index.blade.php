@@ -63,7 +63,8 @@
                             @foreach ($data as $i => $d)
                                 <tr data-bank="{{ $d->bank }}">
                                     <td>
-                                        <div class="statusmember" data-status="{{ $d->member->status ?? 0 }}">{{ $i + 1 }}
+                                        <div class="statusmember" data-status="{{ $d->member->status ?? 0 }}">
+                                            {{ $i + 1 }}
                                         </div>
                                     </td>
                                     <td class="check_box">
@@ -178,7 +179,9 @@
                                     </td>
                                     <td>{{ number_format($dataTrans->amount * 1000, 0, '.', ',') }}</td>
                                     <td>{{ $dataTrans->approved_by }}</td>
-                                    <td class="hsjenistrans" data-proses="{{ $dataTrans->status }}">Deposit</td>
+                                    <td class="hsjenistrans"
+                                        data-proses="{{ $dataTrans->status == '1' ? 'accept' : 'cancel' }}">
+                                        {{ $dataTrans->status == '1' ? 'Accepted' : 'Rejected' }} Deposit</td>
                                 </tr>
                             @endforeach
                         </tbody>

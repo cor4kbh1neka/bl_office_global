@@ -147,7 +147,7 @@ class BankdsController extends Controller
 
     public function deletelistgroup($group)
     {
-        if($group == 'groupbank1' || $group == 'groupbankwd1'){
+        if ($group == 'groupbank1' || $group == 'groupbankwd1') {
             return response()->json(['success' => false, 'message' => 'Group ini tidak dapat dihapus']);
         }
 
@@ -307,7 +307,7 @@ class BankdsController extends Controller
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->put(env('DOMAIN') . '/banks/group/' . $namagroup, $data);
-        
+
         if ($response->successful()) {
             Groupbank::where('group', $namagroup)->update([
                 'group' => $data['namegroupxyzt'],
@@ -374,9 +374,23 @@ class BankdsController extends Controller
     public function addbank()
     {
 
+        $apiUrl = env('DOMAIN') . '/banks/master';
+
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get($apiUrl);
+        $response = $response->json();
+
+        if ($response["status"] == "success") {
+            $response = $response["data"];
+        } else {
+            $response = [];
+        }
+
         return view('bankds.rekbank_add', [
             'title' => 'Add & Set Bank',
             'totalnote' => 0,
+            'data' => $response
         ]);
     }
 
@@ -711,7 +725,7 @@ class BankdsController extends Controller
     {
         $groupbanks = $this->getDataGroupBank();
         $listbank = $this->getDataBankMaster();
-        
+
         $data = Xtrans::query()->join('balance', 'xtrans.username', '=', 'balance.username');
         $alldata = $data->count();
 
@@ -751,76 +765,78 @@ class BankdsController extends Controller
     }
 
     protected function filterXData($query, $request)
-{
-    if ($request->get('typexdata') == 'xwithdraw') {
-        $query->select('xtrans.username', 'balance.amount', 'xtrans.updated_at', 'xtrans.groupbankwd as groupbank', 'xtrans.count_wd as xdata', 'xtrans.bank');
-    } else {
-        $query->select('xtrans.username', 'balance.amount', 'xtrans.updated_at', 'xtrans.groupbank as groupbank', 'xtrans.count_dp as xdata', 'xtrans.bank');
-    }
-
-    if ($request->get('checkusername') && $request->get('username') != '') {
-        $query->where('xtrans.username', 'like', '%' . $request->get('username') . '%');
-    }
-
-    if ($request->has('checktgldari') && $request->get('checktgldari')) {
-        $gabungDari = date('Y-m-d', strtotime($request->get('gabungdari')));
-        $query->where('xtrans.updated_at', '>=', $gabungDari . " 00:00:00");
-    }
-
-    if ($request->has('checktglhingga') && $request->get('checktglhingga')) {
-        $tanggalGabungHingga = date('Y-m-d', strtotime($request->get('gabunghingga')));
-        $query->where('xtrans.updated_at', '<=', $tanggalGabungHingga . " 23:59:59");
-    }
-
-    if ($request->get('checkxmincount') && $request->get('typexdata')) {
-        if ($request->get('typexdata') == 'xdeposit' && $request->get('xmincount')) {
-            $query->where('xtrans.sum_dp', '>=', $request->get('xmincount'));
-        } else if ($request->get('typexdata') == 'xwithdraw' && $request->get('xmincount')) {
-            $query->where('xtrans.sum_wd', '>=', $request->get('xmincount'));
+    {
+        if ($request->get('typexdata') == 'xwithdraw') {
+            $query->select('xtrans.username', 'balance.amount', 'xtrans.updated_at', 'xtrans.groupbankwd as groupbank', 'xtrans.count_wd as xdata', 'xtrans.bank');
+        } else {
+            $query->select('xtrans.username', 'balance.amount', 'xtrans.updated_at', 'xtrans.groupbank as groupbank', 'xtrans.count_dp as xdata', 'xtrans.bank');
         }
-    }
 
-    if ($request->get('checkxmaxcount') && $request->get('typexdata')) {
-        if ($request->get('typexdata') == 'xdeposit' && $request->get('xmaxcount')) {
-            $query->where('xtrans.sum_dp', '<=', $request->get('xmaxcount'));
-        } else if ($request->get('typexdata') == 'xwithdraw' && $request->get('xmaxcount')) {
-            $query->where('xtrans.sum_wd', '<=', $request->get('xmaxcount'));
+        if ($request->get('checkusername') && $request->get('username') != '') {
+            $query->where('xtrans.username', 'like', '%' . $request->get('username') . '%');
         }
+
+        if ($request->has('checktgldari') && $request->get('checktgldari')) {
+            $gabungDari = date('Y-m-d', strtotime($request->get('gabungdari')));
+            $query->where('xtrans.updated_at', '>=', $gabungDari . " 00:00:00");
+        }
+
+        if ($request->has('checktglhingga') && $request->get('checktglhingga')) {
+            $tanggalGabungHingga = date('Y-m-d', strtotime($request->get('gabunghingga')));
+            $query->where('xtrans.updated_at', '<=', $tanggalGabungHingga . " 23:59:59");
+        }
+
+        if ($request->get('checkxmincount') && $request->get('typexdata')) {
+            if ($request->get('typexdata') == 'xdeposit' && $request->get('xmincount')) {
+                $query->where('xtrans.sum_dp', '>=', $request->get('xmincount'));
+            } else if ($request->get('typexdata') == 'xwithdraw' && $request->get('xmincount')) {
+                $query->where('xtrans.sum_wd', '>=', $request->get('xmincount'));
+            }
+        }
+
+        if ($request->get('checkxmaxcount') && $request->get('typexdata')) {
+            if ($request->get('typexdata') == 'xdeposit' && $request->get('xmaxcount')) {
+                $query->where('xtrans.sum_dp', '<=', $request->get('xmaxcount'));
+            } else if ($request->get('typexdata') == 'xwithdraw' && $request->get('xmaxcount')) {
+                $query->where('xtrans.sum_wd', '<=', $request->get('xmaxcount'));
+            }
+        }
+
+        if ($request->get('checkbank') && $request->get('bank') != '') {
+            $query->where('xtrans.bank', 'like', '%' . $request->get('bank') . '%');
+        }
+
+        if ($request->get('checkgroupbank') && $request->get('groupbank') != '') {
+            $query->where('xtrans.groupbank', $request->get('groupbank'));
+        }
+
+        return $query;
     }
 
-    if ($request->get('checkbank') && $request->get('bank') != '') {
-        $query->where('xtrans.bank', 'like', '%' . $request->get('bank') . '%');
-    }
-
-    if ($request->get('checkgroupbank') && $request->get('groupbank') != '') {
-        $query->where('xtrans.groupbank', $request->get('groupbank'));
-    }
-
-    return $query;
-}
-
-    private function getDataGroupBank(){
+    private function getDataGroupBank()
+    {
         $groupbanks = $this->getApiDataGroupbank()["data"];
         $groupbanks = array_keys($groupbanks);
-        $groupbanks = array_filter($groupbanks, function($key) {
+        $groupbanks = array_filter($groupbanks, function ($key) {
             return $key !== 'nongroup' && $key !== 'nongroupwd';
         });
         $groupbanks = array_values($groupbanks);
         return $groupbanks;
     }
 
-    private function getDataBankMaster() {
+    private function getDataBankMaster()
+    {
         $dataBankMaster = $this->getApiDataBankMaster();
         $bank = $dataBankMaster['data'];
-        
-        $bankNames = array_map(function($bank) {
+
+        $bankNames = array_map(function ($bank) {
             return $bank['bnkmstrxyxyx'];
         }, $bank);
-        
+
         sort($bankNames);
-        
+
         $uniqueBankNames = array_unique($bankNames);
-        
+
         return $uniqueBankNames;
     }
 
@@ -935,11 +951,11 @@ class BankdsController extends Controller
             ];
         $idbank = $dataReq['idbank'];
         $bankname_old = $dataReq['bankname_old'];
-            
+
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->put(env('DOMAIN') . '/banks/v2/' . $idbank . '/' . $bankname_old, $data);
-        
+
         if ($response->successful()) {
             return redirect('/bankds/listbank/0/0')->with('success', 'Data berhasil diupdate');
         } else {
@@ -956,7 +972,7 @@ class BankdsController extends Controller
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->delete(env('DOMAIN') . '/banks/' . $idbank . '/' . $bank);
-        
+
         if ($response->successful()) {
             return response()->json(['success' => true, 'message' => 'Data berhasil dihapus']);
         } else {
@@ -988,7 +1004,7 @@ class BankdsController extends Controller
     {
         $data = Xtrans::query()->join('balance', 'xtrans.username', '=', 'balance.username');
         $data = $this->filterXData($data, $request)->get();
-        
+
         return Excel::download(new XDataExport($data), 'XDataBank.xlsx');
     }
 }

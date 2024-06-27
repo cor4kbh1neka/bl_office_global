@@ -51,22 +51,9 @@
                                     <label for="masterbank">pilih master</label>
                                     <div class="groupeditinput">
                                         <select id="bankmaster" name="masterbnkxyxt" value="bca" required>
-                                            <option value="bca">bca</option>
-                                            <option value="bni">bni</option>
-                                            <option value="bri">bri</option>
-                                            <option value="mandiri">mandiri</option>
-                                            <option value="cimb">cimb</option>
-                                            <option value="danamon">danamon</option>
-                                            <option value="panin">panin</option>
-                                            <option value="cimb">cimb</option>
-                                            <option value="permata">permata</option>
-                                            <option value="bsi">bsi</option>
-                                            <option value="dana">dana</option>
-                                            <option value="gopay">gopay</option>
-                                            <option value="ovo">ovo</option>
-                                            <option value="pulsa">pulsa</option>
-                                            <option value="linkaja">linkaja</option>
-                                            <option value="qris">qris</option>
+                                            @foreach ($data as $d)
+                                                <option value="{{ $d['bnkmstrxyxyx'] }}">{{ $d['bnkmstrxyxyx'] }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>

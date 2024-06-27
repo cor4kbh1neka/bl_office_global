@@ -127,13 +127,13 @@ class ApiController extends Controller
         }
 
         $username = $request->username;
-        $ipaddress = $request->ipaddress;
+        $ipaddress = $request->ipaddres;
 
         try {
             $member = Member::where('username', $username)->firstOrFail();
             $member->update([
                 'ip_log' => $ipaddress,
-                'lastlogin' => now(),
+                'lastlogin' => Carbon::now()->format('Y-m-d H:i:s'),
                 'domain' => $request->getHost()
             ]);
 
@@ -901,7 +901,23 @@ class ApiController extends Controller
         $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-refnos.aspx';
 
         $response = Http::post($apiUrl, $data);
-        return $response->json();
+        $response = $response->json();
+        if ($response["error"]["id"] == 0) {
+            foreach ($response["result"] as &$rs) {
+                $rs["orderTime"] = Carbon::parse($rs["orderTime"])->addHours(11)->toDateTimeString();
+                $rs["modifyDate"] = Carbon::parse($rs["modifyDate"])->addHours(11)->toDateTimeString();
+                $rs["settleTime"] = Carbon::parse($rs["settleTime"])->addHours(11)->toDateTimeString();
+                $rs["winLostDate"] = Carbon::parse($rs["winLostDate"])->addHours(11)->toDateTimeString();
+                $rs["subBet"][0]["winlostDate"] = Carbon::parse($rs["subBet"][0]["winlostDate"])->addHours(11)->toDateTimeString();
+                $rs["subBet"][0]["kickOffTime"] = Carbon::parse($rs["subBet"][0]["kickOffTime"])->addHours(11)->toDateTimeString();
+            }
+        }
+
+        // if($response["results"]["error"]["id"] == 0){
+        //     forea
+        // }
+
+        return $response;
     }
 
     private function validasiBearer(Request $request)

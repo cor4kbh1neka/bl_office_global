@@ -14,6 +14,7 @@ use App\Models\MemberAktif;
 use App\Models\Transactions;
 use App\Models\Xtrans;
 use App\Models\Balance;
+use App\Models\ListError;
 use App\Models\ReferralDepo1;
 use App\Models\ReferralDepo2;
 use App\Models\ReferralDepo3;
@@ -237,16 +238,16 @@ class DepoWdController extends Controller
 
                         if ($dataDepo->jenis == 'DP') {
                             $prosesDepo = $this->prosesDeposit($id, $dataDepo, $txnid);
-                            if($prosesDepo !== true) {
+                            if ($prosesDepo !== true) {
                                 $dataDepo->update(['status' => 0, 'approved_by' => '']);
                                 return back()->withInput()->with('error', $prosesDepo);
                             }
-                        } else if ($dataDepo->jenis == 'WD'){
+                        } else if ($dataDepo->jenis == 'WD') {
                             $this->prosesWithdraw($dataDepo, $txnid);
                         } else {
                             return back()->withInput()->with('error', 'Transkasi tidak valid');
                         }
-                        
+
                         $this->updateMemberData($dataDepo);
                     }
                 }
@@ -285,10 +286,10 @@ class DepoWdController extends Controller
                 'message' => 'Gagal melakukan transaksi!'
             ], 400);
         }
-        
+
         return $resultsApi;
     }
-    
+
     private function prosesDeposit($id, $dataDepo, $txnid)
     {
         $dataAPI = [
@@ -328,10 +329,10 @@ class DepoWdController extends Controller
             }
             return true;
         } else {
-            if($resultsApi["error"]["id"] === 4404){
+            if ($resultsApi["error"]["id"] === 4404) {
                 $error4404 = $this->deposit4404($dataAPI, $dataDepo, $txnid);
-                if($error4404 !== true){
-                   return $error4404;
+                if ($error4404 !== true) {
+                    return $error4404;
                 }
             } else {
                 return $resultsApi;
@@ -407,15 +408,15 @@ class DepoWdController extends Controller
 
         // $resultsApi = $this->seamlessApiTransaction('WD', $dataAPI);
         // if ($resultsApi["error"]["id"] === 0) {
-            $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
-            if ($dataToDelete) {
-                $dataToDelete->delete();
-            }
+        $dataToDelete = Xdpwd::where('username', $dataDepo->username)->where('jenis', $dataDepo->jenis)->first();
+        if ($dataToDelete) {
+            $dataToDelete->delete();
+        }
 
-            $balance = Balance::where('username', $dataDepo->username)->first()->amount;
-            $this->addDataHistory($dataDepo->username, $txnid, '', 'withdraw', 'withdraw', $dataDepo->amount, 0, $balance);
-            $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "withdraw");
-            return true;
+        $balance = Balance::where('username', $dataDepo->username)->first()->amount;
+        $this->addDataHistory($dataDepo->username, $txnid, '', 'withdraw', 'withdraw', $dataDepo->amount, 0, $balance);
+        $this->addDataWinLoss($dataDepo->username, $dataDepo->amount, "withdraw");
+        return true;
         // } else {
         //     if($resultsApi["error"]["id"] === 9720){
         //         $withdraw9720 = $this->withdraw9720($resultsApi, $dataAPI);
@@ -584,6 +585,11 @@ class DepoWdController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
+            ListError::create([
+                'fungsi' => 'reject transaksi WD / DP',
+                'pesan_error' => $e->getMessage(),
+                'keterangan' => '-'
+            ]);
             return back()->withInput()->with('error', $e->getMessage());
         }
     }
@@ -710,11 +716,6 @@ class DepoWdController extends Controller
             ]);
         }
         return ['status' => 'success'];
-    }
-
-    public function getDataXdpwd()
-    {
-        return Xdpwd::get();
     }
 
     public function addDataWinLoss($username, $amount, $jenis)
@@ -855,5 +856,15 @@ class DepoWdController extends Controller
         ]);
 
         return;
+    }
+
+    public function getDataXdpwd()
+    {
+        return Xdpwd::get();
+    }
+
+    public function clearXdpwd($id)
+    {
+        return Xdpwd::where('id', $id)->delete();
     }
 }

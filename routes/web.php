@@ -384,7 +384,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/getDataXdpwd', [DepoWdController::class, 'getDataXdpwd']);
     Route::get('/clearXdpwd/{id}', [DepoWdController::class, 'clearXdpwd']);
 
-    /* check Xdpwd */
+    /* check ga penting */
     Route::get('/checklistError', [DepoWdController::class, 'checklistError']);
+    Route::get('/checkWinlossbetDay', [DepoWdController::class, 'checkWinlossbetDay']);
 });
 // });

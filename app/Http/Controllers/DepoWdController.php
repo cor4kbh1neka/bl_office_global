@@ -20,6 +20,7 @@ use App\Models\ReferralDepo2;
 use App\Models\ReferralDepo3;
 use App\Models\ReferralDepo4;
 use App\Models\ReferralDepo5;
+use App\Models\WinlossbetDay;
 use App\Models\winlossDay;
 use App\Models\winlossMonth;
 use App\Models\winlossYear;
@@ -868,8 +869,22 @@ class DepoWdController extends Controller
         return Xdpwd::where('id', $id)->delete();
     }
 
+    /* ga penting */
     public function checklistError()
     {
         return ListError::orderBy('created_at', 'DESC')->get();
+    }
+
+    public function checkWinlossbetDay($username = "")
+    {
+        $query = WinlossbetDay::orderBy('created_at', 'DESC');
+
+        if ($username != '') {
+            $query->where('username', $username);
+        }
+
+        $results = $query->get();
+
+        return $results;
     }
 }

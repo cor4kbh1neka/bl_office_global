@@ -867,4 +867,9 @@ class DepoWdController extends Controller
     {
         return Xdpwd::where('id', $id)->delete();
     }
+
+    public function checklistError()
+    {
+        return ListError::orderBy('created_at', 'DESC')->get();
+    }
 }

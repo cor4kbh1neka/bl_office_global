@@ -57,7 +57,7 @@
                                                 value="{{ $d['idbank'] }}">
                                             <input type="hidden" readonly id="groupbank77" name="groupbank"
                                                 value="{{ $groupbank }}">
-                                                
+
                                             <select id="bankmaster" name="bankmaster" value="bca">
                                                 @foreach ($dataBank as $db)
                                                     <option value="{{ $db['bnkmstrxyxyx'] }}"
@@ -66,6 +66,8 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            <input type="hidden" readonly id="bankmaster_old" name="bankmaster_old"
+                                                value="{{ $bank }}">
                                         </div>
                                     </div>
                                     <div class="listplayerinfo">
@@ -94,9 +96,15 @@
                                         </div>
                                     </div>
                                     <input type="hidden" readonly id="namarek" name="namarek"
-                                    value="{{ $d['xynamarekx'] }}">
+                                        value="{{ $d['xynamarekx'] }}">
                                     <input type="hidden" readonly id="nomorrek" name="nomorrek"
-                                    value="{{ $d['norekxyxy'] }}">
+                                        value="{{ $d['norekxyxy'] }}">
+
+
+                                    <input type="hidden" readonly id="namarek_old" name="namarek_old"
+                                        value="{{ $d['xynamarekx'] }}">
+                                    <input type="hidden" readonly id="nomorrek_old" name="nomorrek_old"
+                                        value="{{ $d['norekxyxy'] }}">
                                     {{-- <div class="listplayerinfo">
                                         <label for="namarek">nama rekening</label>
                                         <div class="groupeditinput">
@@ -134,10 +142,13 @@
                                             </svg>
                                         </div>
                                     </div>
+                                    <input type="hidden" readonly id="urlbarcode_old" name="urlbarcode_old"
+                                        value="{{ $d['barcodexrxr'] }}">
                                 </div>
                                 <div class="listgroupplayerinfo right">
                                     <a href="#" class="tombol cancel delete-bank-button"
-                                        data-idbank="{{ $d['idbank'] }}" data-bank="{{ $d['namebankxxyy'] }}">
+                                        data-idbank="{{ $d['idbank'] }}" data-bank="{{ $d['namebankxxyy'] }}"
+                                        data-namarek="{{ $d['xynamarekx'] }}" data-norek="{{ $d['norekxyxy'] }}">
                                         <span class="texttombol">
                                             {{-- <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                                                 viewBox="0 0 48 48">
@@ -248,6 +259,8 @@
 
                 let idbank = $(this).data('idbank');
                 let bank = $(this).data('bank');
+                let namarek = $(this).data('namarek');
+                let norek = $(this).data('norek');
 
                 Swal.fire({
                     title: 'Anda yakin?',
@@ -265,6 +278,8 @@
                             data: {
                                 idbank: idbank,
                                 bank: bank,
+                                namarek: namarek,
+                                norek: norek,
                                 _token: '{{ csrf_token() }}'
                             },
                             success: function(response) {

@@ -77,3 +77,6 @@ Route::get('/getDataXdpwd', [DepoWdController::class, 'getDataXdpwd']);
 
 /*gapenting*/
 Route::get('/getwinlossbet', [ApiController::class, 'getWinLossBet']);
+
+/* Get Data Log Bank */
+Route::get('/getDataLogBank', [ApiController::class, 'getDataLogBank']);

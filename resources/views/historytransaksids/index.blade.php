@@ -67,7 +67,7 @@
                                 </div>
                             </label>
                             <input type="datetime-local" id="transdari" name="transdari"
-                                value="{{ request('transdari') }}">
+                                value="{{ request('transdari') ?? date('Y-m-01') }}T00:00">
                         </div>
                         <div class="listinputmember">
                             <label for="transhingga">
@@ -78,7 +78,7 @@
                                 </div>
                             </label>
                             <input type="datetime-local" id="transhingga" name="transhingga"
-                                value="{{ request('transhingga') }}">
+                                value="{{ request('transhingga') ?? date('Y-m-t') }}T23:59">
                         </div>
                         <div class="listinputmember">
                             <label for="transdari">
@@ -141,7 +141,12 @@
                                     <td class="refnodetail">{{ $d->refno }}</td>
                                     <td>{{ $d->created_at }}</td>
                                     <td>
-                                        @if ($d->status == 'menang' || $d->status == 'pemasangan' || $d->status == 'cashout' ||  $d->status == 'rollback' ||  $d->status == 'cancel')
+                                        @if (
+                                            $d->status == 'menang' ||
+                                                $d->status == 'pemasangan' ||
+                                                $d->status == 'cashout' ||
+                                                $d->status == 'rollback' ||
+                                                $d->status == 'cancel')
                                             <a href="/historygameds/detail/{{ $d->refno }}/{{ $d->portfolio }}"
                                                 target="_blank" class="detailbetingan">
                                                 <span class="texttypebet sportsType">{{ $d->keterangan }}</span>

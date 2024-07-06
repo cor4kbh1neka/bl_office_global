@@ -14,6 +14,7 @@ use App\Models\HistoryTransaksi;
 use App\Models\Outstanding;
 use App\Models\Balance;
 use App\Models\ListError;
+use App\Models\LogBank;
 use App\Models\Referral1;
 use App\Models\Referral2;
 use App\Models\Referral3;
@@ -867,7 +868,7 @@ class ApiController extends Controller
         $response = Http::post($apiUrl, $data);
         $results = $response->json();
 
-        if ($results["error"] != 0) {
+        if ($results["error"]["id"] == 0) {
             $results = $results['result'];
             foreach ($results as &$d) {
                 $d['orderTime'] = Carbon::parse($d['orderTime'])->addHours(11)->toDateTimeString();
@@ -876,8 +877,6 @@ class ApiController extends Controller
                 $d['winLostDate'] = Carbon::parse($d['winLostDate'])->addHours(11)->toDateTimeString();
             }
         }
-
-
         return $results;
     }
 
@@ -1142,5 +1141,10 @@ class ApiController extends Controller
     public function getErrorList()
     {
         return ListError::orderBy('created_at', 'DESC')->get();
+    }
+
+    public function getDataLogBank()
+    {
+        return LogBank::orderBy('created_at', 'DESC')->get();
     }
 }

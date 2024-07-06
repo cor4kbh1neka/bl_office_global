@@ -60,13 +60,15 @@
                             $hariIni = Carbon::now()->format('Y-m-d');
                         @endphp
                         <div class="listheadhistoryds bottom two">
-                            @if (request('tgldari') === $hariIni && request('tglsampai') === $hariIni)
+                            {{-- @if (request('tgldari') === $hariIni && request('tglsampai') === $hariIni)
                                 <input type="date" id="tgldari" name="tgldari" value="{{ $hariIni }}">
                                 <input type="date" id="tglsampai" name="tglsampai" value="{{ $hariIni }}">
-                            @else
-                                <input type="date" id="tgldari" name="tgldari" value="{{ request('tgldari') }}">
-                                <input type="date" id="tglsampai" name="tglsampai" value="{{ request('tglsampai') }}">
-                            @endif
+                            @else --}}
+                            <input type="date" id="tgldari" name="tgldari"
+                                value="{{ request('tgldari') ?? date('Y-m-01') }}">
+                            <input type="date" id="tglsampai" name="tglsampai"
+                                value="{{ request('tglsampai') ?? date('Y-m-t') }}">
+                            {{-- @endif --}}
                             <button type="submit" class="tombol primary" id="searchbutton">
                                 <span class="texttombol">SUBMIT</span>
                             </button>

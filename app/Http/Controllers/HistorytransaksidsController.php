@@ -133,6 +133,11 @@ class HistorytransaksidsController extends Controller
             $transhingga = Carbon::createFromFormat('Y-m-d\TH:i', $transhinggaInput)->format('Y-m-d H:i:s');
 
             $query = $query->whereBetween('created_at', [$transdari, $transhingga]);
+        } else {
+            $transdari = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+            $transhingga = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
+
+            $query = $query->whereBetween('created_at', [$transdari, $transhingga]);
         }
 
         // Filter untuk strict data

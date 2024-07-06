@@ -843,38 +843,47 @@ class ApiController extends Controller
 
     public function getHistoryGame(Request $request)
     {
-        $validasiBearer = $this->validasiBearer($request);
-        if ($validasiBearer !== true) {
-            return $validasiBearer;
-        }
+        // $validasiBearer = $this->validasiBearer($request);
+        // if ($validasiBearer !== true) {
+        //     return $validasiBearer;
+        // }
 
         $username = $request->username;
         $portfolio = $request->portfolio;
         $startDate = $request->startDate;
         $endDate = $request->endDate;
-
-        $data = [
-            'username' => env('UNIX_CODE') . $username,
-            'portfolio' => $portfolio,
-            'startDate' => $startDate . 'T00:00:00.540Z',
-            'endDate' => $endDate . 'T23:59:59.540Z',
-            'companyKey' => env('COMPANY_KEY'),
-            'language' => 'en',
-            'serverId' => env('SERVERID')
-
+        $results = [
+            "result" => [],
+            "serverId" => "YY-production",
+            "error" => [
+                "id" => 0,
+                "msg" => "No Error"
+            ]
         ];
-        $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx';
+        if ($portfolio != 'SeamlessGame') {
+            $data = [
+                'username' => env('UNIX_CODE') . $username,
+                'portfolio' => $portfolio,
+                'startDate' => $startDate . 'T00:00:00.540Z',
+                'endDate' => $endDate . 'T23:59:59.540Z',
+                'companyKey' => env('COMPANY_KEY'),
+                'language' => 'en',
+                'serverId' => env('SERVERID')
 
-        $response = Http::post($apiUrl, $data);
-        $results = $response->json();
+            ];
+            $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx';
 
-        if ($results["error"]["id"] == 0) {
-            $results = $results['result'];
-            foreach ($results as &$d) {
-                $d['orderTime'] = Carbon::parse($d['orderTime'])->addHours(11)->toDateTimeString();
-                $d['modifyDate'] = Carbon::parse($d['modifyDate'])->addHours(11)->toDateTimeString();
-                $d['settleTime'] = Carbon::parse($d['settleTime'])->addHours(11)->toDateTimeString();
-                $d['winLostDate'] = Carbon::parse($d['winLostDate'])->addHours(11)->toDateTimeString();
+            $response = Http::post($apiUrl, $data);
+            $results = $response->json();
+
+            if ($results["error"]["id"] == 0) {
+                $results = $results['result'];
+                foreach ($results as &$d) {
+                    $d['orderTime'] = Carbon::parse($d['orderTime'])->addHours(11)->toDateTimeString();
+                    $d['modifyDate'] = Carbon::parse($d['modifyDate'])->addHours(11)->toDateTimeString();
+                    $d['settleTime'] = Carbon::parse($d['settleTime'])->addHours(11)->toDateTimeString();
+                    $d['winLostDate'] = Carbon::parse($d['winLostDate'])->addHours(11)->toDateTimeString();
+                }
             }
         }
         return $results;

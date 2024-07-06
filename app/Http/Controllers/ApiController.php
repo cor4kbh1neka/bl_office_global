@@ -842,6 +842,7 @@ class ApiController extends Controller
 
     public function getHistoryGame(Request $request)
     {
+        dd('test');
         $validasiBearer = $this->validasiBearer($request);
         if ($validasiBearer !== true) {
             return $validasiBearer;

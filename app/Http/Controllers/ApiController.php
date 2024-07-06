@@ -843,15 +843,16 @@ class ApiController extends Controller
 
     public function getHistoryGame(Request $request)
     {
-        // $validasiBearer = $this->validasiBearer($request);
-        // if ($validasiBearer !== true) {
-        //     return $validasiBearer;
-        // }
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
 
         $username = $request->username;
         $portfolio = $request->portfolio;
         $startDate = $request->startDate;
         $endDate = $request->endDate;
+
         $results = [
             "result" => [],
             "serverId" => "YY-production",
@@ -860,6 +861,7 @@ class ApiController extends Controller
                 "msg" => "No Error"
             ]
         ];
+
         if ($portfolio != 'SeamlessGame') {
             $data = [
                 'username' => env('UNIX_CODE') . $username,

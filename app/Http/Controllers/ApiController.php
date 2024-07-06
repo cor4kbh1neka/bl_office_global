@@ -867,7 +867,7 @@ class ApiController extends Controller
         $response = Http::post($apiUrl, $data);
         $results = $response->json();
 
-        if ($results["error"] != 0) {
+        if ($results["error"]["id"] == 0) {
             $results = $results['result'];
             foreach ($results as &$d) {
                 $d['orderTime'] = Carbon::parse($d['orderTime'])->addHours(11)->toDateTimeString();

@@ -850,6 +850,7 @@ class ApiBolaController extends Controller
             $txnid = '';
 
             $crteateStatusTransaction = $this->updateTranStatus($dataTransaction->id, 'Settled');
+
             if ($crteateStatusTransaction) {
                 $this->deleteOutstanding($request->TransferCode);
 

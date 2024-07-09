@@ -871,10 +871,21 @@ class ApiController extends Controller
         if ($results["error"]["id"] == 0) {
             $results = $results['result'];
             foreach ($results as &$d) {
-                $d['orderTime'] = Carbon::parse($d['orderTime'])->addHours(11)->toDateTimeString();
-                $d['modifyDate'] = Carbon::parse($d['modifyDate'])->addHours(11)->toDateTimeString();
-                $d['settleTime'] = Carbon::parse($d['settleTime'])->addHours(11)->toDateTimeString();
-                $d['winLostDate'] = Carbon::parse($d['winLostDate'])->addHours(11)->toDateTimeString();
+                if (isset($d['orderTime'])) {
+                    $d['orderTime'] = Carbon::parse($d['orderTime'])->addHours(11)->toDateTimeString();
+                }
+
+                if (isset($d['modifyDate'])) {
+                    $d['modifyDate'] = Carbon::parse($d['modifyDate'])->addHours(11)->toDateTimeString();
+                }
+
+                if (isset($d['settleTime'])) {
+                    $d['settleTime'] = Carbon::parse($d['settleTime'])->addHours(11)->toDateTimeString();
+                }
+
+                if (isset($d['winLostDate'])) {
+                    $d['winLostDate'] = Carbon::parse($d['winLostDate'])->addHours(11)->toDateTimeString();
+                }
             }
         }
 
@@ -904,12 +915,29 @@ class ApiController extends Controller
         $response = $response->json();
         if ($response["error"]["id"] == 0) {
             foreach ($response["result"] as &$rs) {
-                $rs["orderTime"] = Carbon::parse($rs["orderTime"])->addHours(11)->toDateTimeString();
-                $rs["modifyDate"] = Carbon::parse($rs["modifyDate"])->addHours(11)->toDateTimeString();
-                $rs["settleTime"] = Carbon::parse($rs["settleTime"])->addHours(11)->toDateTimeString();
-                $rs["winLostDate"] = Carbon::parse($rs["winLostDate"])->addHours(11)->toDateTimeString();
-                $rs["subBet"][0]["winlostDate"] = Carbon::parse($rs["subBet"][0]["winlostDate"])->addHours(11)->toDateTimeString();
-                $rs["subBet"][0]["kickOffTime"] = Carbon::parse($rs["subBet"][0]["kickOffTime"])->addHours(11)->toDateTimeString();
+                if (isset($rs["orderTime"])) {
+                    $rs["orderTime"] = Carbon::parse($rs["orderTime"])->addHours(11)->toDateTimeString();
+                }
+
+                if (isset($rs["modifyDate"])) {
+                    $rs["modifyDate"] = Carbon::parse($rs["modifyDate"])->addHours(11)->toDateTimeString();
+                }
+
+                if (isset($rs["settleTime"])) {
+                    $rs["settleTime"] = Carbon::parse($rs["settleTime"])->addHours(11)->toDateTimeString();
+                }
+
+                if (isset($rs["winLostDate"])) {
+                    $rs["winLostDate"] = Carbon::parse($rs["winLostDate"])->addHours(11)->toDateTimeString();
+                }
+
+                if (isset($rs["subBet"][0]["winlostDate"])) {
+                    $rs["subBet"][0]["winlostDate"] = Carbon::parse($rs["subBet"][0]["winlostDate"])->addHours(11)->toDateTimeString();
+                }
+
+                if (isset($rs["subBet"][0]["kickOffTime"])) {
+                    $rs["subBet"][0]["kickOffTime"] = Carbon::parse($rs["subBet"][0]["kickOffTime"])->addHours(11)->toDateTimeString();
+                }
             }
         }
 

@@ -293,6 +293,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getGroupBank/{bank}/{jenis}', [BankdsController::class, 'getGroupBank']);
         Route::get('/bankds/xdata', [BankdsController::class, 'xdata']);
         Route::get('/bankds/export', [BankdsController::class, 'export']);
+
+        Route::get('/getdatabank/{bank}', [BankdsController::class, 'getDataBank']);
     });
 
     Route::middleware('refeerral_bonus')->group(function () {

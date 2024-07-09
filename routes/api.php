@@ -54,8 +54,6 @@ Route::post('/getHistoryGame', [ApiController::class, 'getHistoryGame']);
 Route::post('/getHistoryGameById', [ApiController::class, 'getHistoryGameById']);
 Route::post('/getDataOutstanding', [ApiController::class, 'getDataOutstanding']);
 
-Route::post('/gethistory', [ApiController::class, 'getDataHistory']);
-
 // });
 
 
@@ -66,6 +64,7 @@ Route::post('/getDataReferral', [ApiController::class, 'getDataReferral']);
 
 Route::post('/getApiBro', [ApiController::class, 'getApiBro']);
 Route::get('/getDataHistory', [ApiController::class, 'getDataHistoryAll']);
+Route::post('/gethistory', [ApiController::class, 'getDataHistory']);
 Route::get('/deleteHistoryTranskasi', [ApiController::class, 'deleteHistoryTranskasi']);
 
 
@@ -78,3 +77,6 @@ Route::get('/getDataXdpwd', [DepoWdController::class, 'getDataXdpwd']);
 
 /*gapenting*/
 Route::get('/getwinlossbet', [ApiController::class, 'getWinLossBet']);
+
+/* Get Data Log Bank */
+Route::get('/getDataLogBank', [ApiController::class, 'getDataLogBank']);

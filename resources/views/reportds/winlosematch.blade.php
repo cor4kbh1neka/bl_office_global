@@ -191,7 +191,7 @@
                                             <td>{{ $i + 1 }}</td>
                                             <td>{{ $d['refNo'] }}</td>
                                             <td>{{ $portfolio }}</td>
-                                            <td>{{ $portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType'] }}
+                                            <td>{{ $portfolio == 'SeamlessGame' ? $d['gameType'] : ($portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType']) }}
                                             </td>
                                             <td>
                                                 @if ($portfolio != 'Games')

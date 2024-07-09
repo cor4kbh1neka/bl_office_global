@@ -194,7 +194,7 @@
                                             <td>{{ $portfolio == 'SeamlessGame' ? $d['gameType'] : ($portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType']) }}
                                             </td>
                                             <td>
-                                                @if ($portfolio != 'Games')
+                                                @if ($portfolio != 'Games' && $portfolio != 'SeamlessGame')
                                                     <a href="/historygameds/detail/{{ $d['refNo'] }}/{{ $portfolio }}"
                                                         target="_blank" class="detailbetingan">
                                                         <span

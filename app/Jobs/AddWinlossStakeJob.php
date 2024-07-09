@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\WinlossbetDay;
 use App\Models\WinlossbetMonth;
 use App\Models\WinlossbetYear;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -77,93 +78,99 @@ class AddWinlossStakeJob implements ShouldQueue
 
     private function createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis, $created_at)
     {
-        if ($amountWL > 0) {
-            $amountWL = $amountWL - $amount;
-        }
-
-        $day = date('d', strtotime($created_at));
-        $month = date('m', strtotime($created_at));
-        $year = date('Y', strtotime($created_at));
-
-        /* Winloss Bet Day */
-        $winlossbet_day = WinlossbetDay::where('username', $username)
-            ->where('portfolio', $portfolio)
-            ->where('day', $day)
-            ->where('month', $month)
-            ->where('year', $year)->first();
-
-        if ($winlossbet_day) {
-            if ($jenis == 'settle') {
-                $winlossbet_day->increment('stake', $amount);
-                $winlossbet_day->increment('winloss', $amountWL);
-            } else if ($jenis == 'cancel' || $jenis == 'rollback') {
-                $winlossbet_day->decrement('stake', $amount);
-                $winlossbet_day->decrement('winloss', $amountWL);
+        DB::transaction(function () use ($username, $portfolio, $amount, $amountWL, $jenis, $created_at) {
+            if ($amountWL > 0) {
+                $amountWL = $amountWL - $amount;
             }
-        } else {
-            $winlossbet_day = WinlossbetDay::create([
-                'username' => $username,
-                'portfolio' => $portfolio,
-                'day' => $day,
-                'month' => $month,
-                'year' => $year,
-                'stake' => $amount,
-                'winloss' => $amountWL,
-                'created_at' => $created_at
-            ]);
-        }
 
-        return $winlossbet_day;
+            $day = date('d', strtotime($created_at));
+            $month = date('m', strtotime($created_at));
+            $year = date('Y', strtotime($created_at));
 
-        /* Winloss Bet Month */
-        $winlossbet_month = WinlossbetMonth::where('username', $username)
-            ->where('portfolio', $portfolio)
-            ->where('month', $month)
-            ->where('year', $year)->first();
+            /* Winloss Bet Day */
+            $winlossbet_day = WinlossbetDay::where('username', $username)
+                ->where('portfolio', $portfolio)
+                ->where('day', $day)
+                ->where('month', $month)
+                ->where('year', $year)
+                ->lockForUpdate()
+                ->first();
 
-        if ($winlossbet_month) {
-            if ($jenis == 'settle') {
-                $winlossbet_month->increment('stake', $amount);
-                $winlossbet_month->increment('winloss', $amountWL);
-            } else if ($jenis == 'cancel' || $jenis == 'rollback') {
-                $winlossbet_month->decrement('stake', $amount);
-                $winlossbet_month->decrement('winloss', $amountWL);
+            if ($winlossbet_day) {
+                if ($jenis == 'settle') {
+                    $winlossbet_day->increment('stake', $amount);
+                    $winlossbet_day->increment('winloss', $amountWL);
+                } else if ($jenis == 'cancel' || $jenis == 'rollback') {
+                    $winlossbet_day->decrement('stake', $amount);
+                    $winlossbet_day->decrement('winloss', $amountWL);
+                }
+            } else {
+                $winlossbet_day = WinlossbetDay::create([
+                    'username' => $username,
+                    'portfolio' => $portfolio,
+                    'day' => $day,
+                    'month' => $month,
+                    'year' => $year,
+                    'stake' => $amount,
+                    'winloss' => $amountWL,
+                    'created_at' => $created_at
+                ]);
             }
-        } else {
-            $winlossbet_month = WinlossbetMonth::create([
-                'username' => $username,
-                'portfolio' => $portfolio,
-                'month' => $month,
-                'year' => $year,
-                'stake' => $amount,
-                'winloss' => $amountWL,
-                'created_at' => $created_at
-            ]);
-        }
 
-        /* Winloss Bet Year */
-        $winlossbet_year = WinlossbetYear::where('username', $username)
-            ->where('portfolio', $portfolio)
-            ->where('year', $year)->first();
+            /* Winloss Bet Month */
+            $winlossbet_month = WinlossbetMonth::where('username', $username)
+                ->where('portfolio', $portfolio)
+                ->where('month', $month)
+                ->where('year', $year)
+                ->lockForUpdate()
+                ->first();
 
-        if ($winlossbet_year) {
-            if ($jenis == 'settle') {
-                $winlossbet_year->increment('stake', $amount);
-                $winlossbet_year->increment('winloss', $amountWL);
-            } else if ($jenis == 'cancel' || $jenis == 'rollback') {
-                $winlossbet_year->decrement('stake', $amount);
-                $winlossbet_year->decrement('winloss', $amountWL);
+            if ($winlossbet_month) {
+                if ($jenis == 'settle') {
+                    $winlossbet_month->increment('stake', $amount);
+                    $winlossbet_month->increment('winloss', $amountWL);
+                } else if ($jenis == 'cancel' || $jenis == 'rollback') {
+                    $winlossbet_month->decrement('stake', $amount);
+                    $winlossbet_month->decrement('winloss', $amountWL);
+                }
+            } else {
+                $winlossbet_month = WinlossbetMonth::create([
+                    'username' => $username,
+                    'portfolio' => $portfolio,
+                    'month' => $month,
+                    'year' => $year,
+                    'stake' => $amount,
+                    'winloss' => $amountWL,
+                    'created_at' => $created_at
+                ]);
             }
-        } else {
-            WinlossbetYear::create([
-                'username' => $username,
-                'portfolio' => $portfolio,
-                'year' => $year,
-                'stake' => $amount,
-                'winloss' => $amountWL,
-                'created_at' => $created_at
-            ]);
-        }
+
+            /* Winloss Bet Year */
+            $winlossbet_year = WinlossbetYear::where('username', $username)
+                ->where('portfolio', $portfolio)
+                ->where('year', $year)
+                ->lockForUpdate()
+                ->first();
+
+            if ($winlossbet_year) {
+                if ($jenis == 'settle') {
+                    $winlossbet_year->increment('stake', $amount);
+                    $winlossbet_year->increment('winloss', $amountWL);
+                } else if ($jenis == 'cancel' || $jenis == 'rollback') {
+                    $winlossbet_year->decrement('stake', $amount);
+                    $winlossbet_year->decrement('winloss', $amountWL);
+                }
+            } else {
+                WinlossbetYear::create([
+                    'username' => $username,
+                    'portfolio' => $portfolio,
+                    'year' => $year,
+                    'stake' => $amount,
+                    'winloss' => $amountWL,
+                    'created_at' => $created_at
+                ]);
+            }
+        });
     }
 
     private function convertUsername($username)

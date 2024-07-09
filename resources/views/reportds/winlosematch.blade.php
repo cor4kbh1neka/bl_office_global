@@ -186,7 +186,7 @@
                                         <th>W/L</th>
                                     </tr>
                                     @foreach ($data as $i => $d)
-                                        @dd($d)
+                                        {{-- @dd($d) --}}
                                         <tr>
                                             <td>{{ $i + 1 }}</td>
                                             <td>{{ $d['refNo'] }}</td>
@@ -203,7 +203,7 @@
                                                     </a>
                                                 @else
                                                     <span
-                                                        class="texttypebet sportsType">{{ $portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType'] }}</span>
+                                                        class="texttypebet sportsType">{{ $portfolio == 'SeamlessGame' ? $d['gameType'] : ($portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType']) }}</span>
                                                 @endif
                                             </td>
                                             <td class="datacc" data-get="{{ $d['saldo'] }}"></td>

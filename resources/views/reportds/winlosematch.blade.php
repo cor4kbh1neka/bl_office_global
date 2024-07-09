@@ -186,14 +186,15 @@
                                         <th>W/L</th>
                                     </tr>
                                     @foreach ($data as $i => $d)
+                                        {{-- @dd($d) --}}
                                         <tr>
                                             <td>{{ $i + 1 }}</td>
                                             <td>{{ $d['refNo'] }}</td>
                                             <td>{{ $portfolio }}</td>
-                                            <td>{{ $portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType'] }}
+                                            <td>{{ $portfolio == 'SeamlessGame' ? $d['gameType'] : ($portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType']) }}
                                             </td>
                                             <td>
-                                                @if ($portfolio != 'Games')
+                                                @if ($portfolio != 'Games' && $portfolio != 'SeamlessGame')
                                                     <a href="/historygameds/detail/{{ $d['refNo'] }}/{{ $portfolio }}"
                                                         target="_blank" class="detailbetingan">
                                                         <span
@@ -202,7 +203,7 @@
                                                     </a>
                                                 @else
                                                     <span
-                                                        class="texttypebet sportsType">{{ $portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType'] }}</span>
+                                                        class="texttypebet sportsType">{{ $portfolio == 'SeamlessGame' ? $d['gameType'] : ($portfolio == 'SportsBook' ? $d['sportsType'] : $d['productType']) }}</span>
                                                 @endif
                                             </td>
                                             <td class="datacc" data-get="{{ $d['saldo'] }}"></td>

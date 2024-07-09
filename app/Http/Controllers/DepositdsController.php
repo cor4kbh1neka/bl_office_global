@@ -26,11 +26,22 @@ class DepositdsController extends Controller
             ->get();
 
         /* Data master bank */
-        $dataBank = $this->getApiMasterBank();
-        sort($dataBank);
-        $dataBank = array_unique($dataBank);
+        $dataBankApi = $this->getApiMasterBank();
+        $dataBank['DP'] = array_map(function ($item) {
+            return $item[1];
+        }, $dataBankApi);
+
+        $dataBank['WD'] = array_map(function ($item) {
+            return $item[0];
+        }, $dataBankApi);
+
+
+        sort($dataBank[$jenis]);
+
+        $dataBankUniq = array_unique($dataBank[$jenis]);
+
         $allDataBank = [];
-        foreach ($dataBank as $index => $item1) {
+        foreach ($dataBankUniq as $index => $item1) {
             $allDataBank[$index]['bnkmstrxyxyx'] = $item1;
             $allDataBank[$index]['count'] = 0;
 
@@ -49,23 +60,36 @@ class DepositdsController extends Controller
 
         /* Data depo wd */
         $dataDepoWd = DepoWd::with('member:username,status')->where('status', 0)->where('jenis', $jenis)->orderBy('created_at', 'ASC')->get();
-        
+
         if ($jenis == 'WD') {
             /* Data master bank */
             $mbankData = $dataDepoWd->pluck('mbank');
+
             $mbankCounts = $mbankData->countBy()->map(function ($count, $mbank) {
                 return [
                     'bnkmstrxyxyx' => $mbank,
                     'count' => $count,
                 ];
             })->values()->toArray();
+
+            $dataBankApiMap = collect($dataBankApi)->mapWithKeys(function ($item) {
+                return [$item[1] => $item[0]];
+            })->toArray();
+
+            $mbankCounts = collect($mbankCounts)->map(function ($mbC) use ($dataBankApiMap) {
+                $bnk = $mbC['bnkmstrxyxyx'];
+                if (isset($dataBankApiMap[$bnk])) {
+                    $mbC['bnkmstrxyxyx'] = $dataBankApiMap[$bnk];
+                }
+                return $mbC;
+            })->toArray();
+
             $dataBank = array_merge($allDataBank, $mbankCounts);
 
             $dataBank = array_values(array_reduce($dataBank, function ($carry, $item) {
                 if (!isset($carry[$item['bnkmstrxyxyx']])) {
                     $carry[$item['bnkmstrxyxyx']] = $item;
                 } else {
-                    // Jika sudah ada, tambahkan nilai count
                     $carry[$item['bnkmstrxyxyx']]['count'] += $item['count'];
                 }
                 return $carry;
@@ -100,25 +124,29 @@ class DepositdsController extends Controller
         unset($ApiBank['headers']);
         $ApiBankExcept = $this->getApi(env('DOMAIN') . '/banks/exc/groupbank1');
         unset($ApiBankExcept['headers']);
-
         $data1 = [];
         foreach ($ApiBank as $dts) {
-            foreach ($dts as $dt) {
+            foreach ($dts as $i => $dt) {
                 foreach ($dt["data_bank"] as $d) {
-                    $data1[] = $d['namebankxxyy'];
+                    $data1[] = [
+                        $i,
+                        $d['namebankxxyy']
+                    ];
                 }
             }
         }
 
         $data2 = [];
         foreach ($ApiBankExcept as $dts) {
-            foreach ($dts as $dt) {
+            foreach ($dts as $i => $dt) {
                 foreach ($dt["data_bank"] as $d) {
-                    $data2[] = $d['namebankxxyy'];
+                    $data2[] = [
+                        $i,
+                        $d['namebankxxyy']
+                    ];
                 }
             }
         }
-
 
         $allDataBank = array_merge($data1, $data2);
         // $allDataBank = [];

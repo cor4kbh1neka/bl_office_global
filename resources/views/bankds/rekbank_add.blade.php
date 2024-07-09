@@ -62,7 +62,7 @@
                                     <div class="groupnamabank">
                                         <div class="groupeditinput">
                                             <input type="text" id="bankname" name="namebankxxyy" value=""
-                                                placeholder="masukkan nama bank" required>
+                                                placeholder="masukkan nama bank" readonly required>
                                         </div>
                                         <div class="groupeditinput">
                                             <select id="methode" name="yyxxmethod" value="bank" required>
@@ -180,6 +180,63 @@
                     .replace(/^(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
                     .replace(/^(\d{3})(\d{4})/, '$1-$2');
                 $(this).val(formattedNomorRek);
+            });
+        });
+
+        //Set Nama Bank
+        $(document).ready(function() {
+            $('#bankmaster').change(function() {
+                var selectedValue = $(this).val();
+
+                $('.loading').show();
+
+                $.get('/getdatabank/' + selectedValue, function(response) {
+                    $('#bankname').val(response.bank_name);
+                }).always(function() {
+                    $('.loading').hide();
+                });
+            });
+        });
+
+        $(document).ready(function() {
+            $('#bankmaster').change(function() {
+                var selectedValue = $(this).val();
+
+                Swal.fire({
+                    title: 'Memuat...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $('#submit-button').prop('disabled', true);
+
+                $.get('/getdatabank/' + selectedValue, function(response) {
+                    $('#bankname').val(response.bank_name);
+                }).always(function() {
+                    Swal.close();
+
+                    $('#submit-button').prop('disabled', false);
+                }).fail(function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to fetch data!',
+                    });
+                });
+            });
+
+            $('.groupsetbankmaster').submit(function(event) {
+                if (Swal.isLoading()) {
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Please wait...',
+                        text: 'Data is being fetched.',
+                    });
+                }
             });
         });
     </script>

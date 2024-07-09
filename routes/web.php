@@ -293,6 +293,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getGroupBank/{bank}/{jenis}', [BankdsController::class, 'getGroupBank']);
         Route::get('/bankds/xdata', [BankdsController::class, 'xdata']);
         Route::get('/bankds/export', [BankdsController::class, 'export']);
+
+        Route::get('/getdatabank/{bank}', [BankdsController::class, 'getDataBank']);
     });
 
     Route::middleware('refeerral_bonus')->group(function () {
@@ -378,7 +380,6 @@ Route::middleware(['auth'])->group(function () {
     /*-- Memotouserds --*/
     Route::get('/maintenance', [MaintenancedsController::class, 'maintenance']);
     Route::get('/test', [AgentdsController::class, 'userAndUserAccess']);
-
 
 
 

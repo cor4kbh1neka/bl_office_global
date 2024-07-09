@@ -861,7 +861,9 @@ class DepoWdController extends Controller
 
 
 
-    /* gapenting */
+
+
+
     public function getDataXdpwd()
     {
         return Xdpwd::get();

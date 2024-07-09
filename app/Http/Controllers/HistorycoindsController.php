@@ -70,8 +70,8 @@ class HistorycoindsController extends Controller
             $tglsampai = request('tglsampai') . " 23:59:59";
             $query->whereBetween('created_at', [$tgldari, $tglsampai]);
         } else {
-            $tgldari = Carbon::now()->format('Y-m-d') . " 00:00:00";
-            $tglsampai = Carbon::now()->format('Y-m-d') . " 23:59:59";
+            $tgldari = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+            $tglsampai = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
             $query->whereBetween('created_at', [$tgldari, $tglsampai]);
         }
 
@@ -102,9 +102,9 @@ class HistorycoindsController extends Controller
         $tglsampai = $request->input('tglsampai');
 
         // if ($tgldari >= $semingguYangLalu && $tgldari <= $hariIni && $tglsampai >= $semingguYangLalu && $tglsampai <= $hariIni && $tgldari <= $tglsampai) {
-            $crot = $this->filterAndPaginate(9999999999999999);
-            $data = $crot->getCollection();
-            return Excel::download(new DepoWdExport($data), 'Historycoin.xlsx');
+        $crot = $this->filterAndPaginate(9999999999999999);
+        $data = $crot->getCollection();
+        return Excel::download(new DepoWdExport($data), 'Historycoin.xlsx');
         // } else {
         //     return redirect('historycoinds')->with('gagalTarikData', 'Harap masukkan rentang tanggal dalam 7 hari terakhir');
         // }

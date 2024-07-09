@@ -77,8 +77,11 @@
                                                     </svg>
                                                 </a>
                                             </span>
-                                            <span class="datadetailuser showmodal" data-modal="1"
-                                                data-username="{{ $d->username }}" data-jenis="WD">Withdraw</span>
+                                            {{-- <span class="datadetailuser showmodal" data-modal="1"
+                                                data-username="{{ $d->username }}" data-jenis="WD">Withdraw</span> --}}
+                                            <a href="memberlistds/history/{{ $d->username }}"
+                                                class="datadetailuser openviewport" target="_blank"
+                                                data-username="{{ $d->username }}" data-jenis="DP">Withdraw</a>
                                         </div>
                                     </td>
                                     <td class="splitcollum">

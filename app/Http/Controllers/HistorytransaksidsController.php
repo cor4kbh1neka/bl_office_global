@@ -133,6 +133,11 @@ class HistorytransaksidsController extends Controller
             $transhingga = Carbon::createFromFormat('Y-m-d\TH:i', $transhinggaInput)->format('Y-m-d H:i:s');
 
             $query = $query->whereBetween('created_at', [$transdari, $transhingga]);
+        } else {
+            $transdari = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+            $transhingga = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
+
+            $query = $query->whereBetween('created_at', [$transdari, $transhingga]);
         }
 
         // Filter untuk strict data
@@ -142,10 +147,10 @@ class HistorytransaksidsController extends Controller
                 return $item['username'] === $inputUsername;
             });
         }
-        if (request('refno')) {
-            $inputRefno = request('refno');
+        if (request('invoice')) {
+            $inputRefno = request('invoice');
             $query = $query->filter(function ($item) use ($inputRefno) {
-                return stripos($item['refno'], $inputRefno) !== false;
+                return stripos($item['invoice'], $inputRefno) !== false;
             });
         }
         // dd(request('checkall'));

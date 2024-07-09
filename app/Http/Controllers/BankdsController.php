@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\XDataExport;
 use App\Models\Groupbank;
+use App\Models\LogBank;
 use App\Models\Xtrans;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -99,6 +100,8 @@ class BankdsController extends Controller
         ])->post($apiUrl, $validatedData);
 
         if ($response->successful()) {
+            $text = $validatedData["bnkmstrxyxyx"];
+            $this->createLogBank('Bank Master', 'Create', 'bank name :' . $text);
             return redirect()->route('bankds')->with('success', 'Master Bank berhasil ditambahkan');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
@@ -139,6 +142,11 @@ class BankdsController extends Controller
                     'max' => 0
                 ]);
             }
+
+            $jenis = $validatedData["grouptype"] == 1 ? 'DP' : 'WD';
+            $text = $validatedData["namegroupxyzt"];
+            $this->createLogBank('Group Bank ' . $jenis, 'Create', 'group name :' . $text);
+
             return redirect()->route('listgroup')->with('success', 'Master Bank berhasil ditambahkan');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
@@ -174,7 +182,7 @@ class BankdsController extends Controller
 
         if ($response->successful()) {
             Groupbank::where('group', $group)->delete();
-
+            $this->createLogBank('Group Bank', 'Delete', 'Groupbank :' . $group);
             return response()->json(['success' => true, 'message' => 'List group berhasil dihapus']);
         } else {
             return response()->json(['success' => false, 'message' => $response->json()["message"]]);
@@ -183,12 +191,22 @@ class BankdsController extends Controller
 
     public function deletelistmaster($id)
     {
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/master');
+        $resultsBank = $response->json()["data"];
+
+        $filteredBank = array_filter($resultsBank, function ($item) use ($id) {
+            return $item['idbnkmaster'] == $id;
+        });
+
         // $response = Http::delete(env('DOMAIN') . '/banks/master/' . $id);
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->delete(env('DOMAIN') . '/banks/master/' . $id);
 
         if ($response->successful()) {
+            $this->createLogBank('Bank Master', 'Delete', 'bank master name :' . $filteredBank[0]["bnkmstrxyxyx"]);
             return redirect()->route('listmaster')->with('success', 'List group berhasil dihapus');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
@@ -197,7 +215,6 @@ class BankdsController extends Controller
 
     private function requestApi($endpoint)
     {
-
         $url = env('DOMAIN') . '/banks/' . $endpoint;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
@@ -254,6 +271,7 @@ class BankdsController extends Controller
         ])->put(env('DOMAIN') . '/banks/master/' . $bank, $dataReq);
 
         if ($response->successful()) {
+            $this->createLogBank('Bank Master', 'Edit', 'bank master name : (' . $dataReq["bankmstr_old"] . ',url logo ' . $dataReq["urllogo_old"] . ') to (' . $dataReq["bnkmstrxyxyx"] . ',url logo ' . $dataReq["urllogoxxyx"] . ')');
             return redirect()->route('listmaster')->with('success', 'List group berhasil dihapus');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
@@ -315,6 +333,8 @@ class BankdsController extends Controller
                 // 'max' => $data['grouptype'] == 1 ? intval($data['max_dp']) : intval($data['max_wd']),
                 // 'min' => $data['grouptype'] == 1 ? intval($data['min_dp']) : intval($data['min_wd'])
             ]);
+
+            $this->createLogBank('Group Bank', 'Edit', 'group name :' . $namagroup);
             return redirect()->route('listgroup')->with('success', 'List group berhasil diupdate');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
@@ -422,6 +442,7 @@ class BankdsController extends Controller
         ])->post($apiUrl, $validatedData);
 
         if ($response->successful()) {
+            $this->createLogBank('Detail Master', 'Create', 'bank :' . $validatedData["masterbnkxyxt"] . ',bank name :' . $validatedData["bnkmstrxyxyx"]);
             return redirect('/bankds/listbank/0/0')->with('success', 'Set Bank berhasil ditambahkan');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
@@ -957,6 +978,29 @@ class BankdsController extends Controller
         ])->put(env('DOMAIN') . '/banks/v2/' . $idbank . '/' . $bankname_old, $data);
 
         if ($response->successful()) {
+
+            $text = "";
+            if ($dataReq['bankmaster'] != $dataReq['bankmaster_old']) {
+                $text .= 'group name old : ' . $dataReq['bankmaster_old'] . ', change to :' . $dataReq['bankmaster'] . ',';
+            }
+
+            if ($dataReq['bankname'] != $dataReq['bankname_old']) {
+                $text .= ' bank name old : ' . $dataReq['bankname_old'] . ', change to :' . $dataReq['bankname'] . ',';
+            }
+
+            if ($dataReq['namarek'] != $dataReq['namarek_old']) {
+                $text .= ' bank name rek old : ' . $dataReq['namarek_old'] . ', change to :' . $dataReq['namarek'] . ',';
+            }
+
+            if ($dataReq['nomorrek'] != $dataReq['nomorrek_old']) {
+                $text .= ' bank no rek old : ' . $dataReq['nomorrek_old'] . ', change to :' . $dataReq['nomorrek'] . ',';
+            }
+
+            if ($dataReq['urlbarcode'] != $dataReq['urlbarcode_old']) {
+                $text .= ' bank url barcode old : ' . $dataReq['urlbarcode_old'] . ', change to :' . $dataReq['urlbarcode'];
+            }
+
+            $this->createLogBank('Group Bank', 'Edit', 'group name :' . $text);
             return redirect('/bankds/listbank/0/0')->with('success', 'Data berhasil diupdate');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);
@@ -968,12 +1012,15 @@ class BankdsController extends Controller
         $dataReq = $request->all();
         $idbank = $dataReq['idbank'];
         $bank = $dataReq['bank'];
+        $namarek = $dataReq['namarek'];
+        $norek = $dataReq['norek'];
 
         $response = Http::withHeaders([
             'x-customblhdrs' => env('XCUSTOMBLHDRS')
         ])->delete(env('DOMAIN') . '/banks/' . $idbank . '/' . $bank);
 
         if ($response->successful()) {
+            $this->createLogBank('Detail Bank', 'Delete', 'Rek name :' . $namarek . ', No Rek :' . $norek);
             return response()->json(['success' => true, 'message' => 'Data berhasil dihapus']);
         } else {
             $errorMessage = $response->json()["message"] ?? 'Terjadi kesalahan saat menghapus data.';
@@ -1006,5 +1053,76 @@ class BankdsController extends Controller
         $data = $this->filterXData($data, $request)->get();
 
         return Excel::download(new XDataExport($data), 'XDataBank.xlsx');
+    }
+
+    private function createLogBank($menu, $jenis, $text)
+    {
+        $log = $jenis . ' (' . $menu . ') ,' . $text;
+        LogBank::create([
+            'username' => auth()->user()->username,
+            'log' => $log
+        ]);
+
+        return;
+    }
+
+    public function getDataBank($bank)
+    {
+        //Bank
+        $responseBank = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/v2/groupbank1');
+        $responseBank = $responseBank->json();
+
+        $dataBank = [];
+        if ($responseBank["status"] == 'success') {
+            foreach ($responseBank["data"] as $i => $d) {
+                if (isset($d[$bank])) {
+                    foreach ($d[$bank]["data_bank"] as $i2 => $d2) {
+                        $dataBank[] = $d2['namebankxxyy'];
+                    }
+                }
+            }
+        }
+
+        //Bank Exc
+        $responseExc = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/exc/groupbank1');
+        $responseExc = $responseExc->json();
+
+        $dataBankExc = [];
+        if ($responseExc["status"] == 'success') {
+            foreach ($responseExc["data"] as $i => $d) {
+                if (isset($d[$bank])) {
+                    foreach ($d[$bank]["data_bank"] as $i2 => $d2) {
+                        $dataBankExc[] = $d2['namebankxxyy'];
+                    }
+                }
+            }
+        }
+
+        //Combine 
+        $dataBankMarge = array_merge($dataBank, $dataBankExc);
+
+        //Unique
+        $uniqueBank = array_values(array_unique($dataBankMarge));
+
+        if (!empty($uniqueBank)) {
+            $numberBank = array_map(function ($item) use ($bank) {
+                if (empty($item)) {
+                    return 0;
+                } else {
+                    return (int) str_replace($bank, "", $item);
+                }
+            }, $uniqueBank);
+            return [
+                'bank_name' => $bank . (max($numberBank) + 1)
+            ];
+        } else {
+            return [
+                'bank_name' => $bank
+            ];
+        }
     }
 }

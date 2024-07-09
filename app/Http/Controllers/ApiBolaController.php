@@ -949,7 +949,7 @@ class ApiBolaController extends Controller
             $persentase = $persentase ? $persentase->persentase : 0;
 
             $referralAmount = $amount * $persentase / 100;
-            dd($referralAmount);
+
             if ($referralAmount >= 0.01) {
                 $txnid = $this->generateTxnid('D');
 

@@ -319,6 +319,54 @@
                 });
             });
         });
+
+        $(document).ready(function() {
+            $('#bankmaster').change(function() {
+                var selectedValue = $(this).val();
+                var bankmaster_old = $('#bankmaster_old').val();
+                var bankname_old = $('#bankname_old').val();
+
+                if (selectedValue == bankmaster_old) {
+                    $('#bankname').val(bankname_old);
+                    return;
+                }
+                Swal.fire({
+                    title: 'Memuat...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $('#submit-button').prop('disabled', true);
+
+                $.get('/getdatabank/' + selectedValue, function(response) {
+                    $('#bankname').val(response.bank_name);
+                }).always(function() {
+                    Swal.close();
+
+                    $('#submit-button').prop('disabled', false);
+                }).fail(function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to fetch data!',
+                    });
+                });
+            });
+
+            $('.secgroupdatabankds').submit(function(event) {
+                if (Swal.isLoading()) {
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Please wait...',
+                        text: 'Data is being fetched.',
+                    });
+                }
+            });
+        });
     </script>
 
     @if (session('success'))

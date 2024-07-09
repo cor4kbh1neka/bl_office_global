@@ -147,10 +147,10 @@ class HistorytransaksidsController extends Controller
                 return $item['username'] === $inputUsername;
             });
         }
-        if (request('refno')) {
-            $inputRefno = request('refno');
+        if (request('invoice')) {
+            $inputRefno = request('invoice');
             $query = $query->filter(function ($item) use ($inputRefno) {
-                return stripos($item['refno'], $inputRefno) !== false;
+                return stripos($item['invoice'], $inputRefno) !== false;
             });
         }
         // dd(request('checkall'));

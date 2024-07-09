@@ -1065,4 +1065,64 @@ class BankdsController extends Controller
 
         return;
     }
+
+    public function getDataBank($bank)
+    {
+        //Bank
+        $responseBank = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/v2/groupbank1');
+        $responseBank = $responseBank->json();
+
+        $dataBank = [];
+        if ($responseBank["status"] == 'success') {
+            foreach ($responseBank["data"] as $i => $d) {
+                if (isset($d[$bank])) {
+                    foreach ($d[$bank]["data_bank"] as $i2 => $d2) {
+                        $dataBank[] = $d2['namebankxxyy'];
+                    }
+                }
+            }
+        }
+
+        //Bank Exc
+        $responseExc = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->get(env('DOMAIN') . '/banks/exc/groupbank1');
+        $responseExc = $responseExc->json();
+
+        $dataBankExc = [];
+        if ($responseExc["status"] == 'success') {
+            foreach ($responseExc["data"] as $i => $d) {
+                if (isset($d[$bank])) {
+                    foreach ($d[$bank]["data_bank"] as $i2 => $d2) {
+                        $dataBankExc[] = $d2['namebankxxyy'];
+                    }
+                }
+            }
+        }
+
+        //Combine 
+        $dataBankMarge = array_merge($dataBank, $dataBankExc);
+
+        //Unique
+        $uniqueBank = array_values(array_unique($dataBankMarge));
+
+        if (!empty($uniqueBank)) {
+            $numberBank = array_map(function ($item) use ($bank) {
+                if (empty($item)) {
+                    return 0;
+                } else {
+                    return (int) str_replace($bank, "", $item);
+                }
+            }, $uniqueBank);
+            return [
+                'bank_name' => $bank . (max($numberBank) + 1)
+            ];
+        } else {
+            return [
+                'bank_name' => $bank
+            ];
+        }
+    }
 }

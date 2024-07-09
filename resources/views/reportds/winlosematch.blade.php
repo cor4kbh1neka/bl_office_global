@@ -186,7 +186,7 @@
                                         <th>W/L</th>
                                     </tr>
                                     @foreach ($data as $i => $d)
-                                        @dd($d)
+                                        {{-- @dd($d) --}}
                                         <tr>
                                             <td>{{ $i + 1 }}</td>
                                             <td>{{ $d['refNo'] }}</td>

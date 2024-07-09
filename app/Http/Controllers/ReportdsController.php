@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Balance;
 use App\Models\WinlossbetDay;
+use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
@@ -18,13 +22,16 @@ class ReportdsController extends Controller
 
         $data = $this->getDataWinLoss($request);
         $dataAmount = $this->getAmountUser($request);
+        if (empty($dataAmount)) {
+            $dataAmount["username"] = $username;
+            $dataAmount["balance"] = 0;
+        }
 
         if ($data != null) {
             foreach ($data as &$element) {
                 $username = $element['username'];
-
                 $element['referral'] = 0;
-
+                $element['commission'] = 0;
                 /* Amount */
                 $matchingAmount = $dataAmount['username'] === $username ? $dataAmount['balance'] : 0;
                 $element['amount'] = $matchingAmount;
@@ -41,8 +48,8 @@ class ReportdsController extends Controller
         } else {
             $data = [];
         }
-        if($username != ''){
-            if(!empty($data)){
+        if ($username != '') {
+            if (!empty($data)) {
                 $data[0]['username'] = $request->query('username');
             }
         }
@@ -57,6 +64,14 @@ class ReportdsController extends Controller
         ]);
     }
 
+    private function convertDate($date)
+    {
+        $carbonTime = Carbon::parse($date);
+        $adjustedTime = $carbonTime->subHours(11);
+
+        return $adjustedTime->format('Y-m-d\TH:i:s.v\Z');
+    }
+
     private function getDataWinLoss(Request $request)
     {
         $username = $request->query('username');
@@ -67,20 +82,45 @@ class ReportdsController extends Controller
         $data = [
             'username' => env('UNIX_CODE') . $username,
             'portfolio' => $portfolio,
-            'startDate' => $startDate . 'T00:00:00.540Z',
-            'endDate' => $endDate . 'T23:59:59.540Z',
+            'startDate' => $this->convertDate($startDate . 'T00:00:00.540Z'),
+            'endDate' => $this->convertDate($endDate . 'T23:59:59.540Z'),
             "companyKey" => env('COMPANY_KEY'),
             "serverId" =>  env('SERVERID')
         ];
-        $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-customer-report-by-win-lost-date.aspx';
+
+        $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-transaction-date.aspx';
         $response = Http::post($apiUrl, $data);
         $results = $response->json();
-        
+
+        $result = [];
         if ($results["error"]["id"] == 0) {
-            $result = $results["result"];
+            $results = $results["result"];
+            $winlose = 0;
+            foreach ($results as $r) {
+                $winlose += $r['winLost'];
+            }
+
+            $result['username'] = $username;
+            $result['portfolio'] = $portfolio;
+            $result['winlose'] = $winlose;
+
+            $result = [$result];
         } else {
             $result = [];
         }
+
+
+        // $results = WinlossbetDay::select('username', 'portfolio', DB::raw('SUM(winloss) as winlose'))
+        //     ->where('username', $username)
+        //     ->where('portfolio', $portfolio)
+        //     ->where('created_at', '>=', $startDate)
+        //     ->where('created_at', '<=', $endDate)
+        //     ->groupBy('username', 'portfolio')
+        //     ->get()->toArray();
+
+        // if (!empty($results)) {
+        //     $results[0]['commission'] = 0;
+        // }
 
         return $result;
     }
@@ -88,16 +128,26 @@ class ReportdsController extends Controller
     private function getAmountUser(Request $request)
     {
         $username = $request->query('username');
-        $data = [
-            'Username' => env('UNIX_CODE') . $username,
-            "CompanyKey" => env('COMPANY_KEY'),
-            "ServerId" =>  env('SERVERID')
-        ];
-        $apiUrl = env('BODOMAIN') . '/web-root/restricted/player/get-player-balance.aspx';
-        $response = Http::post($apiUrl, $data);
-        $results = $response->json();
+        // $data = [
+        //     'Username' => env('UNIX_CODE') . $username,
+        //     "CompanyKey" => env('COMPANY_KEY'),
+        //     "ServerId" =>  env('SERVERID')
+        // ];
+        // $apiUrl = env('BODOMAIN') . '/web-root/restricted/player/get-player-balance.aspx';
+        // $response = Http::post($apiUrl, $data);
+        // $results = $response->json();
 
-        if ($results["error"]["id"] == 0) {
+        // if ($results["error"]["id"] == 0) {
+        //     $result = $results;
+        // } else {
+        //     $result = [];
+        // }
+
+
+        $results = Balance::where('username', $username)->first();
+        if ($results) {
+            $results = $results->toArray();
+            $results["balance"] = $results["amount"];
             $result = $results;
         } else {
             $result = [];
@@ -142,11 +192,11 @@ class ReportdsController extends Controller
         }
 
         if ($username != '' && $refNo == '') {
-            $data = $this->requestApi('get-bet-list-by-modify-date', [
+            $data = $this->requestApi('get-bet-list-by-transaction-date', [
                 'username' => env('UNIX_CODE') . $username,
                 'portfolio' => $portfolio,
-                'startDate' => $startDate . 'T00:00:00.540Z',
-                'endDate' => $endDate . 'T23:59:59.540Z',
+                'startDate' =>  $this->convertDate($startDate . 'T00:00:00.540Z'),
+                'endDate' =>  $this->convertDate($endDate . 'T23:59:59.540Z'),
                 'companyKey' => env('COMPANY_KEY'),
                 'language' => 'en',
                 'serverId' => env('SERVERID')
@@ -245,9 +295,9 @@ class ReportdsController extends Controller
         $gabungdari = $request->input('gabungdari') != null ? date('Y-m-d', strtotime($request->input('gabungdari'))) : '';
         $gabunghingga =  $request->input('gabunghingga') != null ? date('Y-m-d', strtotime($request->input('gabunghingga'))) : '';
         $username = $request->input('username');
-        
+
         $results = $this->getDataBonus($portfolio, $gabungdari, $gabunghingga, $username);
-        
+
         return view('reportds.to_wl', [
             'title' => 'TURN OVER & WINLOSE',
             'data' => $results,
@@ -263,8 +313,8 @@ class ReportdsController extends Controller
     }
 
     private function getDataBonus($portfolio = null, $gabungdari = null, $gabunghingga = null, $username = null)
-    {   
-        if($gabungdari && $gabunghingga){
+    {
+        if ($gabungdari && $gabunghingga) {
             $query = WinlossbetDay::query()
                 ->when($portfolio, function ($query) use ($portfolio) {
                     return $query->where('portfolio', $portfolio);
@@ -279,7 +329,7 @@ class ReportdsController extends Controller
                 ->groupBy('username');
 
             $results = $query->get();
-        }else{
+        } else {
             $results = collect();
         }
 

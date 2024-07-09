@@ -38,6 +38,7 @@ class AddWinlossStakeJob implements ShouldQueue
             $amountWL = $this->data['amount'];
             $amount = $this->data['amount_bet'];
             $jenis = $this->data['jenis'];
+            $created_at = $this->data['created_at'];
 
             // Log::info('cc:', ['data' => $this->data]);
             // if($portfolio == 'SportsBook' || $portfolio == 'VirtualSports') {
@@ -51,7 +52,7 @@ class AddWinlossStakeJob implements ShouldQueue
             //     }
             // } else {
             $username = $this->convertUsername($username);
-            $responseWL = $this->createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis);
+            $responseWL = $this->createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis, $created_at);
             // }
 
             // Log::info('cc:', ['data' => $responseWL]);
@@ -74,18 +75,22 @@ class AddWinlossStakeJob implements ShouldQueue
     //     return $response->json();
     // }
 
-    private function createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis)
+    private function createWinLoseStake($username, $portfolio, $amount, $amountWL, $jenis, $created_at)
     {
         if ($amountWL > 0) {
             $amountWL = $amountWL - $amount;
         }
 
+        $day = date('d', strtotime($created_at));
+        $month = date('m', strtotime($created_at));
+        $year = date('Y', strtotime($created_at));
+
         /* Winloss Bet Day */
         $winlossbet_day = WinlossbetDay::where('username', $username)
             ->where('portfolio', $portfolio)
-            ->where('day', date('d'))
-            ->where('month', date('m'))
-            ->where('year', date('Y'))->first();
+            ->where('day', $day)
+            ->where('month', $month)
+            ->where('year', $year)->first();
 
         if ($winlossbet_day) {
             if ($jenis == 'settle') {
@@ -99,11 +104,12 @@ class AddWinlossStakeJob implements ShouldQueue
             $winlossbet_day = WinlossbetDay::create([
                 'username' => $username,
                 'portfolio' => $portfolio,
-                'day' => date('d'),
-                'month' => date('m'),
-                'year' => date('Y'),
+                'day' => $day,
+                'month' => $month,
+                'year' => $year,
                 'stake' => $amount,
-                'winloss' => $amountWL
+                'winloss' => $amountWL,
+                'created_at' => $created_at
             ]);
         }
 
@@ -112,8 +118,8 @@ class AddWinlossStakeJob implements ShouldQueue
         /* Winloss Bet Month */
         $winlossbet_month = WinlossbetMonth::where('username', $username)
             ->where('portfolio', $portfolio)
-            ->where('month', date('m'))
-            ->where('year', date('Y'))->first();
+            ->where('month', $month)
+            ->where('year', $year)->first();
 
         if ($winlossbet_month) {
             if ($jenis == 'settle') {
@@ -127,17 +133,18 @@ class AddWinlossStakeJob implements ShouldQueue
             $winlossbet_month = WinlossbetMonth::create([
                 'username' => $username,
                 'portfolio' => $portfolio,
-                'month' => date('m'),
-                'year' => date('Y'),
+                'month' => $month,
+                'year' => $year,
                 'stake' => $amount,
-                'winloss' => $amountWL
+                'winloss' => $amountWL,
+                'created_at' => $created_at
             ]);
         }
 
         /* Winloss Bet Year */
         $winlossbet_year = WinlossbetYear::where('username', $username)
             ->where('portfolio', $portfolio)
-            ->where('year', date('Y'))->first();
+            ->where('year', $year)->first();
 
         if ($winlossbet_year) {
             if ($jenis == 'settle') {
@@ -151,9 +158,10 @@ class AddWinlossStakeJob implements ShouldQueue
             WinlossbetYear::create([
                 'username' => $username,
                 'portfolio' => $portfolio,
-                'year' => date('Y'),
+                'year' => $year,
                 'stake' => $amount,
-                'winloss' => $amountWL
+                'winloss' => $amountWL,
+                'created_at' => $created_at
             ]);
         }
     }

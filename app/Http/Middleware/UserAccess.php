@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserAccess
@@ -18,7 +19,7 @@ class UserAccess
     {
         $user = $this->userAndUserAccess();
         if (!$user) {
-            abort(403, 'Unauthorized');
+            abort(403, 'Mau Ngapain Coba2?');
         }
 
         if ($this->superadminBawaan($user) === true && $user['name'] === 'admin L21' && $user['username'] === env('XUSRADXE')) {
@@ -32,6 +33,7 @@ class UserAccess
                 'referral' => 1,
                 'history_game' => 1,
                 'member_outstanding' => 1,
+                'crot_crot' => 1,
                 'cashback_rollingan' => 1,
                 'report' => 1,
                 'bank' => 1,
@@ -41,8 +43,6 @@ class UserAccess
                 'content' => 1,
                 'apk_setting' => 1,
                 'memo_other' => 1,
-                'seamless' => 1,
-                'refeerral_bonus' => 1,
             ];
         }
         if ($role === 'superadmin' && $this->isSuperAdmin($user)) {
@@ -102,21 +102,19 @@ class UserAccess
         if ($role === 'memo_other' && $this->canMemoOther($user)) {
             abort(403, 'Action unauthorized');
         }
-        if ($role === 'seamless' && $this->canSeamless($user)) {
-            abort(403, 'Action unauthorized');
-        }
-        if ($role === 'refeerral_bonus' && $this->canReferralBonus($user)) {
-            abort(403, 'Action unauthorized');
-        }
         return $next($request);
     }
 
     private function userAndUserAccess()
     {
         $user = auth()->user();
-        $userWithAccess = User::with('userAccess')->find($user->id);
-        $result = $userWithAccess->toArray();
-        return $result;
+        $userWithAccess = User::with('userAccess')->find($user->id)->toArray();
+        if (Cache::get('user_access_' . $user->username)) {
+            return $userWithAccess;
+        } else {
+            Cache::put('user_access_' . $user->username, $userWithAccess, 60);
+        }
+        return $userWithAccess;
     }
     private function superadminBawaan($user)
     {
@@ -140,8 +138,7 @@ class UserAccess
             $user['user_access']['analytic'] !== 1 &&
             $user['user_access']['content'] !== 1 &&
             $user['user_access']['apk_setting'] !== 1 &&
-            $user['user_access']['seamless'] !== 1 &&
-            $user['user_access']['refeerral_bonus'] !== 1;
+            $user['user_access']['mempo_other'] !== 1;
     }
     private function canDeposit($user)
     {
@@ -214,13 +211,5 @@ class UserAccess
     private function canMemoOther($user)
     {
         return $user['user_access']['memo_other'] !== 1;
-    }
-    private function canSeamless($user)
-    {
-        return $user['user_access']['seamless'] !== 1;
-    }
-    private function canReferralBonus($user)
-    {
-        return $user['user_access']['refeerral_bonus'] !== 1;
     }
 }

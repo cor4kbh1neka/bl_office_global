@@ -24,7 +24,7 @@ use App\Jobs\AddHistoryJob;
 use App\Jobs\AddOutstandingJob;
 use App\Jobs\AddWinlossStakeJob;
 use App\Jobs\DeleteOutstandingJob;
-
+use App\Models\ListError;
 use Illuminate\Support\Facades\Http;
 
 class ApiBolaController extends Controller
@@ -935,6 +935,7 @@ class ApiBolaController extends Controller
     private function execReferral(Request $request, $amount)
     {
         $dataAktif = MemberAktif::where('username', $request->Username)->first();
+
         if (!$dataAktif) {
             $dataAktif = Member::where('username', $request->Username)->first();
         }
@@ -947,7 +948,8 @@ class ApiBolaController extends Controller
             $persentase = $persentase ? $persentase->persentase : 0;
 
             $referralAmount = $amount * $persentase / 100;
-            if ($referralAmount > 0) {
+
+            if ($referralAmount >= 0.01) {
                 $txnid = $this->generateTxnid('D');
 
                 $dataDepo = [
@@ -959,6 +961,7 @@ class ApiBolaController extends Controller
                 ];
 
                 $responseDepoRef = $this->requestApi('deposit', $dataDepo);
+
                 if ($responseDepoRef["error"]["id"] === 0) {
                     $this->execBalance($request, $portfolio, $dataAktif, $referralAmount);
                 } else {
@@ -978,11 +981,24 @@ class ApiBolaController extends Controller
                     }
 
                     if ($responseDepoRef["error"]["id"] !== 0) {
+                        ListError::create([
+                            'fungsi' => 'execReferral',
+                            'pesan_error' => $responseDepoRef["error"]["id"],
+                            'keterangan' => '-'
+                        ]);
                         return response()->json([
                             'status' => 'Error',
                             'message' => $responseDepoRef["error"]["msg"]
                         ], 500);
                     }
+                }
+
+                if ($responseDepoRef["error"]["id"] !== 0) {
+                    ListError::create([
+                        'fungsi' => 'execReferral',
+                        'pesan_error' => $responseDepoRef["error"]["id"],
+                        'keterangan' => '-'
+                    ]);
                 }
             }
         }

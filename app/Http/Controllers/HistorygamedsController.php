@@ -16,8 +16,8 @@ class HistorygamedsController extends Controller
     {
         $username = $request->query('username');
         $portfolio = $request->query('portfolio');
-        $startDate = $request->query('startDate');
-        $endDate = $request->query('endDate');
+        $startDate = $request->query('startDate') ?? date('Y-m-d');
+        $endDate = $request->query('endDate') ?? date('Y-m-d');
         $refNo = $request->query('refNo');
         $sportsType = $request->query('sportsType');
         $status = $request->query('status');

@@ -1191,7 +1191,7 @@ class ApiController extends Controller
             ) B ON A.transtatus_id = B.id
             INNER JOIN transactions C on B.trans_id = C.id
             LEFT JOIN member D ON C.username = D.username
-            LEFT JOIN history_transaksi H ON H.username = C.referral AND H.refno = C.transfercode AND H.status = 'referral'
+            LEFT JOIN history_transaksi H ON H.username = D.referral AND H.refno = C.transfercode AND H.status = 'referral'
             WHERE B.status = 'Settled' AND A.amount = 0 AND coalesce(D.referral,'') != '' AND coalesce(H.username, '') = '';
             ";
 

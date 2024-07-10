@@ -1176,4 +1176,26 @@ class ApiController extends Controller
     {
         return LogBank::orderBy('created_at', 'DESC')->get();
     }
+
+    public function getDataReferralFail()
+    {
+        $query = "SELECT C.username, coalesce(D.referral,'') as referral, C.transfercode, B.status, A.* FROM transaction_saldo A
+            INNER JOIN (
+            SELECT A1.*
+                FROM transaction_status A1
+                JOIN (
+                SELECT trans_id, MAX(created_at) as max_created_at, MAX(urutan) as max_urutan
+                    FROM transaction_status
+                    GROUP BY trans_id
+                ) B1 ON A1.trans_id = B1.trans_id AND A1.created_at = B1.max_created_at AND A1.urutan = B1.max_urutan
+            ) B ON A.transtatus_id = B.id
+            INNER JOIN transactions C on B.trans_id = C.id
+            LEFT JOIN member D ON C.username = D.username
+            LEFT JOIN history_transaksi H ON H.username = D.referral AND H.refno = C.transfercode AND H.status = 'referral'
+            WHERE B.status = 'Settled' AND A.amount = 0 AND coalesce(D.referral,'') != '' AND coalesce(H.username, '') = '';
+            ";
+
+        $results = DB::select($query);
+        return $results;
+    }
 }

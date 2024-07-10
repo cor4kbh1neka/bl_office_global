@@ -25,6 +25,7 @@ use App\Http\Controllers\BankdsController;
 use App\Http\Controllers\MemodsController;
 use App\Http\Controllers\AgentdsController;
 use App\Http\Controllers\AnalyticsdsController;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ContentdsController;
 use App\Http\Controllers\ApksettingdsController;
 use App\Http\Controllers\MemotouserdsController;
@@ -394,5 +395,7 @@ Route::middleware(['auth'])->group(function () {
     /* check ga penting */
     Route::get('/checklistError', [DepoWdController::class, 'checklistError']);
     Route::get('/checkWinlossbetDay', [DepoWdController::class, 'checkWinlossbetDay']);
+
+    Route::get('/getdatareferralfail', [ApiController::class, 'getDataReferralFail']);
 });
 // });

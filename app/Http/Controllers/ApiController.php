@@ -513,10 +513,10 @@ class ApiController extends Controller
                 }
             }
 
-            // return response()->json([
-            //     'status' => 'Success',
-            //     'message' => 'Withdrawal sedang diproses'
-            // ]);
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Withdrawal sedang diproses'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

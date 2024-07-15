@@ -495,13 +495,28 @@ class ApiController extends Controller
 
             DB::commit();
             if ($dataWD) {
-                $this->ApiProsesWithdraw($txnid, $dataWD);
+                $prosesWD = $this->ApiProsesWithdraw($txnid, $dataWD);
+                if ($prosesWD["error"]["id"] === 0) {
+                    ListError::create([
+                        'fungsi' => 'ApiWithdraw',
+                        'pesan_error' => $prosesWD["error"]["id"],
+                        'keterangan' => $prosesWD["error"]["msg"]
+                    ]);
+
+                    return response()->json(
+                        [
+                            'status' => 'Fail',
+                            'message' => 'Withdraw gagal'
+                        ],
+                        400
+                    );
+                }
             }
 
-            return response()->json([
-                'status' => 'Success',
-                'message' => 'Withdrawal sedang diproses'
-            ]);
+            // return response()->json([
+            //     'status' => 'Success',
+            //     'message' => 'Withdrawal sedang diproses'
+            // ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -531,10 +546,11 @@ class ApiController extends Controller
             sleep(6);
             $resultsApi = $this->requestApi('withdraw', $dataAPI);
             if ($resultsApi["error"]["id"] === 0) {
-                return response()->json([
-                    'status' => 'Success',
-                    'message' => 'Withdrawal sedang diproses'
-                ]);
+                return $resultsApi;
+                // return response()->json([
+                //     'status' => 'Success',
+                //     'message' => 'Withdrawal sedang diproses'
+                // ]);
             }
             $attempt9720++;
         }
@@ -553,10 +569,11 @@ class ApiController extends Controller
                 ]);
                 $this->processBalance($dataWD->username, 'WD', $dataWD->amount);
 
-                return response()->json([
-                    'status' => 'Success',
-                    'message' => 'Withdrawal sedang diproses'
-                ]);
+                return $resultsApi;
+                // return response()->json([
+                //     'status' => 'Success',
+                //     'message' => 'Withdrawal sedang diproses'
+                // ]);
             }
             $attempt4404++;
         }
@@ -565,20 +582,22 @@ class ApiController extends Controller
         if ($resultsApi["error"]["id"] !== 0) {
             DepoWd::destroy($dataWD->id);
 
-            return response()->json([
-                'status' => 'Error',
-                'message' => $resultsApi["error"]["msg"]
-            ], 500);
+            return $resultsApi;
+
+            // return response()->json([
+            //     'status' => 'Error',
+            //     'message' => $resultsApi["error"]["msg"]
+            // ], 500);
         }
 
         // Successful withdrawal
         if ($resultsApi["error"]["id"] === 0) {
             $this->processBalance($dataWD->username, 'WD', $dataWD->amount);
-
-            return response()->json([
-                'status' => 'Success',
-                'message' => 'Withdrawal sedang diproses'
-            ]);
+            return $resultsApi;
+            // return response()->json([
+            //     'status' => 'Success',
+            //     'message' => 'Withdrawal sedang diproses'
+            // ]);
         }
 
         return;
@@ -1175,5 +1194,27 @@ class ApiController extends Controller
     public function getDataLogBank()
     {
         return LogBank::orderBy('created_at', 'DESC')->get();
+    }
+
+    public function getDataReferralFail()
+    {
+        $query = "SELECT C.username, coalesce(D.referral,'') as referral, C.transfercode, B.status, A.* FROM transaction_saldo A
+            INNER JOIN (
+            SELECT A1.*
+                FROM transaction_status A1
+                JOIN (
+                SELECT trans_id, MAX(created_at) as max_created_at, MAX(urutan) as max_urutan
+                    FROM transaction_status
+                    GROUP BY trans_id
+                ) B1 ON A1.trans_id = B1.trans_id AND A1.created_at = B1.max_created_at AND A1.urutan = B1.max_urutan
+            ) B ON A.transtatus_id = B.id
+            INNER JOIN transactions C on B.trans_id = C.id
+            LEFT JOIN member D ON C.username = D.username
+            LEFT JOIN history_transaksi H ON H.username = D.referral AND H.refno = C.transfercode AND H.status = 'referral'
+            WHERE B.status = 'Settled' AND A.amount = 0 AND coalesce(D.referral,'') != '' AND coalesce(H.username, '') = '';
+            ";
+
+        $results = DB::select($query);
+        return $results;
     }
 }

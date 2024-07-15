@@ -496,7 +496,7 @@ class ApiController extends Controller
             DB::commit();
             if ($dataWD) {
                 $prosesWD = $this->ApiProsesWithdraw($txnid, $dataWD);
-                if ($prosesWD["error"]["id"] === 0) {
+                if ($prosesWD["error"]["id"] !== 0) {
                     ListError::create([
                         'fungsi' => 'ApiWithdraw',
                         'pesan_error' => $prosesWD["error"]["id"],

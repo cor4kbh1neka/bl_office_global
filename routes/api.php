@@ -40,7 +40,7 @@ Route::delete('/deleteTransactions', [ApiController::class, 'deleteTransactions'
 
 
 // Route::middleware(['cors'])->group(function () {
-Route::post('/login', [ApiController::class, 'login']);
+Route::post('/login/{portfolio?}', [ApiController::class, 'login']);
 Route::post('/historylog', [ApiController::class, 'historyLog']);
 Route::post('/register', [ApiController::class, 'register']);
 Route::post('/get-recommend-matches', [ApiController::class, 'getRecomMatch']);

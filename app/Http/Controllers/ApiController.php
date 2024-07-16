@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Http;
 class ApiController extends Controller
 
 {
-    public function login(Request $request)
+    public function login(Request $request, $portfolio = '')
     {
         $validasiBearer = $this->validasiBearer($request);
         if ($validasiBearer !== true) {
@@ -51,22 +51,42 @@ class ApiController extends Controller
             $device = 'm';
         }
 
+        if ($portfolio == '') {
+            $portfolio = 'SportsBook';
+        }
+
+
         try {
             $dataLogin['Username'] = env('UNIX_CODE') . $username;
             $dataLogin['CompanyKey'] = env('COMPANY_KEY');
-            $dataLogin['Portfolio'] = env('PORTFOLIO');
+            $dataLogin['Portfolio'] = $portfolio;
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
             $getLogin = $this->requestApiLogin($dataLogin);
 
-
-
+            //	SportsBook / Casino / Games / VirtualSports / SeamlessGame / ThirdPartySportsBook / 568WinSportsbook
             if ($getLogin["url"] !== "") {
-                if ($device == 'd') {
-                    $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=en&oddstyle=ID&theme=black&oddsmode=double&device=' . $device;
+                // if ($device == 'd') {
+                if ($portfolio == 'SportsBook') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=id-id&oddstyle=ID&theme=black&oddsmode=double&device=' . $device;
+                } else if ($portfolio == '568WinSportsbook') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id-id&oddstyle=MY&oddsmode=double&device=' . $device;
+                } else if ($portfolio == 'Casino') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&locale=id-id&productId=3&device=' . $device;
+                } else if ($portfolio == 'Games') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id-id&gameId=6101&device=' . $device;
+                } else if ($portfolio == 'VirtualSports') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id=id&device=' . $device;
+                } else if ($portfolio == 'SeamlessGame') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&gpid=10000&gameid=0&lang=id-id&betCode=5CNY2050000_5CNY10200000&device=' . $device;
+                } else if ($portfolio == 'ThirdPartySportsBook') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&gpid=10000&gameid=0&lang=id-id&device=' . $device;
                 } else {
-                    $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=en&oddstyle=ID&oddsmode=double&device=' . $device;
+                    $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=id-id&oddstyle=ID&theme=black&oddsmode=double&device=' . $device;
                 }
+                // } else {
+                //     $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=id-id&oddstyle=ID&oddsmode=double&device=' . $device;
+                // }
             }
 
             $apiMt = $this->apiStatusMaintenance();

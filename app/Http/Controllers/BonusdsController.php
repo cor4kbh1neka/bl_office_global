@@ -288,6 +288,11 @@ class BonusdsController extends Controller
                     }
 
                     if ($prosesApiDepo["error"]["id"] !== 0) {
+                        ListError::create([
+                            'fungsi' => 'storebonusds',
+                            'pesan_error' => $prosesApiDepo["error"]["id"],
+                            'keterangan' => $prosesApiDepo["error"]["msg"]
+                        ]);
                     }
                 }
             }
@@ -328,7 +333,7 @@ class BonusdsController extends Controller
         $data = [
             "Username" => env('UNIX_CODE') . $username,
             "TxnId" => $txnid,
-            "Amount" => $amount,
+            "Amount" => round($amount, 2),
             'companyKey' => env('COMPANY_KEY'),
             'serverId' => env('SERVERID')
         ];

@@ -63,7 +63,7 @@ class ApiController extends Controller
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
             $getLogin = $this->requestApiLogin($dataLogin);
-
+            // dd($getLogin);
             //	SportsBook / Casino / Games / VirtualSports / SeamlessGame / ThirdPartySportsBook / 568WinSportsbook
             if ($getLogin["url"] !== "") {
                 // if ($device == 'd') {
@@ -129,7 +129,6 @@ class ApiController extends Controller
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
         ])->post($url, $data);
-
         if ($response->successful()) {
             $responseData = $response->json();
         } else {

@@ -76,7 +76,7 @@ class ApiController extends Controller
                 } else if ($portfolio == 'Games') {
                     $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id-id&gameId=6101&device=' . $device;
                 } else if ($portfolio == 'VirtualSports') {
-                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id=id&device=' . $device;
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id-id&device=' . $device;
                 } else if ($portfolio == 'SeamlessGame') {
                     $getLogin["url"] = 'https://' . $getLogin["url"] . '&gpid=10000&gameid=0&lang=id-id&betCode=5CNY2050000_5CNY10200000&device=' . $device;
                 } else if ($portfolio == 'ThirdPartySportsBook') {

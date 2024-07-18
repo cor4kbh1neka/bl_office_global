@@ -1253,6 +1253,11 @@ class ApiController extends Controller
 
     public function changePassword(Request $request)
     {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
         $username = $request->username;
         $password = $request->password;
         $ipaddress = $request->ipaddress;

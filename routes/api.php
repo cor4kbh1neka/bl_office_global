@@ -40,7 +40,8 @@ Route::delete('/deleteTransactions', [ApiController::class, 'deleteTransactions'
 
 
 // Route::middleware(['cors'])->group(function () {
-Route::post('/login/{portfolio?}', [ApiController::class, 'login']);
+Route::post('/login/{portfolio?}', [ApiController::class, 'l
+ogin']);
 Route::post('/historylog', [ApiController::class, 'historyLog']);
 Route::post('/register', [ApiController::class, 'register']);
 Route::post('/get-recommend-matches', [ApiController::class, 'getRecomMatch']);
@@ -80,3 +81,6 @@ Route::get('/getwinlossbet', [ApiController::class, 'getWinLossBet']);
 
 /* Get Data Log Bank */
 Route::get('/getDataLogBank', [ApiController::class, 'getDataLogBank']);
+
+/* Get Data Log Member*/
+Route::get('/getdatalogmember/{username?}', [ApiController::class, 'getDataLogMember']);

@@ -15,6 +15,7 @@ use App\Models\Outstanding;
 use App\Models\Balance;
 use App\Models\ListError;
 use App\Models\LogBank;
+use App\Models\LogMember;
 use App\Models\Referral1;
 use App\Models\Referral2;
 use App\Models\Referral3;
@@ -156,6 +157,19 @@ class ApiController extends Controller
                 'lastlogin' => Carbon::now()->format('Y-m-d H:i:s'),
                 'domain' => $request->getHost()
             ]);
+
+            $log_member = LogMember::where('username', $username)->where('jenis', 'login')->where('ipaddress', $ipaddress)->whereDate('created_at', now()->toDateString())->first();
+            if (!$log_member) {
+                LogMember::create([
+                    'username' => $username,
+                    'ipaddress' => $ipaddress,
+                    'jenis' => 'login'
+                ]);
+            } else {
+                $log_member->update([
+                    'updated_at' => now()
+                ]);
+            }
 
             return response()->json(['message' => 'Log berhasil tersimpan!']);
         } catch (\Exception $e) {
@@ -1235,5 +1249,49 @@ class ApiController extends Controller
 
         $results = DB::select($query);
         return $results;
+    }
+
+    public function changePassword(Request $request)
+    {
+        $username = $request->username;
+        $password = $request->password;
+        $ipaddress = $request->ipaddress;
+
+        $url = env('DOMAIN') . '/users/pswdy/' . $username;
+        $data = [
+            'password' => $password
+        ];
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->put($url, $data);
+        $response = $response->json();
+
+        if ($response['status'] == 'success') {
+            $log_member = LogMember::where('username', $username)->where('jenis', 'cpassword')->where('ipaddress', $ipaddress)->whereDate('created_at', now()->toDateString())->first();
+            if (!$log_member) {
+                LogMember::create([
+                    'username' => $username,
+                    'ipaddress' => $ipaddress,
+                    'jenis' => 'cpassword'
+                ]);
+            } else {
+                $log_member->update([
+                    'updated_at' => now()
+                ]);
+            }
+            return $response;
+        } else {
+            return $response;
+        }
+    }
+
+    public function getDataLogMember($username = '')
+    {
+        if ($username) {
+            $data = LogMember::where('username', $username)->get();
+        } else {
+            $data = LogMember::get();
+        }
+        return $data;
     }
 }

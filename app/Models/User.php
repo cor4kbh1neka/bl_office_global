@@ -26,7 +26,8 @@ class User extends Authenticatable
         'status',
         'password',
         'last_login',
-        'ip_login'
+        'ip_login',
+        'pin'
     ];
 
     /**

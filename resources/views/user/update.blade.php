@@ -39,6 +39,16 @@
                             {{ $disabled }}>
                     </div>
                     <div class="list_form">
+                        <span class="sec_label">Pin</span>
+                        <input type="pin" id="pin" name="pin[]"
+                            placeholder="Masukkan Pin Jika Ingin Mengganti Pin , Kosongkan jika tidak" {{ $disabled }}>
+                    </div>
+                    <div class="list_form">
+                        <span class="sec_label">Konfirmasi Pin</span>
+                        <input type="pin" id="pin" name="pin[]" placeholder="Masukkan Konfirmasi Pin"
+                            {{ $disabled }}>
+                    </div>
+                    <div class="list_form">
                         <span class="sec_label">Gambar Profile</span>
                         <div class="pilihan_gambar">
                             <input type="file" id="image" name="image[]" {{ $disabled }}>
@@ -89,8 +99,10 @@
                 </div>
             @endforeach
             <div class="sec_button_form">
-                <button class="sec_botton btn_submit" type="submit" id="Contactsubmit" {{ $disabled }}>Submit</button>
-                <a href="/user" id="cancel"><button type="button" class="sec_botton btn_cancel">Cancel</button></a>
+                <button class="sec_botton btn_submit" type="submit" id="Contactsubmit"
+                    {{ $disabled }}>Submit</button>
+                <a href="/user" id="cancel"><button type="button"
+                        class="sec_botton btn_cancel">Cancel</button></a>
             </div>
         </form>
     </div>

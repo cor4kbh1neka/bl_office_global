@@ -20,17 +20,17 @@ class AgentdsController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-    
+
         $query = User::query();
-        
+
         if ($search) {
             $query->where('username', 'LIKE', '%' . $search . '%');
         }
-        
+
         if (auth()->user()->divisi != 'superadmin') {
             $query->where('divisi', '!=', 'superadmin');
         }
-        
+
         $data = $query->paginate(20);
 
         return view('agentds.index', [
@@ -56,6 +56,7 @@ class AgentdsController extends Controller
         $request->validate([
             'username' => 'required',
             'password' => 'required',
+            'pin' => 'required',
             'divisi' => 'required',
         ]);
 
@@ -64,6 +65,7 @@ class AgentdsController extends Controller
         $user->username = $request->username;
         $user->divisi = $request->divisi;
         $user->password = bcrypt($request->password);
+        $user->pin = bcrypt($request->pin);
         $user->image = "";
         $user->status = 1;
 
@@ -75,7 +77,7 @@ class AgentdsController extends Controller
     public function agentupdate($id)
     {
         $data = User::where('id', $id)->first();
-        
+
         if (auth()->user()->divisi != 'superadmin' && $data->divisi == 'superadmin') {
             abort(403);
         }
@@ -95,6 +97,7 @@ class AgentdsController extends Controller
             'id' => 'required',
             'divisi' => 'required',
             'newpassword' => 'nullable',
+            'newpin' => 'nullable',
         ]);
 
         if (auth()->user()->divisi != 'superadmin' && $request->divisi == 'superadmin') {
@@ -104,6 +107,9 @@ class AgentdsController extends Controller
         $user = User::findOrFail($request->id);
         if ($request->filled('newpassword')) {
             $user->password = bcrypt($request->newpassword);
+        }
+        if ($request->filled('newpin')) {
+            $user->pin = bcrypt($request->newpin);
         }
 
         $user->divisi = $request->divisi;
@@ -339,6 +345,7 @@ class AgentdsController extends Controller
 
         if ($user) {
             $user->status = $request->status;
+            $user->pin_attempts = 0;
             $user->save();
 
             return response()->json(['success' => true, 'message' => 'Status agent telah diubah.']);

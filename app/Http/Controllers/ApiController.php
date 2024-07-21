@@ -1283,12 +1283,14 @@ class ApiController extends Controller
         }
     }
 
-    public function getDataLogMember(Request $request, $username = '')
+    public function getDataLogMember(Request $request)
     {
         $validasiBearer = $this->validasiBearer($request);
         if ($validasiBearer !== true) {
             return $validasiBearer;
         }
+
+        $username = isset($request->username) ? $request->username : '';
 
         if ($username) {
             $data = LogMember::where('username', $username)->get();

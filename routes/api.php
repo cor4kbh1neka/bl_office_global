@@ -54,6 +54,7 @@ Route::post('/getHistoryGame', [ApiController::class, 'getHistoryGame']);
 Route::post('/getHistoryGameById', [ApiController::class, 'getHistoryGameById']);
 Route::post('/getDataOutstanding', [ApiController::class, 'getDataOutstanding']);
 Route::post('/changePassword', [ApiController::class, 'changePassword']);
+Route::post('/getdatalogmember/{username?}', [ApiController::class, 'getDataLogMember']);
 
 // });
 
@@ -81,6 +82,3 @@ Route::get('/getwinlossbet', [ApiController::class, 'getWinLossBet']);
 
 /* Get Data Log Bank */
 Route::get('/getDataLogBank', [ApiController::class, 'getDataLogBank']);
-
-/* Get Data Log Member*/
-Route::get('/getdatalogmember/{username?}', [ApiController::class, 'getDataLogMember']);

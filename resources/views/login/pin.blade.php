@@ -27,7 +27,7 @@
             });
         </script>
     @endif
-    <section class="containterlogin">
+    <section class="containterlogin pin">
         <form action="/pin/validate" method="POST">
             @csrf
             <div class="loginpart">

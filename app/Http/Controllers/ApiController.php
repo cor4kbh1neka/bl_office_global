@@ -1275,7 +1275,7 @@ class ApiController extends Controller
             LogMember::create([
                 'username' => $username,
                 'ipaddress' => $ipaddress,
-                'jenis' => 'cpassword'
+                'jenis' => 'ubah password'
             ]);
             return $response;
         } else {
@@ -1283,8 +1283,13 @@ class ApiController extends Controller
         }
     }
 
-    public function getDataLogMember($username = '')
+    public function getDataLogMember(Request $request, $username = '')
     {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
         if ($username) {
             $data = LogMember::where('username', $username)->get();
         } else {

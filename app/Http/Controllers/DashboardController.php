@@ -56,6 +56,7 @@ class DashboardController extends Controller
         $total_settled = $this->getDataSettled()->total_settled;
 
         $totalmember = Member::count();
+        $totalmember = Member::count();
 
         return view('dashboard.index', [
             'title' => 'Dashboard',

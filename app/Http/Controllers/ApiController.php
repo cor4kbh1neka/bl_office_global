@@ -152,6 +152,7 @@ class ApiController extends Controller
 
         try {
             $member = Member::where('username', $username)->firstOrFail();
+
             $member->update([
                 'ip_log' => $ipaddress,
                 'lastlogin' => Carbon::now()->format('Y-m-d H:i:s'),
@@ -1293,9 +1294,9 @@ class ApiController extends Controller
         $username = isset($request->username) ? $request->username : '';
 
         if ($username) {
-            $data = LogMember::where('username', $username)->get();
+            $data = LogMember::where('username', $username)->orderBy('updated_at', 'DESC')->get();
         } else {
-            $data = LogMember::get();
+            $data = LogMember::orderBy('updated_at', 'DESC')->get();
         }
         return $data;
     }

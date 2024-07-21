@@ -34,22 +34,22 @@
                     </div>
                     <div class="listdatagrouplsmid">
                         <span class="detailtitle">cash balanse </span>
-                        <span class="countdetail nominal" data-value="200000015.69"></span>
+                        <span class="countdetail nominal" data-value="{{ $cash_balance }}"></span>
                     </div>
                     <div class="listdatagrouplsmid">
                         <span class="detailtitle">member balance </span>
-                        <span class="countdetail nominal" data-value="60564123.77"></span>
+                        <span class="countdetail nominal" data-value="{{ $member_balance }}"></span>
                     </div>
                     <div class="listdatagrouplsmid">
                         <span class="detailtitle">total balance </span>
-                        <span class="countdetail nominal" data-value="260564139.46"></span>
+                        <span class="countdetail nominal" data-value="{{ $total_balance }}"></span>
                     </div>
                 </div>
                 <div class="grouplistsecdashboard">
                     <div class="listsecdashboard">
                         <div class="groupdatalistdashboard deposit">
                             <div class="listdatagroupls">
-                                <span class="countdata">540</span>
+                                <span class="countdata">{{ $count_depo }}</span>
                                 <span class="textdetail">total deposit accepted 15 April 2024</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512">
@@ -61,7 +61,7 @@
                         </div>
                         <div class="groupdatalistdashboard deposit">
                             <div class="listdatagroupls">
-                                <span class="countdata nominal" data-value="35877089.11"></span>
+                                <span class="countdata nominal" data-value="{{ $sum_depo }}"></span>
                                 <span class="textdetail">Jumlah coin Deposit accepted 15 April 2024</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
@@ -73,16 +73,16 @@
                         <div class="groupdatalistdashboard deposit">
                             <div class="listdatagrouplsmid">
                                 <span class="detailtitle">real deposit </span>
-                                <span class="countdetail nominal" data-value="200370646"></span>
+                                <span class="countdetail nominal" data-value="{{ $sum_depo_real }}"></span>
                             </div>
                             <div class="listdatagrouplsmid">
                                 <span class="detailtitle">deposit manual</span>
-                                <span class="countdetail nominal" data-value="15506443"></span>
+                                <span class="countdetail nominal" data-value="{{ $sum_depo_manual }}"></span>
                             </div>
                         </div>
                         <div class="groupdatalistdashboard">
                             <div class="listdatagroupls">
-                                <span class="countdata">600</span>
+                                <span class="countdata">{{ $count_all_status_depo }}</span>
                                 <span class="textdetail">total request form deposit 15 April 2024</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@
                         </div>
                         <div class="groupdatalistdashboard bet">
                             <div class="listdatagroupls">
-                                <span class="countdata">500</span>
+                                <span class="countdata">{{ $count_settled }}</span>
                                 <span class="textdetail">total user bets settled 15 April 2024</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 36 36">
@@ -113,7 +113,7 @@
                     <div class="listsecdashboard">
                         <div class="groupdatalistdashboard withdraw">
                             <div class="listdatagroupls">
-                                <span class="countdata">188</span>
+                                <span class="countdata">{{ $count_wd }}</span>
                                 <span class="textdetail">total withdraw accepted 15 April 2024</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -123,7 +123,7 @@
                         </div>
                         <div class="groupdatalistdashboard withdraw">
                             <div class="listdatagroupls">
-                                <span class="countdata nominal" data-value="29473506.93"></span>
+                                <span class="countdata nominal" data-value="{{ $sum_wd }}"></span>
                                 <span class="textdetail">Jumlah coin withdraw accepted 15 April 2024</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
@@ -135,16 +135,16 @@
                         <div class="groupdatalistdashboard withdraw">
                             <div class="listdatagrouplsmid">
                                 <span class="detailtitle">real withdraw</span>
-                                <span class="countdetail nominal" data-value="28268555"></span>
+                                <span class="countdetail nominal" data-value="{{ $sum_wd_real }}"></span>
                             </div>
                             <div class="listdatagrouplsmid">
                                 <span class="detailtitle">withdraw manual</span>
-                                <span class="countdetail nominal" data-value="1204951"></span>
+                                <span class="countdetail nominal" data-value="{{ $sum_wd_manual }}"></span>
                             </div>
                         </div>
                         <div class="groupdatalistdashboard">
                             <div class="listdatagroupls">
-                                <span class="countdata">210</span>
+                                <span class="countdata">{{ $count_all_status_wd }}</span>
                                 <span class="textdetail">total request form withdraw 15 April 2024</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -154,7 +154,7 @@
                         </div>
                         <div class="groupdatalistdashboard bet">
                             <div class="listdatagroupls">
-                                <span class="countdata nominal" data-value="75321100.12"></span>
+                                <span class="countdata nominal" data-value="{{ $total_settled }}"></span>
                                 <span class="textdetail">total Coin bets settled 15 April 2024</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -171,7 +171,7 @@
                     <span class="titlegrp">member online</span>
                     <div class="groupboxlist">
                         <div class="listdatagroupls">
-                            <span class="countdata">1000</span>
+                            <span class="countdata">{{ $total_member_online }}</span>
                             <span class="textdetail">total member online 15 April 2024</span>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -184,7 +184,7 @@
                     <span class="titlegrp">new member regist</span>
                     <div class="groupboxlist">
                         <div class="listdatagroupls">
-                            <span class="countdata">1000</span>
+                            <span class="countdata">{{ $total_new_member_regis }}</span>
                             <span class="textdetail">pemain yang sudah daftar 15 April 2024</span>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -197,7 +197,7 @@
                     <span class="titlegrp">new member deposit</span>
                     <div class="groupboxlist">
                         <div class="listdatagroupls">
-                            <span class="countdata">1000</span>
+                            <span class="countdata">{{ $total_new_member_deposit }}</span>
                             <span class="textdetail">pemain baru yang sudah deposit 15 April 2024</span>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -210,7 +210,7 @@
                     <span class="titlegrp">total member</span>
                     <div class="groupboxlist">
                         <div class="listdatagroupls">
-                            <span class="countdata">1000</span>
+                            <span class="countdata">{{ $total_new_member_regis }}</span>
                             <span class="textdetail">total keseluruhan member 15 April 2024</span>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">

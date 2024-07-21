@@ -1272,18 +1272,11 @@ class ApiController extends Controller
         $response = $response->json();
 
         if ($response['status'] == 'success') {
-            $log_member = LogMember::where('username', $username)->where('jenis', 'cpassword')->where('ipaddress', $ipaddress)->whereDate('created_at', now()->toDateString())->first();
-            if (!$log_member) {
-                LogMember::create([
-                    'username' => $username,
-                    'ipaddress' => $ipaddress,
-                    'jenis' => 'cpassword'
-                ]);
-            } else {
-                $log_member->update([
-                    'updated_at' => now()
-                ]);
-            }
+            LogMember::create([
+                'username' => $username,
+                'ipaddress' => $ipaddress,
+                'jenis' => 'cpassword'
+            ]);
             return $response;
         } else {
             return $response;

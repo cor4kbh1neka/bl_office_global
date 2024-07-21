@@ -53,12 +53,12 @@ Route::get('/', function () {
 });
 
 /* Dashboard */
-Route::get('/dashboard', function () {
-    return view('layouts.index', [
-        'title' => 'dashboard',
-        'totalnote' => 0
-    ]);
-})->middleware('auth');
+// Route::get('/dashboard', function () {
+//     return view('layouts.index', [
+//         'title' => 'dashboard',
+//         'totalnote' => 0
+//     ]);
+// })->middleware('auth');
 // Route::get('/dashboard', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
 
 /* Login & Logout */

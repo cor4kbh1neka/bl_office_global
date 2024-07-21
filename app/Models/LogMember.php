@@ -10,6 +10,6 @@ class LogMember extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['username', 'ipaddress', 'jenis'];
+    protected $fillable = ['username', 'ipaddress', 'jenis', 'updated_at'];
     protected $table = 'log_member';
 }

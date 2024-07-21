@@ -54,7 +54,7 @@ Route::post('/getHistoryGame', [ApiController::class, 'getHistoryGame']);
 Route::post('/getHistoryGameById', [ApiController::class, 'getHistoryGameById']);
 Route::post('/getDataOutstanding', [ApiController::class, 'getDataOutstanding']);
 Route::post('/changePassword', [ApiController::class, 'changePassword']);
-Route::post('/getdatalogmember/{username?}', [ApiController::class, 'getDataLogMember']);
+Route::post('/getdatalogmember', [ApiController::class, 'getDataLogMember']);
 
 // });
 

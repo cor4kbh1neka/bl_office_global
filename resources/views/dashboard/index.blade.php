@@ -210,7 +210,7 @@
                     <span class="titlegrp">total member</span>
                     <div class="groupboxlist">
                         <div class="listdatagroupls">
-                            <span class="countdata">{{ $total_new_member_regis }}</span>
+                            <span class="countdata">{{ $totalmember }}</span>
                             <span class="textdetail">total keseluruhan member 15 April 2024</span>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">

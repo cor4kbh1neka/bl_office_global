@@ -493,7 +493,6 @@ class ApiController extends Controller
                 ], 500);
             }
 
-            DB::commit();
             if ($dataWD) {
                 $prosesWD = $this->ApiProsesWithdraw($txnid, $dataWD);
                 if ($prosesWD["error"]["id"] !== 0) {
@@ -502,7 +501,7 @@ class ApiController extends Controller
                         'pesan_error' => $prosesWD["error"]["id"],
                         'keterangan' => $prosesWD["error"]["msg"]
                     ]);
-
+                    DB::rollBack();
                     return response()->json(
                         [
                             'status' => 'Fail',
@@ -512,6 +511,8 @@ class ApiController extends Controller
                     );
                 }
             }
+
+            DB::commit();
 
             return response()->json([
                 'status' => 'Success',

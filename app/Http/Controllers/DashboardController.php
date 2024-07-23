@@ -116,19 +116,15 @@ class DashboardController extends Controller
         // group by username, DATE(created_at)) A
         // WHERE A.created_at >= ? AND A.created_at <= ?";
 
-        $sql = "SELECT A.username
-            FROM (
+        $sql = "SELECT * FROM (
             SELECT username, DATE(created_at) as created_at FROM depo_wd
-            where created_at >= ? AND created_at <= ? AND status = '1'
-            group by username, DATE(created_at)
-            ) A
-            LEFT JOIN (
-                SELECT username, DATE(MIN(created_at)) as created_at FROM depo_wd
-                where status = '1'
+            WHERE created_at >= ? AND created_at <= ? AND status = '1'
+            GROUP BY username, DATE(created_at)) A
+            INNER JOIN (
+                SELECT username, MIN(DATE(created_at)) as created_at FROM depo_wd
+                WHERE status = '1'
                 group by username
-            ) B ON A.username = B.username 
-            WHERE A.created_at = B.created_at;
-            ";
+            ) B ON A.username = B.username AND A.created_at = B.created_at";
 
         $results = DB::select($sql, ["$fromdate 00:00:00", "$todate 23:59:59"]);
 

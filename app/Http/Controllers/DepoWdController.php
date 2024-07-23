@@ -196,6 +196,12 @@ class DepoWdController extends Controller
                             'status' => 'success',
                             'message' => 'Transaksi berhasil!'
                         ], 200);
+                    } else {
+                        DepoWd::where('id', $result->id)->delete();
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Gagal melakukan transaksi!'
+                        ], 400);
                     }
                 }
 

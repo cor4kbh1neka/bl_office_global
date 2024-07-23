@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\ApiBolaController;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\DashboardController;
 // use App\Http\Controllers\DepoWdController;
 use App\Http\Controllers\ReferraldsController;
 
@@ -55,6 +56,10 @@ Route::post('/getHistoryGameById', [ApiController::class, 'getHistoryGameById'])
 Route::post('/getDataOutstanding', [ApiController::class, 'getDataOutstanding']);
 Route::post('/getdatalogmember', [ApiController::class, 'getDataLogMember']);
 
+
+Route::get('/olddata/yesterday', [DashboardController::class, 'apiOldDataYesterday']);
+Route::get('/olddata/lastweek', [DashboardController::class, 'apiOldDataLastWeek']);
+Route::get('/olddata/lastmonth', [DashboardController::class, 'apiOldDataLastMonth']);
 // });
 
 

@@ -47,7 +47,7 @@ class StoreOldDataYesterday extends Command
             'todate' => $date,
         ]);
 
-        $data = app()->call('App\Http\Controllers\DashboardController@apiOldDataYesterday', ['request' => $newRequest]);
+        $data = app()->call('App\Http\Controllers\DashboardController@oldData', ['request' => $newRequest]);
 
         Redis::setex('yesterday', 86400, json_encode($data));
 

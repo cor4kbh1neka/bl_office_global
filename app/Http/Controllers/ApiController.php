@@ -26,7 +26,17 @@ use App\Models\ReferralAktif2;
 use App\Models\ReferralAktif3;
 use App\Models\ReferralAktif4;
 use App\Models\ReferralAktif5;
+use App\Models\ReferralDepo1;
+use App\Models\ReferralDepo2;
+use App\Models\ReferralDepo3;
+use App\Models\ReferralDepo4;
+use App\Models\ReferralDepo5;
 use App\Models\WinlossbetDay;
+use App\Models\WinlossbetMonth;
+use App\Models\WinlossbetYear;
+use App\Models\winlossDay;
+use App\Models\winlossMonth;
+use App\Models\winlossYear;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -1298,6 +1308,99 @@ class ApiController extends Controller
         } else {
             $data = LogMember::orderBy('updated_at', 'DESC')->get();
         }
+        return $data;
+    }
+
+
+
+    /* OLD DATA */
+    public function old_historycoin()
+    {
+        $jenisraw = DB::raw("CASE jenis
+            WHEN 'DP' THEN 'deposit'
+            WHEN 'WD' THEN 'withdraw'
+            WHEN 'DPM' THEN 'deposit manual'
+            WHEN 'WDM' THEN 'withdraw manual'
+            ELSE jenis
+        END as jenis_temp");
+
+        $query = DepoWD::query()->select('*', $jenisraw);
+
+        $query->whereIn('status', [1, 2])->orderBy('created_at', 'DESC');
+
+        return $query->get();
+    }
+
+    public function old_history_transaksi()
+    {
+        $data = HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->limit(100)->get();
+        return $data;
+    }
+
+    public function old_ref_aktif()
+    {
+        $ReferralAktif1 = ReferralAktif1::orderByDesc('created_at')->get();
+        $ReferralAktif2 = ReferralAktif2::orderByDesc('created_at')->get();
+        $ReferralAktif3 = ReferralAktif3::orderByDesc('created_at')->get();
+        $ReferralAktif4 = ReferralAktif4::orderByDesc('created_at')->get();
+        $ReferralAktif5 = ReferralAktif5::orderByDesc('created_at')->get();
+
+        $data = [
+            'ReferralAktif1' => $ReferralAktif1,
+            'ReferralAktif2' => $ReferralAktif2,
+            'ReferralAktif3' => $ReferralAktif3,
+            'ReferralAktif4' => $ReferralAktif4,
+            'ReferralAktif5' => $ReferralAktif5
+        ];
+
+        return $data;
+    }
+
+    public function old_ref_depo()
+    {
+        $ReferralDepo1 = ReferralDepo1::orderByDesc('created_at')->get();
+        $ReferralDepo2 = ReferralDepo2::orderByDesc('created_at')->get();
+        $ReferralDepo3 = ReferralDepo3::orderByDesc('created_at')->get();
+        $ReferralDepo4 = ReferralDepo4::orderByDesc('created_at')->get();
+        $ReferralDepo5 = ReferralDepo5::orderByDesc('created_at')->get();
+
+        $data = [
+            'ReferralDepo1' => $ReferralDepo1,
+            'ReferralDepo2' => $ReferralDepo2,
+            'ReferralDepo3' => $ReferralDepo3,
+            'ReferralDepo4' => $ReferralDepo4,
+            'ReferralDepo5' => $ReferralDepo5
+        ];
+
+        return $data;
+    }
+
+    public function old_winlossbet()
+    {
+        $WinlossbetDay = WinlossbetDay::orderBy('created_at', 'DESC')->get();
+        $WinlossbetMonth = WinlossbetMonth::orderBy('created_at', 'DESC')->get();
+        $WinlossbetYear = WinlossbetYear::orderBy('created_at', 'DESC')->get();
+
+        $data = [
+            'WinlossbetDay' => $WinlossbetDay,
+            'WinlossbetMonth' => $WinlossbetMonth,
+            'WinlossbetYear' => $WinlossbetYear
+        ];
+        return $data;
+    }
+
+    public function old_winloss()
+    {
+        $winlossDay = winlossDay::orderBy('created_at', 'DESC')->get();
+        $winlossMonth = winlossMonth::orderBy('created_at', 'DESC')->get();
+        $winlossYear = winlossYear::orderBy('created_at', 'DESC')->get();
+
+        $data = [
+            'WinlossbetDay' => $winlossDay,
+            'WinlossbetMonth' => $winlossMonth,
+            'WinlossbetYear' => $winlossYear
+        ];
+
         return $data;
     }
 }

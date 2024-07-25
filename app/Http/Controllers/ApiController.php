@@ -42,6 +42,7 @@ use Carbon\Carbon;
 
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
 
 class ApiController extends Controller
 
@@ -1314,93 +1315,181 @@ class ApiController extends Controller
 
 
     /* OLD DATA */
+    /* OLD DATA */
     public function old_historycoin()
     {
-        $jenisraw = DB::raw("CASE jenis
-            WHEN 'DP' THEN 'deposit'
-            WHEN 'WD' THEN 'withdraw'
-            WHEN 'DPM' THEN 'deposit manual'
-            WHEN 'WDM' THEN 'withdraw manual'
-            ELSE jenis
-        END as jenis_temp");
+        if (Redis::exists('olddata:history_coin')) {
+            $data = Redis::get('olddata:history_coin');
+            return json_decode($data, true);
+        } else {
+            $jenisraw = DB::raw("CASE jenis
+                WHEN 'DP' THEN 'deposit'
+                WHEN 'WD' THEN 'withdraw'
+                WHEN 'DPM' THEN 'deposit manual'
+                WHEN 'WDM' THEN 'withdraw manual'
+                ELSE jenis
+            END as jenis_temp");
 
-        $query = DepoWD::query()->select('*', $jenisraw);
+            $query = DepoWD::query()->select('*', $jenisraw)
+                ->whereIn('status', [1, 2])
+                ->orderBy('created_at', 'DESC');
 
-        $query->whereIn('status', [1, 2])->orderBy('created_at', 'DESC');
+            $result = $query->get();
 
-        return $query->get();
+            Redis::setex('olddata:history_coin', 86400, json_encode($result));
+            return $result;
+        }
     }
+
 
     public function old_history_transaksi()
     {
-        $data = HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->limit(100)->get();
-        return $data;
+        if (Redis::exists('olddata:history_transaksi')) {
+            $data = Redis::get('olddata:history_transaksi');
+            return json_decode($data, true);
+        } else {
+            $data = HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->limit(100)->get();
+            Redis::setex('olddata:history_coin', 86400, json_encode($data));
+            return $data;
+        }
     }
 
     public function old_ref_aktif()
     {
-        $ReferralAktif1 = ReferralAktif1::orderByDesc('created_at')->get();
-        $ReferralAktif2 = ReferralAktif2::orderByDesc('created_at')->get();
-        $ReferralAktif3 = ReferralAktif3::orderByDesc('created_at')->get();
-        $ReferralAktif4 = ReferralAktif4::orderByDesc('created_at')->get();
-        $ReferralAktif5 = ReferralAktif5::orderByDesc('created_at')->get();
+        if (Redis::exists('olddata:ref_aktif')) {
+            $data = Redis::get('olddata:ref_aktif');
+            return json_decode($data, true);
+        } else {
+            $ReferralAktif1 = ReferralAktif1::orderByDesc('created_at')->get();
+            $ReferralAktif2 = ReferralAktif2::orderByDesc('created_at')->get();
+            $ReferralAktif3 = ReferralAktif3::orderByDesc('created_at')->get();
+            $ReferralAktif4 = ReferralAktif4::orderByDesc('created_at')->get();
+            $ReferralAktif5 = ReferralAktif5::orderByDesc('created_at')->get();
 
-        $data = [
-            'ReferralAktif1' => $ReferralAktif1,
-            'ReferralAktif2' => $ReferralAktif2,
-            'ReferralAktif3' => $ReferralAktif3,
-            'ReferralAktif4' => $ReferralAktif4,
-            'ReferralAktif5' => $ReferralAktif5
-        ];
-
-        return $data;
+            $data = [
+                'ReferralAktif1' => $ReferralAktif1,
+                'ReferralAktif2' => $ReferralAktif2,
+                'ReferralAktif3' => $ReferralAktif3,
+                'ReferralAktif4' => $ReferralAktif4,
+                'ReferralAktif5' => $ReferralAktif5
+            ];
+            Redis::setex('olddata:ref_aktif', 86400, json_encode($data));
+            return $data;
+        }
     }
 
     public function old_ref_depo()
     {
-        $ReferralDepo1 = ReferralDepo1::orderByDesc('created_at')->get();
-        $ReferralDepo2 = ReferralDepo2::orderByDesc('created_at')->get();
-        $ReferralDepo3 = ReferralDepo3::orderByDesc('created_at')->get();
-        $ReferralDepo4 = ReferralDepo4::orderByDesc('created_at')->get();
-        $ReferralDepo5 = ReferralDepo5::orderByDesc('created_at')->get();
+        if (Redis::exists('olddata:ref_depo')) {
+            $data = Redis::get('olddata:ref_depo');
+            return json_decode($data, true);
+        } else {
+            $ReferralDepo1 = ReferralDepo1::orderByDesc('created_at')->get();
+            $ReferralDepo2 = ReferralDepo2::orderByDesc('created_at')->get();
+            $ReferralDepo3 = ReferralDepo3::orderByDesc('created_at')->get();
+            $ReferralDepo4 = ReferralDepo4::orderByDesc('created_at')->get();
+            $ReferralDepo5 = ReferralDepo5::orderByDesc('created_at')->get();
 
-        $data = [
-            'ReferralDepo1' => $ReferralDepo1,
-            'ReferralDepo2' => $ReferralDepo2,
-            'ReferralDepo3' => $ReferralDepo3,
-            'ReferralDepo4' => $ReferralDepo4,
-            'ReferralDepo5' => $ReferralDepo5
-        ];
-
-        return $data;
+            $data = [
+                'ReferralDepo1' => $ReferralDepo1,
+                'ReferralDepo2' => $ReferralDepo2,
+                'ReferralDepo3' => $ReferralDepo3,
+                'ReferralDepo4' => $ReferralDepo4,
+                'ReferralDepo5' => $ReferralDepo5
+            ];
+            Redis::setex('olddata:ref_depo', 86400, json_encode($data));
+            return $data;
+        }
     }
 
     public function old_winlossbet()
     {
-        $WinlossbetDay = WinlossbetDay::orderBy('created_at', 'DESC')->get();
-        $WinlossbetMonth = WinlossbetMonth::orderBy('created_at', 'DESC')->get();
-        $WinlossbetYear = WinlossbetYear::orderBy('created_at', 'DESC')->get();
+        if (Redis::exists('olddata:winloss_bet')) {
+            $data = Redis::get('olddata:winloss_bet');
+            return json_decode($data, true);
+        } else {
+            $WinlossbetDay = WinlossbetDay::orderBy('created_at', 'DESC')->get();
+            $WinlossbetMonth = WinlossbetMonth::orderBy('created_at', 'DESC')->get();
+            $WinlossbetYear = WinlossbetYear::orderBy('created_at', 'DESC')->get();
 
-        $data = [
-            'WinlossbetDay' => $WinlossbetDay,
-            'WinlossbetMonth' => $WinlossbetMonth,
-            'WinlossbetYear' => $WinlossbetYear
-        ];
-        return $data;
+            $data = [
+                'WinlossbetDay' => $WinlossbetDay,
+                'WinlossbetMonth' => $WinlossbetMonth,
+                'WinlossbetYear' => $WinlossbetYear
+            ];
+            Redis::setex('olddata:winloss_bet', 86400, json_encode($data));
+            return $data;
+        }
     }
 
     public function old_winloss()
     {
-        $winlossDay = winlossDay::orderBy('created_at', 'DESC')->get();
-        $winlossMonth = winlossMonth::orderBy('created_at', 'DESC')->get();
-        $winlossYear = winlossYear::orderBy('created_at', 'DESC')->get();
+        if (Redis::exists('olddata:winloss')) {
+            $data = Redis::get('olddata:winloss');
+            return json_decode($data, true);
+        } else {
+            $winlossDay = winlossDay::orderBy('created_at', 'DESC')->get();
+            $winlossMonth = winlossMonth::orderBy('created_at', 'DESC')->get();
+            $winlossYear = winlossYear::orderBy('created_at', 'DESC')->get();
 
-        $data = [
-            'WinlossbetDay' => $winlossDay,
-            'WinlossbetMonth' => $winlossMonth,
-            'WinlossbetYear' => $winlossYear
-        ];
+            $data = [
+                'WinlossbetDay' => $winlossDay,
+                'WinlossbetMonth' => $winlossMonth,
+                'WinlossbetYear' => $winlossYear
+            ];
+            Redis::setex('olddata:winloss', 86400, json_encode($data));
+            return $data;
+        }
+    }
+    public function redis_key()
+    {
+        $keys = Redis::keys('*');
+        return response()->json($keys);
+    }
+    public function flushdb()
+    {
+        Redis::flushdb();
+        return redirect()->back()->with('success', 'Berhasil refresh cache');
+    }
+    public function deleteKey($key)
+    {
+        $key = str_replace(' ', '%20', $key);
+        if (Redis::exists($key)) {
+            Redis::del($key);
+        } else {
+            return redirect('dashboard')->with('error', 'Cache ' . $key . ' gagal direset');
+        }
 
-        return $data;
+        return redirect()->back()->with('success', 'Cache ' . $key . ' berhasil direset');
+    }
+    public function deleteKeysWithSubstring($substring)
+    {
+        $substring = str_replace(' ', '%20', $substring);
+
+        $cursor = '0';
+        $keysToDelete = [];
+
+        do {
+            $result = Redis::scan($cursor, ['MATCH' => 'laravel_database_*']);
+            $cursor = $result[0];
+            $keys = $result[1];
+
+            foreach ($keys as $key) {
+                if (strpos($key, $substring) !== false) {
+                    $keysToDelete[] = $key;
+                }
+            }
+        } while ($cursor != 0);
+
+        foreach ($keysToDelete as $key) {
+            $keyToDelete = str_replace('laravel_database_', '', $key);
+            Redis::del($keyToDelete);
+        }
+
+        if (empty($keysToDelete)) {
+            return redirect()->back()->with('error', 'Tidak ada kunci yang cocok dengan substring ' . $substring . ' ditemukan.');
+        }
+
+        return redirect()->back()->with('success', 'Semua kunci yang cocok dengan substring ' . $substring . ' berhasil dihapus.');
     }
 }

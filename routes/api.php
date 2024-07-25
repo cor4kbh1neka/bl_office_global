@@ -68,8 +68,15 @@ Route::get('/olddata/refdepo', [ApiController::class, 'old_ref_depo']);
 Route::get('/olddata/winlossbet', [ApiController::class, 'old_winlossbet']);
 Route::get('/olddata/winloss', [ApiController::class, 'old_winloss']);
 
+/* Cek Key */
+Route::get('/yindiktiitinyiyingmiitinyisiyi', [ApiController::class, 'redis_key']);
+Route::post('/redis/Sl3beuw.Bu_lu_kukuk/flushdb', [ApiController::class, 'flushdb']);
+Route::post('/redis/del/{key}', [ApiController::class, 'deleteKey']);
+Route::post('/redis/scan/{substring}', [ApiController::class, 'deleteKeysWithSubstring']);
 // });
 
+//composer require predis/predis
+ 
 
 // /* Referral */
 // Route::post('/getDataReferral', [ApiController::class, 'getDataReferral']);

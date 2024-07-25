@@ -138,10 +138,15 @@
                                     <td>
                                         <div class="statusmember">{{ $startNumber + $index }}</div>
                                     </td>
-                                    <td class="refnodetail">{{ $d->refno }}</td>
+                                    <td class="refnodetail">{{ $d->refno == '' ? $d->invoice : $d->refno }}</td>
                                     <td>{{ $d->created_at }}</td>
                                     <td>
-                                        @if ($d->status == 'menang' || $d->status == 'pemasangan' || $d->status == 'cashout' ||  $d->status == 'rollback' ||  $d->status == 'cancel')
+                                        @if (
+                                            $d->status == 'menang' ||
+                                                $d->status == 'pemasangan' ||
+                                                $d->status == 'cashout' ||
+                                                $d->status == 'rollback' ||
+                                                $d->status == 'cancel')
                                             <a href="/historygameds/detail/{{ $d->refno }}/{{ $d->portfolio }}"
                                                 target="_blank" class="detailbetingan">
                                                 <span class="texttypebet sportsType">{{ $d->keterangan }}</span>

@@ -42,19 +42,19 @@ use App\Http\Controllers\ReferraldsController;
 
 // Route::middleware(['cors'])->group(function () {
 // Route::post('/login', [ApiController::class, 'login']);
-Route::post('/historylog', [ApiController::class, 'historyLog']);
+// Route::post('/historylog', [ApiController::class, 'historyLog']);
 // Route::post('/register', [ApiController::class, 'register']);
-Route::post('/get-recommend-matches', [ApiController::class, 'getRecomMatch']);
-Route::post('/cekuserreferral', [ApiController::class, 'cekuserreferral']);
+// Route::post('/get-recommend-matches', [ApiController::class, 'getRecomMatch']);
+// Route::post('/cekuserreferral', [ApiController::class, 'cekuserreferral']);
 // Route::post('/deposit', [ApiController::class, 'deposit']);
 // Route::post('/withdrawal', [ApiController::class, 'withdrawal']);
-Route::post('/getHistoryDw', [ApiController::class, 'getHistoryDepoWd']);
-Route::post('/checkLastTransaction', [ApiController::class, 'getLastStatusTransaction']);
-Route::post('/checkBalance', [ApiController::class, 'getBalance']);
-Route::post('/getHistoryGame', [ApiController::class, 'getHistoryGame']);
-Route::post('/getHistoryGameById', [ApiController::class, 'getHistoryGameById']);
-Route::post('/getDataOutstanding', [ApiController::class, 'getDataOutstanding']);
-Route::post('/getdatalogmember', [ApiController::class, 'getDataLogMember']);
+// Route::post('/getHistoryDw', [ApiController::class, 'getHistoryDepoWd']);
+// Route::post('/checkLastTransaction', [ApiController::class, 'getLastStatusTransaction']);
+// Route::post('/checkBalance', [ApiController::class, 'getBalance']);
+// Route::post('/getHistoryGame', [ApiController::class, 'getHistoryGame']);
+// Route::post('/getHistoryGameById', [ApiController::class, 'getHistoryGameById']);
+// Route::post('/getDataOutstanding', [ApiController::class, 'getDataOutstanding']);
+// Route::post('/getdatalogmember', [ApiController::class, 'getDataLogMember']);
 
 
 Route::get('/olddata/yesterday', [DashboardController::class, 'apiOldDataYesterday']);

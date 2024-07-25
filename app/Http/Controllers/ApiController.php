@@ -496,12 +496,13 @@ class ApiController extends Controller
             if ($dataWD) {
                 $prosesWD = $this->ApiProsesWithdraw($txnid, $dataWD);
                 if ($prosesWD["error"]["id"] !== 0) {
+                    DB::rollBack();
                     ListError::create([
                         'fungsi' => 'ApiWithdraw',
                         'pesan_error' => $prosesWD["error"]["id"],
                         'keterangan' => $prosesWD["error"]["msg"]
                     ]);
-                    DB::rollBack();
+
                     return response()->json(
                         [
                             'status' => 'Fail',

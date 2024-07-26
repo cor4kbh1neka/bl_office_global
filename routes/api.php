@@ -76,7 +76,7 @@ Route::post('/redis/scan/{substring}', [ApiController::class, 'deleteKeysWithSub
 // });
 
 //composer require predis/predis
- 
+
 
 // /* Referral */
 // Route::post('/getDataReferral', [ApiController::class, 'getDataReferral']);

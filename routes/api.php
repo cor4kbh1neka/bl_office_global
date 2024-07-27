@@ -61,10 +61,10 @@ Route::get('/olddata/yesterday', [DashboardController::class, 'apiOldDataYesterd
 Route::get('/olddata/lastweek', [DashboardController::class, 'apiOldDataLastWeek']);
 Route::get('/olddata/lastmonth', [DashboardController::class, 'apiOldDataLastMonth']);
 
-Route::get('/olddata/historycoin', [ApiController::class, 'old_historycoin']);
+Route::get('/olddata/historycoins', [ApiController::class, 'old_historycoin']);
 Route::get('/olddata/historytransaksi', [ApiController::class, 'old_history_transaksi']);
 Route::get('/olddata/refaktif', [ApiController::class, 'old_ref_aktif']);
-Route::get('/olddata/refdepo', [ApiController::class, 'old_ref_depo']);
+Route::get('/olddata/refdepo', [ApiController::class, 'old_history_reffdepo']);
 Route::get('/olddata/winlossbet', [ApiController::class, 'old_winlossbet']);
 Route::get('/olddata/winloss', [ApiController::class, 'old_winloss']);
 

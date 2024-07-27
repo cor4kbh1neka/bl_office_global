@@ -1316,131 +1316,243 @@ class ApiController extends Controller
 
     /* OLD DATA */
     /* OLD DATA */
-    public function old_historycoin()
+    public function old_datahistorycoin(Request $request)
     {
-        if (Redis::exists('olddata:history_coin')) {
-            $data = Redis::get('olddata:history_coin');
-            return json_decode($data, true);
-        } else {
-            $jenisraw = DB::raw("CASE jenis
+        // $getdate = $request->query('getdate');
+        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
+        $todate = $request->query('todate') ?? date('Y-m-d');
+
+        $jenisraw = DB::raw("CASE jenis
                 WHEN 'DP' THEN 'deposit'
                 WHEN 'WD' THEN 'withdraw'
                 WHEN 'DPM' THEN 'deposit manual'
                 WHEN 'WDM' THEN 'withdraw manual'
                 ELSE jenis
             END as jenis_temp");
+        $query = DepoWD::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->select('*', $jenisraw)
+            ->whereIn('status', [1, 2])
+            ->orderBy('created_at', 'DESC')
+            ->get();
 
-            $query = DepoWD::query()->select('*', $jenisraw)
-                ->whereIn('status', [1, 2])
-                ->orderBy('created_at', 'DESC');
 
-            $result = $query->get();
+        // $result = $query->get();
 
-            Redis::setex('olddata:history_coin', 86400, json_encode($result));
-            return $result;
+        // Redis::setex('olddata:history_coin', 86400, json_encode($result));
+        return $query;
+    }
+
+    public function old_historycoin()
+    {
+        if (Redis::exists('olddatacoins')) {
+            $data = json_decode(Redis::get('olddatacoins'), true);
+        } else {
+            return response()->json('gagal ambil cache');
         }
+        return response()->json($data)->header('x-data-source', 'cache');
     }
 
 
+    //history transaksi
+    public function old_datahistorytrans(Request $request)
+    {
+        // $getdate = $request->query('getdate');
+        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
+        $todate = $request->query('todate') ?? date('Y-m-d');
+
+        $data = HistoryTransaksi::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')
+            ->orderByDesc('urutan')
+            ->get();
+
+
+        return $data;
+    }
+
     public function old_history_transaksi()
     {
-        if (Redis::exists('olddata:history_transaksi')) {
-            $data = Redis::get('olddata:history_transaksi');
-            return json_decode($data, true);
+        if (Redis::exists('olddatahistorytrans')) {
+            $data = json_decode(Redis::get('olddatahistorytrans'), true);
         } else {
-            $data = HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->limit(100)->get();
-            Redis::setex('olddata:history_coin', 86400, json_encode($data));
-            return $data;
+            return response()->json('gagal ambil cache');
         }
+        return response()->json($data)->header('x-data-source', 'cache');
+    }
+
+    //history reff aktif
+    public function old_datahistoryreffAktif(Request $request)
+    {
+        // $getdate = $request->query('getdate');
+        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
+        $todate = $request->query('todate') ?? date('Y-m-d');
+
+        $ReferralAktif1 = ReferralAktif1::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+        $ReferralAktif2 = ReferralAktif2::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+        $ReferralAktif3 = ReferralAktif3::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+        $ReferralAktif4 = ReferralAktif4::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+        $ReferralAktif5 = ReferralAktif5::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+
+        $data = [
+            'ReferralAktif1' => $ReferralAktif1,
+            'ReferralAktif2' => $ReferralAktif2,
+            'ReferralAktif3' => $ReferralAktif3,
+            'ReferralAktif4' => $ReferralAktif4,
+            'ReferralAktif5' => $ReferralAktif5
+        ];
+
+
+
+        return $data;
     }
 
     public function old_ref_aktif()
     {
-        if (Redis::exists('olddata:ref_aktif')) {
-            $data = Redis::get('olddata:ref_aktif');
-            return json_decode($data, true);
+        if (Redis::exists('olddatahistoryreffaktif')) {
+            $data = json_decode(Redis::get('olddatahistoryreffaktif'), true);
         } else {
-            $ReferralAktif1 = ReferralAktif1::orderByDesc('created_at')->get();
-            $ReferralAktif2 = ReferralAktif2::orderByDesc('created_at')->get();
-            $ReferralAktif3 = ReferralAktif3::orderByDesc('created_at')->get();
-            $ReferralAktif4 = ReferralAktif4::orderByDesc('created_at')->get();
-            $ReferralAktif5 = ReferralAktif5::orderByDesc('created_at')->get();
-
-            $data = [
-                'ReferralAktif1' => $ReferralAktif1,
-                'ReferralAktif2' => $ReferralAktif2,
-                'ReferralAktif3' => $ReferralAktif3,
-                'ReferralAktif4' => $ReferralAktif4,
-                'ReferralAktif5' => $ReferralAktif5
-            ];
-            Redis::setex('olddata:ref_aktif', 86400, json_encode($data));
-            return $data;
+            return response()->json('gagal ambil cache');
         }
+        return response()->json($data)->header('x-data-source', 'cache');
     }
 
-    public function old_ref_depo()
-    {
-        if (Redis::exists('olddata:ref_depo')) {
-            $data = Redis::get('olddata:ref_depo');
-            return json_decode($data, true);
-        } else {
-            $ReferralDepo1 = ReferralDepo1::orderByDesc('created_at')->get();
-            $ReferralDepo2 = ReferralDepo2::orderByDesc('created_at')->get();
-            $ReferralDepo3 = ReferralDepo3::orderByDesc('created_at')->get();
-            $ReferralDepo4 = ReferralDepo4::orderByDesc('created_at')->get();
-            $ReferralDepo5 = ReferralDepo5::orderByDesc('created_at')->get();
 
-            $data = [
-                'ReferralDepo1' => $ReferralDepo1,
-                'ReferralDepo2' => $ReferralDepo2,
-                'ReferralDepo3' => $ReferralDepo3,
-                'ReferralDepo4' => $ReferralDepo4,
-                'ReferralDepo5' => $ReferralDepo5
-            ];
-            Redis::setex('olddata:ref_depo', 86400, json_encode($data));
-            return $data;
+
+
+    //history reff depo
+    public function old_datahistoryreffdepo(Request $request)
+    {
+        // $getdate = $request->query('getdate');
+        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
+        $todate = $request->query('todate') ?? date('Y-m-d');
+
+        $ReferralDepo1 = ReferralDepo1::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+        $ReferralDepo2 = ReferralDepo2::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+        $ReferralDepo3 = ReferralDepo3::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+        $ReferralDepo4 = ReferralDepo4::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+        $ReferralDepo5 = ReferralDepo5::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderByDesc('created_at')->get();
+
+        $data = [
+            'ReferralDepo1' => $ReferralDepo1,
+            'ReferralDepo2' => $ReferralDepo2,
+            'ReferralDepo3' => $ReferralDepo3,
+            'ReferralDepo4' => $ReferralDepo4,
+            'ReferralDepo5' => $ReferralDepo5
+        ];
+
+
+        return $data;
+    }
+
+    public function old_history_reffdepo()
+    {
+        if (Redis::exists('olddatahistorytrans')) {
+            $data = json_decode(Redis::get('olddatahistorytrans'), true);
+        } else {
+            return response()->json('gagal ambil cache');
         }
+        return response()->json($data)->header('x-data-source', 'cache');
+    }
+
+
+    //history winlosbet
+    public function old_datahistorywinlosbet(Request $request)
+    {
+        // $getdate = $request->query('getdate');
+        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
+        $todate = $request->query('todate') ?? date('Y-m-d');
+
+        $WinlossbetDay = WinlossbetDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderBy('created_at', 'DESC')->get();
+        $WinlossbetMonth = WinlossbetMonth::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderBy('created_at', 'DESC')->get();
+        $WinlossbetYear = WinlossbetYear::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderBy('created_at', 'DESC')->get();
+
+        $data = [
+            'WinlossbetDay' => $WinlossbetDay,
+            'WinlossbetMonth' => $WinlossbetMonth,
+            'WinlossbetYear' => $WinlossbetYear
+        ];
+
+
+        return $data;
     }
 
     public function old_winlossbet()
     {
-        if (Redis::exists('olddata:winloss_bet')) {
-            $data = Redis::get('olddata:winloss_bet');
-            return json_decode($data, true);
+        if (Redis::exists('olddatahistorywinlosbet')) {
+            $data = json_decode(Redis::get('olddatahistorywinlosbet'), true);
         } else {
-            $WinlossbetDay = WinlossbetDay::orderBy('created_at', 'DESC')->get();
-            $WinlossbetMonth = WinlossbetMonth::orderBy('created_at', 'DESC')->get();
-            $WinlossbetYear = WinlossbetYear::orderBy('created_at', 'DESC')->get();
-
-            $data = [
-                'WinlossbetDay' => $WinlossbetDay,
-                'WinlossbetMonth' => $WinlossbetMonth,
-                'WinlossbetYear' => $WinlossbetYear
-            ];
-            Redis::setex('olddata:winloss_bet', 86400, json_encode($data));
-            return $data;
+            return response()->json('gagal ambil cache');
         }
+        return response()->json($data)->header('x-data-source', 'cache');
+    }
+
+
+    //history winloss balance
+    public function old_datahistorywinlossbalance(Request $request)
+    {
+        // $getdate = $request->query('getdate');
+        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
+        $todate = $request->query('todate') ?? date('Y-m-d');
+
+        $winlossDay = winlossDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderBy('created_at', 'DESC')->get();
+        $winlossMonth = winlossMonth::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderBy('created_at', 'DESC')->get();
+        $winlossYear = winlossYear::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
+            ->orderBy('created_at', 'DESC')->get();
+
+        $data = [
+            'WinlossbetDay' => $winlossDay,
+            'WinlossbetMonth' => $winlossMonth,
+            'WinlossbetYear' => $winlossYear
+        ];
+
+        return $data;
     }
 
     public function old_winloss()
     {
-        if (Redis::exists('olddata:winloss')) {
-            $data = Redis::get('olddata:winloss');
-            return json_decode($data, true);
+        if (Redis::exists('olddatahistorywinlosbal')) {
+            $data = json_decode(Redis::get('olddatahistorywinlosbal'), true);
         } else {
-            $winlossDay = winlossDay::orderBy('created_at', 'DESC')->get();
-            $winlossMonth = winlossMonth::orderBy('created_at', 'DESC')->get();
-            $winlossYear = winlossYear::orderBy('created_at', 'DESC')->get();
-
-            $data = [
-                'WinlossbetDay' => $winlossDay,
-                'WinlossbetMonth' => $winlossMonth,
-                'WinlossbetYear' => $winlossYear
-            ];
-            Redis::setex('olddata:winloss', 86400, json_encode($data));
-            return $data;
+            return response()->json('gagal ambil cache');
         }
+        return response()->json($data)->header('x-data-source', 'cache');
     }
+
+
+
+    // public function old_winloss()
+    // {
+    //     if (Redis::exists('olddata:winloss')) {
+    //         $data = Redis::get('olddata:winloss');
+    //         return json_decode($data, true);
+    //     } else {
+    //         $winlossDay = winlossDay::orderBy('created_at', 'DESC')->get();
+    //         $winlossMonth = winlossMonth::orderBy('created_at', 'DESC')->get();
+    //         $winlossYear = winlossYear::orderBy('created_at', 'DESC')->get();
+
+    //         $data = [
+    //             'WinlossbetDay' => $winlossDay,
+    //             'WinlossbetMonth' => $winlossMonth,
+    //             'WinlossbetYear' => $winlossYear
+    //         ];
+    //         Redis::setex('olddata:winloss', 86400, json_encode($data));
+    //         return $data;
+    //     }
+    // }
     public function redis_key()
     {
         $keys = Redis::keys('*');

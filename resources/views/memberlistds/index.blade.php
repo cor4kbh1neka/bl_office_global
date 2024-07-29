@@ -164,7 +164,7 @@
                                     <td class="hsjenisakun" data-statusakun="{{ $d->status }}"></td>
                                     <td>{{ $d->keterangan }}</td>
                                     <td>{{ $d->created_at }}</td>
-                                    <td>{{ $d->lastlogin }}</td>
+                                    <td>{{ $d->ip_log }} </br> {{ $d->lastlogin }}</td>
                                     <td>
                                         <div class="grouptools">
                                             <a href="/memberlistds/edit/{{ $d->id }}"

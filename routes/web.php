@@ -223,11 +223,13 @@ Route::middleware(['auth'])->group(function () {
 
         /*-- Historyds --*/
         Route::get('/historycoinds', [HistorycoindsController::class, 'index'])->middleware('history_coin');
+        Route::get('/historycoindsold', [HistorycoindsController::class, 'index_old'])->middleware('history_coin');
         Route::get('/historycoinds/export/', [HistorycoindsController::class, 'export']);
 
         /*-- Historytransaksids --*/
         Route::middleware('history_transaction')->group(function () {
             Route::get('/historytransaksids', [HistorytransaksidsController::class, 'index']);
+            Route::get('/historytransaksidsold', [HistorytransaksidsController::class, 'index_old']);
             Route::get('/historytransaksids/transaksilama', [HistorytransaksidsController::class, 'transaksilama']);
             Route::get('/historytransaksids/export', [HistorytransaksidsController::class, 'export']);
         });

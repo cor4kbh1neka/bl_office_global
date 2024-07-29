@@ -16,7 +16,8 @@
         <div class="sechistoryds">
             <div class="grouphistoryds">
                 <div class="groupheadhistoryds">
-                    <form id="searchForm" method="GET" action="/historytransaksids"
+                    <form id="searchForm" method="GET"
+                        action="{{ $is_old == true ? '/historytransaksidsold' : '/historytransaksids' }}"
                         class="listmembergroup historytransds">
                         <div class="listinputmember">
                             <label for="username">username<span class="required">*</span></label>
@@ -53,7 +54,8 @@
                                 <option value="pemasangan" {{ request('status') == 'pemasangan' ? 'selected' : '' }}>
                                     pemasangan
                                 </option>
-                                <option value="menang" {{ request('status') == 'menang' ? 'selected' : '' }}>menang</option>
+                                <option value="menang" {{ request('status') == 'menang' ? 'selected' : '' }}>menang
+                                </option>
                                 <option value="referral" {{ request('status') == 'referral' ? 'selected' : '' }}>referral
                                 </option>
                             </select>
@@ -67,7 +69,7 @@
                                 </div>
                             </label>
                             <input type="datetime-local" id="transdari" name="transdari"
-                                value="{{ request('transdari') ?? date('Y-m-01') }}T00:00">
+                                value="{{ request('transdari') ?? date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))) . 'T00:00' }}">
                         </div>
                         <div class="listinputmember">
                             <label for="transhingga">
@@ -78,7 +80,7 @@
                                 </div>
                             </label>
                             <input type="datetime-local" id="transhingga" name="transhingga"
-                                value="{{ request('transhingga') ?? date('Y-m-t') }}T23:59">
+                                value="{{ request('transhingga') ?? date('Y-m-d') . 'T23:59' }}">
                         </div>
                         <div class="listinputmember">
                             <label for="transdari">
@@ -101,15 +103,16 @@
                         </div>
                     </form>
                     <div class="groupmaksimaldata">
-                        <span class="textmaksimaldata">Data yang di tampilkan adalah data <span class="dataterakhir">5
-                                minggu terakhir</span>, </span>
-                        <a href="/historytransaksids/transaksilama" {{-- <a href="/historytransaksids/transaksilama{{ $query != '' ? '?' . $query : '' }}" --}}
+                        <span class="textmaksimaldata">Data yang di tampilkan adalah data <span
+                                class="dataterakhir">{{ $is_old ? 'lebih dari 2 bulan terakhir' : '2 bulan terakhir' }}</span>,
+                        </span>
+                        <a href="{{ $is_old ? '/historytransaksids' : '/historytransaksidsold' }}" {{-- <a href="/historytransaksids/transaksilama{{ $query != '' ? '?' . $query : '' }}" --}}
                             class="transaksilama tombol primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="m22.69 18.37l1.14-1l-1-1.73l-1.45.49c-.32-.27-.68-.48-1.08-.63L20 14h-2l-.3 1.49c-.4.15-.76.36-1.08.63l-1.45-.49l-1 1.73l1.14 1c-.08.5-.08.76 0 1.26l-1.14 1l1 1.73l1.45-.49c.32.27.68.48 1.08.63L18 24h2l.3-1.49c.4-.15.76-.36 1.08-.63l1.45.49l1-1.73l-1.14-1c.08-.51.08-.77 0-1.27M19 21c-1.1 0-2-.9-2-2s.9-2 2-2s2 .9 2 2s-.9 2-2 2M11 7v5.41l2.36 2.36l1.04-1.79l-1.4-1.39V7zm10 5a9 9 0 0 0-9-9C9.17 3 6.65 4.32 5 6.36V4H3v6h6V8H6.26A7.01 7.01 0 0 1 12 5c3.86 0 7 3.14 7 7zm-10.14 6.91c-2.99-.49-5.35-2.9-5.78-5.91H3.06c.5 4.5 4.31 8 8.94 8h.07z" />
                             </svg>
-                            Lihat Transaksi Lama
+                            {{ $is_old ? 'Lihat Transaksi Baru' : 'Lihat Transaksi Lama' }}
                         </a>
                     </div>
                 </div>
@@ -267,26 +270,26 @@
             });
         });
 
-        document.getElementById('searchForm').addEventListener('submit', function(event) {
-            const inputs = [
-                'username',
-                'invoice',
-                'status',
-                'transdari',
-                'transhingga',
-                'checkinvoice',
-                'checkstatus',
-                'checktransdari',
-                'checktranshingga',
-                'checkall',
-            ];
-            inputs.forEach(id => {
-                const inputElement = document.getElementById(id);
-                if (!inputElement.value) {
-                    inputElement.disabled = true; // Untuk disabled input kalau tidak ada filter :D
-                }
-            });
-        });
+        // document.getElementById('searchForm').addEventListener('submit', function(event) {
+        //     const inputs = [
+        //         'username',
+        //         'invoice',
+        //         'status',
+        //         'transdari',
+        //         'transhingga',
+        //         'checkinvoice',
+        //         'checkstatus',
+        //         'checktransdari',
+        //         'checktranshingga',
+        //         'checkall',
+        //     ];
+        //     inputs.forEach(id => {
+        //         const inputElement = document.getElementById(id);
+        //         if (!inputElement.value) {
+        //             inputElement.disabled = true; // Untuk disabled input kalau tidak ada filter :D
+        //         }
+        //     });
+        // });
 
         document.addEventListener('DOMContentLoaded', (event) => {
             const checkAll = document.getElementById('checkall');
@@ -310,38 +313,65 @@
                 cancelButtonText: 'Batal',
             }).then(function(result) {
                 if (result.isConfirmed) {
-
                     var username = $('#username').val();
-
                     var checkinvoice = $('#checkinvoice').val();
                     var invoice = $('#invoice').val();
-
                     var checkstatus = $('#checkstatus').val();
                     var status = $('#status').val();
-
                     var checktransdari = $('#checktransdari').val();
                     var transdari = $('#transdari').val();
-
                     var checktranshingga = $('#checktranshingga').val();
                     var transhingga = $('#transhingga').val();
-
                     var checkall = $('#checkall').val();
+                    var is_old = @json($is_old);
 
                     // Membuat URL dengan parameter dinamis
-                    var url = '/historytransaksids/export?username=' + encodeURIComponent(username) +
-                        '&checkinvoice=' + encodeURIComponent(checkinvoice) +
-                        '&invoice=' + encodeURIComponent(invoice) +
-                        '&checkstatus=' + encodeURIComponent(checkstatus) +
-                        '&status=' + encodeURIComponent(status) +
-                        '&checktransdari=' + encodeURIComponent(checktransdari) +
-                        '&transdari=' + encodeURIComponent(transdari) +
-                        '&checktranshingga=' + encodeURIComponent(checktranshingga) +
-                        '&transhingga=' + encodeURIComponent(transhingga) +
-                        '&checkall=' + encodeURIComponent(checkall);
+                    var url = '/historytransaksids/export?';
+
+                    if (username) url += 'username=' + encodeURIComponent(username) + '&';
+                    if (checkinvoice && invoice) url += 'checkinvoice=' + encodeURIComponent(checkinvoice) +
+                        '&invoice=' + encodeURIComponent(invoice) + '&';
+                    if (checkstatus && status) url += 'checkstatus=' + encodeURIComponent(checkstatus) +
+                        '&status=' + encodeURIComponent(status) + '&';
+                    if (checktransdari && transdari) url += 'checktransdari=' + encodeURIComponent(
+                        checktransdari) + '&transdari=' + encodeURIComponent(transdari) + '&';
+                    if (checktranshingga && transhingga) url += 'checktranshingga=' + encodeURIComponent(
+                        checktranshingga) + '&transhingga=' + encodeURIComponent(transhingga) + '&';
+                    if (checkall) url += 'checkall=' + encodeURIComponent(checkall) + '&';
+                    if (is_old) url += 'is_old=' + encodeURIComponent(is_old);
+
+                    // Menghapus karakter '&' terakhir jika ada
+                    url = url.replace(/&$/, '');
 
                     window.location.href = url;
                 }
             });
+        });
+
+        var oldData = @json($is_old);
+        $(document).ready(function() {
+            // Mendapatkan tanggal hari ini
+            var today = new Date();
+
+            // Menghitung tanggal pertama bulan sebelumnya
+            var lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            var boundaryDate = lastMonth.toISOString().split('T')[0] + 'T00:00';
+
+            // Mengatur atribut min dan max pada input transdari dan transhingga
+            if (!oldData) {
+                $('#transdari').attr('min', boundaryDate);
+            }
+            // Validasi input transdari jika diubah
+            $('#transdari').on('change', function() {
+                var selectedDate = $(this).val();
+                if (!oldData) {
+                    if (selectedDate < boundaryDate) {
+                        alert('Tanggal tidak boleh kurang dari ' + boundaryDate);
+                        $(this).val(boundaryDate); // Reset tanggal ke batas minimal
+                    }
+                }
+            });
+
         });
     </script>
 @endsection

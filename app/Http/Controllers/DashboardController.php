@@ -19,74 +19,73 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $data = [
-            [
-                'id' => '1',
-                'nama' => 'Waantos',
-                'alamat' => 'Pekanbaru',
-                'notelp' => '0778007711',
-                'tgllhir' => '12-09-1996',
-                'tempatlahir' => 'sukajadi'
-            ]
-        ];
+        $currentHour = date('H');
+        $is_maintenance = false;
+        if ($currentHour >= 0 && $currentHour < 1) {
+            $is_maintenance = true;
+        } else {
 
-        $getdate = $request->query('getdate');
-        $fromdate = $request->query('fromdate') ?? date('Y-m-d', strtotime('-1 day'));
-        $todate = $request->query('todate') ?? date('Y-m-d', strtotime('-1 day'));
+            $getdate = $request->query('getdate');
+            $fromdate = $request->query('fromdate');
+            $todate = $request->query('todate');
 
-        $cash_balance = 0;
-        $member_balance = Balance::sum('amount');
-        $total_balance = $member_balance;
+            $response = Http::get(env('OLDDOMAIN') . 'api/olddata/' . $getdate);
+            $data_old = $response->json();
 
-        $count_depo = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->where('status', 1)->whereIn('jenis', ['DP', 'DPM'])->count();
-        $count_wd = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->where('status', 1)->whereIn('jenis', ['WD', 'WDM'])->count();
+            $cash_balance = isset($data_old["cash_balance"]) ? $data_old["cash_balance"] : 0;
+            $member_balance = isset($data_old["member_balance"]) ? $data_old["member_balance"] : 0;
+            $total_balance = isset($data_old["total_balance"]) ? $data_old["total_balance"] : 0;
 
-        $sum_depo = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->where('status', 1)->whereIn('jenis', ['DP', 'DPM'])->sum('amount');
-        $sum_wd = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->where('status', 1)->whereIn('jenis', ['WD', 'WDM'])->sum('amount');
+            $count_depo = isset($data_old["count_depo"]) ? $data_old["count_depo"] : 0;
+            $count_wd = isset($data_old["count_wd"]) ? $data_old["count_wd"] : 0;
 
-        $sum_depo_real = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->where('status', 1)->where('jenis', 'DP')->sum('amount');
-        $sum_depo_manual = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->where('status', 1)->where('jenis', 'DPM')->sum('amount');
-        $sum_wd_real = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->where('status', 1)->where('jenis', 'WD')->sum('amount');
-        $sum_wd_manual = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->where('status', 1)->where('jenis', 'WDM')->sum('amount');
+            $sum_depo = isset($data_old["sum_depo"]) ? $data_old["sum_depo"] : 0;
+            $sum_wd = isset($data_old["sum_wd"]) ? $data_old["sum_wd"] : 0;
 
-        $count_all_status_depo = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->whereIn('jenis', ['DP', 'DPM'])->count();
-        $count_all_status_wd = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->whereIn('jenis', ['WD', 'WDM'])->count();
+            $sum_depo_real = isset($data_old["sum_depo_real"]) ? $data_old["sum_depo_real"] : 0;
+            $sum_depo_manual = isset($data_old["sum_depo_manual"]) ? $data_old["sum_depo_manual"] : 0;
+            $sum_wd_real = isset($data_old["sum_wd_real"]) ? $data_old["sum_wd_real"] : 0;
+            $sum_wd_manual = isset($data_old["sum_wd_manual"]) ? $data_old["sum_wd_manual"] : 0;
 
-        $count_settled = $this->getDataSettled($fromdate, $todate)->count_settled;
-        $total_settled = $this->getDataSettled($fromdate, $todate)->total_settled ?? 0;
+            $count_all_status_depo = isset($data_old["count_all_status_depo"]) ? $data_old["count_all_status_depo"] : 0;
+            $count_all_status_wd = isset($data_old["count_all_status_wd"]) ? $data_old["count_all_status_wd"] : 0;
 
-        $totalmember = Member::where('created_at', '<=', $todate . ' 23:59:59')->count();
-        $total_new_member_regis = Member::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->count();
-        $total_new_member_deposit = $this->getDataNewmemberDepo($fromdate, $todate);
+            $count_settled = isset($data_old["count_settled"]) ? $data_old["count_settled"] : 0;
+            $total_settled = isset($data_old["total_settled"]) ? $data_old["total_settled"] : 0;
 
-        $total_member_online = $this->getDataMemberOnline($fromdate, $todate);
+            $totalmember = isset($data_old["totalmember"]) ? $data_old["totalmember"] : 0;
+            $total_new_member_regis = isset($data_old["total_new_member_regis"]) ? $data_old["total_new_member_regis"] : 0;
+            $total_new_member_deposit = isset($data_old["total_new_member_deposit"]) ? $data_old["total_new_member_deposit"] : 0;
+
+            $total_member_online = isset($data_old["total_member_online"]) ? $data_old["total_member_online"] : 0;
+        }
 
         return view('dashboard.index', [
             'title' => 'Dashboard',
-            'data' => $data,
             'totalnote' => 0,
-            'getdate' => $getdate,
-            'fromdate' => $fromdate,
-            'todate' => $todate,
-            'cash_balance' => $cash_balance,
-            'member_balance' => $member_balance,
-            'total_balance' => $total_balance,
-            'count_depo' => $count_depo,
-            'count_wd' => $count_wd,
-            'sum_depo' => $sum_depo,
-            'sum_wd' => $sum_wd,
-            'sum_depo_real' => $sum_depo_real,
-            'sum_depo_manual' => $sum_depo_manual,
-            'sum_wd_real' => $sum_wd_real,
-            'sum_wd_manual' => $sum_wd_manual,
-            'count_all_status_depo' => $count_all_status_depo,
-            'count_all_status_wd' => $count_all_status_wd,
-            'count_settled' => $count_settled,
-            'total_settled' => $total_settled,
-            'totalmember' => $totalmember,
-            'total_new_member_regis' => $total_new_member_regis,
-            'total_new_member_deposit' => $total_new_member_deposit,
-            'total_member_online' => $total_member_online
+            'is_maintenance' => $is_maintenance,
+            'getdate' => $getdate ?? null,
+            'fromdate' => $fromdate ?? null,
+            'todate' => $todate ?? null,
+            'cash_balance' => $cash_balance ?? null,
+            'member_balance' => $member_balance ?? null,
+            'total_balance' => $total_balance ?? null,
+            'count_depo' => $count_depo ?? null,
+            'count_wd' => $count_wd ?? null,
+            'sum_depo' => $sum_depo ?? null,
+            'sum_wd' => $sum_wd ?? null,
+            'sum_depo_real' => $sum_depo_real ?? null,
+            'sum_depo_manual' => $sum_depo_manual ?? null,
+            'sum_wd_real' => $sum_wd_real ?? null,
+            'sum_wd_manual' => $sum_wd_manual ?? null,
+            'count_all_status_depo' => $count_all_status_depo ?? null,
+            'count_all_status_wd' => $count_all_status_wd ?? null,
+            'count_settled' => $count_settled ?? null,
+            'total_settled' => $total_settled ?? null,
+            'totalmember' => $totalmember ?? null,
+            'total_new_member_regis' => $total_new_member_regis ?? null,
+            'total_new_member_deposit' => $total_new_member_deposit ?? null,
+            'total_member_online' => $total_member_online ?? null
         ]);
     }
 

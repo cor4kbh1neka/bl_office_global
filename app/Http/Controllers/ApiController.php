@@ -16,6 +16,7 @@ use App\Models\Balance;
 use App\Models\ListError;
 use App\Models\LogBank;
 use App\Models\LogMember;
+use App\Models\Product;
 use App\Models\Referral1;
 use App\Models\Referral2;
 use App\Models\Referral3;
@@ -1641,5 +1642,16 @@ class ApiController extends Controller
         $result = DB::select($sql, ["$fromdate 00:00:00", "$todate 23:59:59"]);
 
         return $result[0]->totalmo;
+    }
+
+    public function getMaintenance(Request $request)
+    {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
+        $data = Product::get();
+        return $data;
     }
 }

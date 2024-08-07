@@ -59,6 +59,8 @@ Route::post('/getdatalogmember', [ApiController::class, 'getDataLogMember']);
 
 Route::get('/getdatadashboard', [ApiController::class, 'getDataDashboard']);
 
+Route::post('/getmaintenance', [ApiController::class, 'getMaintenance']);
+
 // Route::get('/olddata/historycoin', [ApiController::class, 'old_historycoin']);
 // Route::get('/olddata/historytransaksi', [ApiController::class, 'old_history_transaksi']);
 // Route::get('/olddata/refaktif', [ApiController::class, 'old_ref_aktif']);

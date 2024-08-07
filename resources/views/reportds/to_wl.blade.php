@@ -4,7 +4,7 @@
     <style>
         .red-text {
             color: var(--red-color);
-    }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
@@ -40,20 +40,23 @@
                             <form method="GET" action="/reportds/towl" class="listmembergroup">
                                 <div class="listinputmember">
                                     <label for="username">username</label>
-                                    <input type="input" id="username" name="username"
-                                        placeholder="username" value="{{ $username }}">
+                                    <input type="input" id="username" name="username" placeholder="username"
+                                        value="{{ $username }}">
                                 </div>
                                 <div class="listinputmember">
                                     <label for="portfolio">Portfolio</label>
                                     <select name="portfolio" id="portfolio">
                                         <option value="">Pilih semua</option>
-                                        <option value="Sportsbook" {{ $portfolio == 'Sportsbook' ? 'selected' : '' }}>Sportsbook
+                                        <option value="Sportsbook" {{ $portfolio == 'Sportsbook' ? 'selected' : '' }}>
+                                            Sportsbook
                                         </option>
-                                        <option value="VirtualSports" {{ $portfolio == 'VirtualSports' ? 'selected' : '' }}>VirtualSports
+                                        <option value="VirtualSports" {{ $portfolio == 'VirtualSports' ? 'selected' : '' }}>
+                                            VirtualSports
                                         </option>
                                         <option value="Games" {{ $portfolio == 'Games' ? 'selected' : '' }}>Games
                                         </option>
-                                        <option value="SeamlessGame" {{ $portfolio == 'SeamlessGame' ? 'selected' : '' }}>SeamlessGame
+                                        <option value="SeamlessGame" {{ $portfolio == 'SeamlessGame' ? 'selected' : '' }}>
+                                            SeamlessGame
                                         </option>
                                     </select>
                                 </div>
@@ -67,7 +70,7 @@
                                     <input type="date" id="gabunghingga" name="gabunghingga"
                                         placeholder="tanggal gabung hingga" value="{{ $gabunghingga }}" required>
                                 </div>
-                            
+
                                 <div class="listinputmember">
                                     <button class="tombol primary">
                                         <span class="texttombol">SUBMIT</span>
@@ -94,7 +97,8 @@
                         <div class="totalbonus">
                             <div class="listtotalbonus">
                                 <span class="textbonus">Portfolio :</span>
-                                <span class="countbonus">{{ ucfirst($portfolio) == '' ? 'All' : ucfirst($portfolio) }}</span>
+                                <span
+                                    class="countbonus">{{ ucfirst($portfolio) == '' ? 'All' : ucfirst($portfolio) }}</span>
                             </div>
                             <div class="listtotalbonus">
                                 <span class="textbonus">tanggal :</span>
@@ -114,7 +118,8 @@
                             </div>
                             <div class="listtotalbonus">
                                 <span class="textbonus">Total W/L :</span>
-                                <span class="nominalbonus2 {{ $total_wl < 0 ? 'red-text' : '' }}" data-bonus="{{ $total_wl }}"></span>
+                                <span class="nominalbonus2 {{ $total_wl < 0 ? 'red-text' : '' }}"
+                                    data-bonus="{{ $total_wl }}"></span>
                             </div>
                         </div>
                         <div class="tabelproses">
@@ -148,7 +153,7 @@
                                     </tr>
                                     @foreach ($data as $i => $d)
                                         <tr>
-                                            <td>1</td>
+                                            <td>{{ $i + 1 }}</td>
                                             {{-- <td class="check_box">
                                                 <input type="checkbox" id="myCheckbox-{{ $i }}"
                                                     name="myCheckbox-{{ $i }}"

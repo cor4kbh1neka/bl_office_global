@@ -34,7 +34,8 @@
                                 <td>{{ $d['username'] }}</td>
                                 <td>{{ $d['jenis'] }}</td>
                                 <td>
-                                    <a href="https://ipinfo.io/{{ $d['ipaddress'] }}">{{ $d['ipaddress'] }}
+                                    <a href="https://ipinfo.io/{{ $d['ipaddress'] }}"
+                                        target="_blank">{{ $d['ipaddress'] }}
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
                                             class="iconify iconify--fluent-mdl2" width="1em" height="1em"

@@ -292,12 +292,14 @@
 
                         var url = '/storebonusds/' + encodeURIComponent(bonusVal) + '/' +
                             encodeURIComponent(gabungdariVal) + '/' + encodeURIComponent(
-                                gabunghinggaVal) + '/' + encodeURIComponent(kecualiVal);;
+                                gabunghinggaVal) + '/' + encodeURIComponent(kecualiVal);
 
                         $.ajax({
                             url: url,
                             type: 'POST',
-                            data: JSON.stringify(data),
+                            data: JSON.stringify({
+                                data: data
+                            }),
                             contentType: 'application/json',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken
@@ -315,6 +317,20 @@
                                         //     '/bonuslistds';
                                     }
                                 });
+
+                                // Display failed usernames if any
+                                if (response.failedUsernames.length > 0) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal Diproses',
+                                        html: 'Username berikut gagal diproses:<ul>' +
+                                            response.failedUsernames.map(
+                                                username =>
+                                                `<li>${username}</li>`).join(
+                                                '') +
+                                            '</ul>'
+                                    });
+                                }
                             },
                             error: function(error) {
                                 Swal.fire({

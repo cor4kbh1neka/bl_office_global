@@ -215,7 +215,6 @@ class BonusdsController extends Controller
     {
 
         $data = $request->request->all();
-
         $bonuses = array_column($data, 'bonus');
         $totalBonus = array_sum($bonuses);
 
@@ -231,7 +230,7 @@ class BonusdsController extends Controller
         ]);
         if ($createListbonus) {
 
-            foreach ($data as $d) {
+            foreach ($data["data"] as $d) {
                 $createDetail = Listbonusdetail::create([
                     'listbonus_id' => $createListbonus['id'],
                     'username' => $d['username'],
@@ -262,32 +261,14 @@ class BonusdsController extends Controller
 
                         // 5.Create History
                         $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $d['bonus'], $prosesBalance["balance"]);
-                    }
-
-                    $maxAttempts4404 = 10;
-                    $attempt4404 = 0;
-                    while ($prosesApiDepo["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
-                        $txnid = $this->generateTxnid('D');
-                        $resultsApi = $this->apiDepo($d['username'], $d['bonus'], $txnid);
-                        if ($resultsApi["error"]["id"] === 0) {
-                            // 2.create DepoWd DPM
-                            $balance = Balance::where('username', $d['username'])->first()->amount;
-                            $keterangan = 'Bonus ' . $bonus;
-                            $this->createDepoWD($d['username'], $d['bonus'], $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 'Approved');
-
-                            // 3. Process balance
-                            $prosesBalance = $this->processBalance($d['username'], 'DP', $d['bonus']);
-
-                            //4. Process win Lose
-                            $this->addDataWinLoss($d['username'], $d['bonus'], "deposit");
-
-                            // 5.Create History
-                            $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $d['bonus'], $prosesBalance["balance"]);
-                        }
-                        $attempt4404++;
-                    }
-
-                    if ($prosesApiDepo["error"]["id"] !== 0) {
+                    } else {
+                        $createDetail->delete();
+                        $failedUsernames[] = $d['username'];
+                        ListError::create([
+                            'fungsi' => 'storebonusds',
+                            'pesan_error' => $prosesApiDepo["error"]["id"],
+                            'keterangan' => $d['username'] . ' / '  . $prosesApiDepo["error"]["msg"]
+                        ]);
                     }
                 }
             }

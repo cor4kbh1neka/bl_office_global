@@ -82,12 +82,12 @@
                         <div class="listinputmember">
                             <label for="gabungdari">tanggal gabung dari</label>
                             <input type="date" id="gabungdari" name="gabungdari" placeholder="tanggal gabung dari"
-                                value="{{ request('gabungdari') ?? date('Y-m-01') }}">
+                                value="{{ request('gabungdari') }}">
                         </div>
                         <div class="listinputmember">
                             <label for="gabunghingga">tanggal gabung hingga</label>
                             <input type="date" id="gabunghingga" name="gabunghingga" placeholder="tanggal gabung hingga"
-                                value="{{ request('gabunghingga') ?? date('Y-m-t') }}">
+                                value="{{ request('gabunghingga') }}">
                         </div>
                         <div class="listinputmember">
                             <label for="status">Status</label>

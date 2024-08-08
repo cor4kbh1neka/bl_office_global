@@ -102,6 +102,8 @@
                             </svg>
                         </div>
                     </form>
+                    @php
+                        /*
                     <div class="groupmaksimaldata">
                         <span class="textmaksimaldata">Data yang di tampilkan adalah data <span
                                 class="dataterakhir">{{ $is_old ? 'lebih dari 2 bulan terakhir' : '2 bulan terakhir' }}</span>,
@@ -115,6 +117,8 @@
                             {{ $is_old ? 'Lihat Transaksi Baru' : 'Lihat Transaksi Lama' }}
                         </a>
                     </div>
+                    */
+                    @endphp
                 </div>
                 <div class="tabelproses">
                     <table>

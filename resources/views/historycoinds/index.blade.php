@@ -78,7 +78,7 @@
                         </div>
                     </div>
                 </form>
-                <div class="groupmaksimaldata">
+                {{-- <div class="groupmaksimaldata">
                     @if ($is_old)
                         <span class="textmaksimaldata">Data yang di tampilkan adalah data <span class="dataterakhir">lebih
                                 dari 2 bulan terakhir</span>, </span>
@@ -102,7 +102,7 @@
                             Lihat Transaksi Lama
                         </a>
                     @endif
-                </div>
+                </div> --}}
                 <div class="tabelproses">
                     <table>
                         <tbody>

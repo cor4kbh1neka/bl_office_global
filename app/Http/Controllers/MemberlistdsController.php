@@ -346,14 +346,11 @@ class MemberlistdsController extends Controller
         if (request('gabungdari') && request('gabunghingga')) {
             $gabungdari = request('gabungdari') . " 00:00:00";
             $gabunghingga = request('gabunghingga') . " 23:59:59";
-        } else {
-            $gabungdari = date('Y-m-01') . " 00:00:00";
-            $gabunghingga = date('Y-m-t') . " 23:59:59";
-        }
-        $query = $query->filter(function ($item) use ($gabungdari, $gabunghingga) {
-            return $item['created_at'] >= $gabungdari && $item['created_at'] <= $gabunghingga;
-        });
 
+            $query = $query->filter(function ($item) use ($gabungdari, $gabunghingga) {
+                return $item['created_at'] >= $gabungdari && $item['created_at'] <= $gabunghingga;
+            });
+        }
 
         // Filter untuk strict username
         if (request('checkusername')) {

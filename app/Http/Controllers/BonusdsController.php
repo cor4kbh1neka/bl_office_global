@@ -243,7 +243,7 @@ class BonusdsController extends Controller
                     // 1. requestApiSeamless
                     $txnid = $this->generateTxnid('D');
                     $prosesApiDepo = $this->apiDepo($d['username'], $d['bonus'], $txnid);
-
+                    dd($prosesApiDepo);
                     if ($prosesApiDepo["error"]["id"] === 0) {
                         // 2.create DepoWd DPM
                         $balance = Balance::where('username', $d['username'])->first();

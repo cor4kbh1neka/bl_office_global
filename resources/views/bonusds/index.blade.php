@@ -313,8 +313,8 @@
                                     showConfirmButton: true,
                                     confirmButtonText: 'Oke',
                                     didClose: () => {
-                                        // window.location.href =
-                                        //     '/bonuslistds';
+                                        window.location.href =
+                                            '/bonuslistds';
                                     }
                                 });
 

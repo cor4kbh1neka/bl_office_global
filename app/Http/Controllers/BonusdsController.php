@@ -214,9 +214,15 @@ class BonusdsController extends Controller
     public function store(Request $request, $bonus, $gabungdari, $gabunghingga, $kecuali)
     {
 
-        $data = $request->request->all();
+        $data = $request->request->all()["data"];
         $bonuses = array_column($data, 'bonus');
-        $totalBonus = array_sum($bonuses);
+
+        $totalBonus = 0;
+
+        // Melakukan pembulatan setiap elemen array ke dua angka desimal dan menjumlahkannya
+        foreach ($bonuses as $bonus) {
+            $totalBonus += round($bonus, 2);
+        }
 
         $createListbonus = Listbonus::create([
             'no_invoice' => $this->generateInvoiceNumber(),
@@ -230,7 +236,7 @@ class BonusdsController extends Controller
         ]);
         if ($createListbonus) {
 
-            foreach ($data["data"] as $d) {
+            foreach ($data as $d) {
                 $nominalBonus = round($d['bonus'], 2);
                 $createDetail = Listbonusdetail::create([
                     'listbonus_id' => $createListbonus['id'],

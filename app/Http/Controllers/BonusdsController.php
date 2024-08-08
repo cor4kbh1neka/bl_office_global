@@ -231,19 +231,20 @@ class BonusdsController extends Controller
         if ($createListbonus) {
 
             foreach ($data["data"] as $d) {
+                $nominalBonus = round($d['bonus'], 2);
                 $createDetail = Listbonusdetail::create([
                     'listbonus_id' => $createListbonus['id'],
                     'username' => $d['username'],
                     'turnover' => $d['stake'],
                     'winlose' => $d['winloss'],
-                    'bonus' => $d['bonus']
+                    'bonus' => $nominalBonus
                 ]);
 
                 if ($createDetail) {
                     // 1. requestApiSeamless
                     $txnid = $this->generateTxnid('D');
-                    $prosesApiDepo = $this->apiDepo($d['username'], $d['bonus'], $txnid);
-                    dd($prosesApiDepo);
+                    $prosesApiDepo = $this->apiDepo($d['username'], $nominalBonus, $txnid);
+
                     if ($prosesApiDepo["error"]["id"] === 0) {
                         // 2.create DepoWd DPM
                         $balance = Balance::where('username', $d['username'])->first();
@@ -251,16 +252,16 @@ class BonusdsController extends Controller
                             $balance = $balance->amount;
                         }
                         $keterangan = 'Bonus ' . $bonus;
-                        $this->createDepoWD($d['username'], $d['bonus'], $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 1);
+                        $this->createDepoWD($d['username'], $nominalBonus, $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 1);
 
                         // 3. Process balance
-                        $prosesBalance = $this->processBalance($d['username'], 'DP', $d['bonus']);
+                        $prosesBalance = $this->processBalance($d['username'], 'DP', $nominalBonus);
 
                         //4. Process win Lose
-                        $this->addDataWinLoss($d['username'], $d['bonus'], "deposit");
+                        $this->addDataWinLoss($d['username'], $nominalBonus, "deposit");
 
                         // 5.Create History
-                        $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $d['bonus'], $prosesBalance["balance"]);
+                        $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $nominalBonus, $prosesBalance["balance"]);
                     } else {
                         $createDetail->delete();
                         $failedUsernames[] = $d['username'];

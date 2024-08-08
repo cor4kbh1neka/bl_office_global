@@ -14,19 +14,55 @@ class PersentaseTableSeeder extends Seeder
      */
     public function run(): void
     {
+        // DB::table('persentase')->insert(
+        //     [
+        //         'jenis' => 'SportsBook',
+        //         'persentase' => 0.02,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
+
+        // DB::table('persentase')->insert(
+        //     [
+        //         'jenis' => 'VirtualSports',
+        //         'persentase' => 0.03,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
+
+        // DB::table('persentase')->insert(
+        //     [
+        //         'jenis' => 'Games',
+        //         'persentase' => 0.04,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
+
         DB::table('persentase')->insert(
             [
-                'jenis' => 'SportsBook',
+                'jenis' => 'Casino',
                 'persentase' => 0.02,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]
         );
 
+        // DB::table('persentase')->insert(
+        //     [
+        //         'jenis' => 'SeamlessGame',
+        //         'persentase' => 0.03,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
+
         DB::table('persentase')->insert(
             [
-                'jenis' => 'VirtualSports',
-                'persentase' => 0.03,
+                'jenis' => 'ThirdPartySportsBook',
+                'persentase' => 0.04,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]
@@ -34,7 +70,7 @@ class PersentaseTableSeeder extends Seeder
 
         DB::table('persentase')->insert(
             [
-                'jenis' => 'Games',
+                'jenis' => '568WinSportsbook',
                 'persentase' => 0.04,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

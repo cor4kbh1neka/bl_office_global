@@ -565,7 +565,6 @@ class MemberlistdsController extends Controller
 
     public function historylog($username)
     {
-
         $data = [
             'username' => $username,
         ];

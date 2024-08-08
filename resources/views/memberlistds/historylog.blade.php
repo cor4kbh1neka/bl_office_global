@@ -48,7 +48,7 @@
                                 </td>
                                 <td>
                                     @php
-                                        $date = new DateTime($d['created_at']);
+                                        $date = new DateTime($d['updated_at']);
                                         $newFormat = $date->format('Y-m-d H:i:s');
                                         echo $newFormat;
                                     @endphp

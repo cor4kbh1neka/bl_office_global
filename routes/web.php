@@ -205,7 +205,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/notice', [SettingsController::class, 'indexnotice']);
 
         /*-- Dashboard --*/
-        Route::get('/dashboard', [DashboardController::class, 'index']);
+        Route::get('/dashboard', [DepositdsController::class, 'index']);
 
         /*-- Despositds & Withdrawtds --*/
         Route::get('/depositds', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);

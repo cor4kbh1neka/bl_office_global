@@ -16,10 +16,20 @@
         });
     </script>
 </head>
-<div class="body_openwindow datawinlose">
+<div class="body_openwindow datawinlose aktifitasakun">
     <div class="sec_openwindow">
         <div class="table_detailhistorygameds">
             <span class="titlewinloseuser">{{ $title }}</span>
+            <select name="status" id="status">
+                <option value="" selected="" place="" style="color: #838383; font-style: italic;">Pilih
+                    status</option>
+                <option value="9">new member</option>
+                <option value="1">default</option>
+                <option value="2">VVIP</option>
+                <option value="3">bandar</option>
+                <option value="4">warning</option>
+                <option value="5">suspend</option>
+            </select>
             <table>
                 <tbody>
                     <tr>

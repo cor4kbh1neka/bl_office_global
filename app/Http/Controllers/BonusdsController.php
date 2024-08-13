@@ -145,10 +145,10 @@ class BonusdsController extends Controller
     {
         if ($bonus == 'cashback') {
             /*bonus cahsback*/
-            $dataPortfolio = ['Casino', 'Games', 'ThirdPartySportsBook'];
+            $dataPortfolio = ['Casino', 'Games', 'SeamlessGame', 'ThirdPartySportsBook'];
         } else {
             /*bonus rolingan*/
-            $dataPortfolio = ['SportsBook', 'VirtualSports', 'SeamlessGame'];
+            $dataPortfolio = ['SportsBook', 'VirtualSports'];
         }
 
         if ($bonus != null && $gabungdari !== null && $gabunghingga !== null && $pengecualian !== null) {

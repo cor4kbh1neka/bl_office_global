@@ -74,7 +74,7 @@ class LoginController extends Controller
             $user->pin_attempts = 0;
             $user->save();
             $request->session()->put('pin_validated', true);
-            return redirect()->intended('/dashboard'); // Redirect ke halaman dashboard atau halaman tujuan setelah validasi PIN berhasil
+            return redirect()->intended('/depositds'); // Redirect ke halaman dashboard atau halaman tujuan setelah validasi PIN berhasil
         } else {
             $user->pin_attempts += 1;
 

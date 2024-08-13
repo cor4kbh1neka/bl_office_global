@@ -213,15 +213,14 @@ class BonusdsController extends Controller
 
     public function store(Request $request, $bonus, $gabungdari, $gabunghingga, $kecuali)
     {
-
         $data = $request->request->all()["data"];
         $bonuses = array_column($data, 'bonus');
 
         $totalBonus = 0;
 
         // Melakukan pembulatan setiap elemen array ke dua angka desimal dan menjumlahkannya
-        foreach ($bonuses as $bonus) {
-            $totalBonus += round($bonus, 2);
+        foreach ($bonuses as $value) {
+            $totalBonus += round($value, 2);
         }
 
         $createListbonus = Listbonus::create([

@@ -228,7 +228,7 @@
         });
 
         $(document).ready(function() {
-            $('#updatemt').click(function() {
+            $('.updatemt').click(function() {
                 const button = $(this);
                 const portfolio = button.data('portfolio');
                 const currentStatus = button.data('ismaintenance');

@@ -45,7 +45,7 @@
                                     <th class="action aksi">Tools</th>
                                 </tr>
                                 <tr>
-                                    <td>1</td>
+                                    <td>#</td>
                                     <td>
                                         <div class="sec_card_count">
                                             <div class="prog_icon_circle primary">

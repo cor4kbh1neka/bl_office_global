@@ -130,8 +130,8 @@
                                         <td>
                                             <div class="grouptools">
                                                 <button
-                                                    class="tombol {{ $item->ismaintenance == 0 ? 'cancel' : 'grey' }} border"
-                                                    id="tombol" data-ismaintenance="{{ $item->ismaintenance }}"
+                                                    class="updatemt tombol {{ $item->ismaintenance == 0 ? 'cancel' : 'grey' }} border"
+                                                    data-ismaintenance="{{ $item->ismaintenance }}"
                                                     data-portfolio="{{ $item->portfolio }}">
                                                     <span
                                                         class="texttombol">{{ $item->ismaintenance == '0' ? 'MT' : 'Run' }}</span>
@@ -228,7 +228,7 @@
         });
 
         $(document).ready(function() {
-            $('#tombol').click(function() {
+            $('#updatemt').click(function() {
                 const button = $(this);
                 const portfolio = button.data('portfolio');
                 const currentStatus = button.data('ismaintenance');

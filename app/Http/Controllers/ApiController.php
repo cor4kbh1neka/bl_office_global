@@ -64,6 +64,7 @@ class ApiController extends Controller
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
             $getLogin = $this->requestApiLogin($dataLogin);
+
             // dd($getLogin);
             //	SportsBook / Casino / Games / VirtualSports / SeamlessGame / ThirdPartySportsBook / 568WinSportsbook
             if ($getLogin["url"] !== "") {
@@ -100,6 +101,16 @@ class ApiController extends Controller
             $statusMember = Member::where('username', $username)->first();
             if ($statusMember) {
                 $getLogin["is_suspend"] = $statusMember->status == 5 ? true : false;
+            }
+
+            $data = Product::where('portfolio', $portfolio)->first();
+            if ($data) {
+                if ($data->ismaintenance != 0) {
+                    $getLogin["url"] = "";
+                    $getLogin["is_maintenance"] = true;
+
+                    return $getLogin;
+                }
             }
 
             return $getLogin;

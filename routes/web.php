@@ -159,6 +159,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/maintenance', [ContentdsController::class, 'statusMaintenance']);
             Route::get('/maintenance/{status}/edit', [ContentdsController::class, 'statusMaintenanceEdit']);
             Route::put('/maintenance/{status}', [ContentdsController::class, 'statusMaintenanceUpdate']);
+            Route::post('/updatestatusmt/{portfolio}', [ContentdsController::class, 'updatestatusmt']);
         });
         /*-- Players --*/
         Route::get('/players', [PlayersController::class, 'index']);

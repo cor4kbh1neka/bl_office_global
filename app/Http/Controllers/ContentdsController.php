@@ -456,6 +456,7 @@ class ContentdsController extends Controller
     {
         $data = $this->apiStatusMaintenance();
         $dataproduct = Product::get();
+        dd($dataproduct);
         return view('contentds.maintenance', [
             'title' => 'Content',
             'data' => $data,

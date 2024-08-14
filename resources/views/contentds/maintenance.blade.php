@@ -231,6 +231,7 @@
             $('.tombol').click(function() {
                 const button = $(this);
                 const portfolio = button.data('portfolio');
+                alert(portfolio);
                 const currentStatus = button.data('ismaintenance');
 
                 // Tentukan status baru berdasarkan status saat ini

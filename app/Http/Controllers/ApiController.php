@@ -16,6 +16,7 @@ use App\Models\Balance;
 use App\Models\ListError;
 use App\Models\LogBank;
 use App\Models\LogMember;
+use App\Models\Product;
 use App\Models\Referral1;
 use App\Models\Referral2;
 use App\Models\Referral3;

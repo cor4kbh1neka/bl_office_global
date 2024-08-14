@@ -93,7 +93,7 @@
                                             <span class="waktu">{{ $parts[1] }}</span>
                                         </div>
                                     </td>
-                                    <td class="valuenominal">{{ number_format($d->amount * 1000, 0, '.', ',') }}</td>
+                                    <td class="valuenominal debit">{{ number_format($d->amount * 1000, 0, '.', ',') }}</td>
                                     <td class="valuenominal">{{ number_format($d->balance * 1000, 0, '.', ',') }}</td>
                                     <td class="valuebank">{{ $d->mbank }}, {{ $d->mnamarek }}, {{ $d->mnorek }}
                                     </td>

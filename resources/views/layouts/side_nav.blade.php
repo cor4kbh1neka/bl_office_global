@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <a href="/depositds" class="nav_group">
+    <a href="/dashboard" class="nav_group">
         <div class="title_Nav singlemenu {{ Request::is('dashboard*') ? 'nyala' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                 <path fill="currentColor"

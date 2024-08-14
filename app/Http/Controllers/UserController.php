@@ -194,6 +194,7 @@ class UserController extends Controller
                     Rule::unique('users')->ignore($id)
                 ],
                 'password' => 'nullable',
+                'pin' => 'nullable',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:500',
             ], [
                 'name.required' => 'Nama tidak boleh kosong.',
@@ -217,6 +218,10 @@ class UserController extends Controller
                     $user->divisi = $alldata['divisi'];
                     if ($alldata['password'] != '') {
                         $user->password = bcrypt($alldata['password']);
+                    }
+                    if ($alldata['pin'] != '') {
+                        $user->pin = bcrypt($alldata['pin']);
+                        $user->pin_attempts = 0;
                     }
 
                     if ($alldata['image']) {

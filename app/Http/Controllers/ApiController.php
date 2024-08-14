@@ -15,6 +15,7 @@ use App\Models\Outstanding;
 use App\Models\Balance;
 use App\Models\ListError;
 use App\Models\LogBank;
+use App\Models\LogMember;
 use App\Models\Referral1;
 use App\Models\Referral2;
 use App\Models\Referral3;
@@ -35,7 +36,7 @@ use Illuminate\Support\Facades\Http;
 class ApiController extends Controller
 
 {
-    public function login(Request $request)
+    public function login(Request $request, $portfolio = '')
     {
         $validasiBearer = $this->validasiBearer($request);
         if ($validasiBearer !== true) {
@@ -51,22 +52,42 @@ class ApiController extends Controller
             $device = 'm';
         }
 
+        if ($portfolio == '') {
+            $portfolio = 'SportsBook';
+        }
+
+
         try {
             $dataLogin['Username'] = env('UNIX_CODE') . $username;
             $dataLogin['CompanyKey'] = env('COMPANY_KEY');
-            $dataLogin['Portfolio'] = env('PORTFOLIO');
+            $dataLogin['Portfolio'] = $portfolio;
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
             $getLogin = $this->requestApiLogin($dataLogin);
-
-
-
+            // dd($getLogin);
+            //	SportsBook / Casino / Games / VirtualSports / SeamlessGame / ThirdPartySportsBook / 568WinSportsbook
             if ($getLogin["url"] !== "") {
-                if ($device == 'd') {
-                    $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=en&oddstyle=ID&theme=black&oddsmode=double&device=' . $device;
+                // if ($device == 'd') {
+                if ($portfolio == 'SportsBook') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=id-id&oddstyle=ID&theme=black&oddsmode=double&device=' . $device;
+                } else if ($portfolio == '568WinSportsbook') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id-id&oddstyle=MY&oddsmode=double&device=' . $device;
+                } else if ($portfolio == 'Casino') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&locale=id-id&productId=3&device=' . $device;
+                } else if ($portfolio == 'Games') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id-id&gameId=6101&device=' . $device;
+                } else if ($portfolio == 'VirtualSports') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&lang=id-id&device=' . $device;
+                } else if ($portfolio == 'SeamlessGame') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&gpid=10000&gameid=0&lang=id-id&betCode=5CNY2050000_5CNY10200000&device=' . $device;
+                } else if ($portfolio == 'ThirdPartySportsBook') {
+                    $getLogin["url"] = 'https://' . $getLogin["url"] . '&gpid=10000&gameid=0&lang=id-id&device=' . $device;
                 } else {
-                    $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=en&oddstyle=ID&oddsmode=double&device=' . $device;
+                    $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=id-id&oddstyle=ID&theme=black&oddsmode=double&device=' . $device;
                 }
+                // } else {
+                //     $getLogin["url"] = 'https://' . $getLogin["url"] .  '/welcome2.aspx?token=token&lang=id-id&oddstyle=ID&oddsmode=double&device=' . $device;
+                // }
             }
 
             $apiMt = $this->apiStatusMaintenance();
@@ -109,7 +130,6 @@ class ApiController extends Controller
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
         ])->post($url, $data);
-
         if ($response->successful()) {
             $responseData = $response->json();
         } else {
@@ -132,11 +152,25 @@ class ApiController extends Controller
 
         try {
             $member = Member::where('username', $username)->firstOrFail();
+
             $member->update([
                 'ip_log' => $ipaddress,
                 'lastlogin' => Carbon::now()->format('Y-m-d H:i:s'),
                 'domain' => $request->getHost()
             ]);
+
+            $log_member = LogMember::where('username', $username)->where('jenis', 'login')->where('ipaddress', $ipaddress)->whereDate('created_at', now()->toDateString())->first();
+            if (!$log_member) {
+                LogMember::create([
+                    'username' => $username,
+                    'ipaddress' => $ipaddress,
+                    'jenis' => 'login'
+                ]);
+            } else {
+                $log_member->update([
+                    'updated_at' => now()
+                ]);
+            }
 
             return response()->json(['message' => 'Log berhasil tersimpan!']);
         } catch (\Exception $e) {
@@ -1218,5 +1252,54 @@ class ApiController extends Controller
 
         $results = DB::select($query);
         return $results;
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
+        $username = $request->username;
+        $password = $request->password;
+        $ipaddress = $request->ipaddress;
+
+        $url = env('DOMAIN') . '/users/pswdy/' . $username;
+        $data = [
+            'password' => $password
+        ];
+        $response = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+        ])->put($url, $data);
+        $response = $response->json();
+
+        if ($response['status'] == 'success') {
+            LogMember::create([
+                'username' => $username,
+                'ipaddress' => $ipaddress,
+                'jenis' => 'ubah password'
+            ]);
+            return $response;
+        } else {
+            return $response;
+        }
+    }
+
+    public function getDataLogMember(Request $request)
+    {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
+        $username = isset($request->username) ? $request->username : '';
+
+        if ($username) {
+            $data = LogMember::where('username', $username)->orderBy('updated_at', 'DESC')->get();
+        } else {
+            $data = LogMember::orderBy('updated_at', 'DESC')->get();
+        }
+        return $data;
     }
 }

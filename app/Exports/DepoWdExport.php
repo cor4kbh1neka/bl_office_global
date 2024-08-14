@@ -3,7 +3,7 @@
 namespace App\Exports;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -24,7 +24,12 @@ class DepoWdExport implements FromCollection, WithHeadings, WithStyles, WithColu
     public function collection()
     {
         return $this->data->map(function ($item) {
-            $itemArray = $item->toArray();
+            if ($item instanceof \Illuminate\Database\Eloquent\Model) {
+                $itemArray = $item->toArray();
+            } else {
+                $itemArray = is_array($item) ? $item : get_object_vars($item);
+            }
+
             unset($itemArray['id']); // Menghilangkan kolom "id"
             if ($itemArray['status'] == 1) {
                 $itemArray['status'] = 'ACCEPTED';
@@ -42,7 +47,6 @@ class DepoWdExport implements FromCollection, WithHeadings, WithStyles, WithColu
             if (isset($itemArray['updated_at'])) {
                 $itemArray['updated_at'] = Carbon::parse($itemArray['updated_at'])->addHours(7)->format('Y-m-d H:i:s');
             }
-
             return $itemArray;
         });
     }

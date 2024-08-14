@@ -12,6 +12,17 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('login');
+        // return $request->expectsJson() ? null : route('login');
+
+        if (!$request->expectsJson()) {
+            if ($request->user() && !$request->session()->has('pin_validated')) {
+                // Jika pengguna sudah login dan belum validasi PIN, arahkan ke halaman validasi PIN
+                return route('pin.validate');
+            } else {
+                // Jika belum login, arahkan ke halaman login
+                session()->forget('pin_validated');
+                return route('login');
+            }
+        }
     }
 }

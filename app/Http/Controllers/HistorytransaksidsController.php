@@ -24,12 +24,29 @@ class HistorytransaksidsController extends Controller
     public function index(Request $request)
     {
         $data = [];
+
         if ($request->getQueryString() && request('username')) {
             $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
         }
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
             'data' => $data,
+            'is_old' => false
+        ]);
+    }
+
+    public function index_old(Request $request)
+    {
+        $data = [];
+        $username = request('username');
+
+        if ($request->getQueryString() && $username) {
+            $data = $this->filterAndPaginateOld(20);
+        }
+        return view('historytransaksids.index', [
+            'title' => 'History Transaksi Baru',
+            'data' => $data,
+            'is_old' => true
         ]);
     }
 
@@ -48,6 +65,83 @@ class HistorytransaksidsController extends Controller
 
     //     return $response->json();
     // }
+
+
+    public function filterAndPaginateOld($page)
+    {
+        $response = Http::get(env('OLDDOMAIN') . 'api/olddata/historytransaksi');
+        $data = json_decode($response->body(), false);
+        $data = collect($data);
+
+
+        $reqs = request()->all();
+        $username = $reqs['username'] ?? '';
+        $invoice = $reqs['invoice'] ?? '';
+        $checkinvoice = $reqs['checkinvoice'] ?? '';
+        $status = isset($reqs['status']) ? $reqs['status'] : '';
+        $checkstatus = $reqs['checkstatus'] ?? '';
+        $transdari = $reqs['transdari'] ?? '';
+        $checktransdari = $reqs['checktransdari'] ?? '';
+        $transhingga = $reqs['transhingga'] ?? '';
+        $checktranshingga = $reqs['checktranshingga'] ?? '';
+
+
+        if ($username) {
+            $data = $data->filter(function ($item) use ($username) {
+                return stripos($item->username, $username) !== false;
+            });
+        }
+
+        if ($checkinvoice == 'on' && $invoice != '') {
+            $data = $data->filter(function ($item) use ($invoice) {
+                return stripos($item->invoice, $invoice) !== false || stripos($item->refno, $invoice) !== false;
+            });
+        }
+
+        if ($checkstatus == 'on' && $status != '') {
+            $data = $data->filter(function ($item) use ($status) {
+                return stripos($item->status, $status) !== false;
+            });
+        }
+
+        $data = $data->map(function ($item) {
+            $item->created_at = Carbon::parse($item->created_at)->format('Y-m-d H:i:s');
+            $item->updated_at = Carbon::parse($item->updated_at)->format('Y-m-d H:i:s');
+            return $item;
+        });
+
+
+        if (($checktransdari == 'on' && $transdari != '') && ($checktranshingga == 'on' && $transhingga != '')) {
+            $tgldariDate = date('Y-m-d H:i:s', strtotime($transdari));
+            $tglsampaiDate = date('Y-m-d H:i:s', strtotime($transhingga));
+            $tglsampaiDate = substr($tglsampaiDate, 0, -2) . '59';
+
+            $data = $data->filter(function ($item) use ($tgldariDate, $tglsampaiDate) {
+                return $item->created_at >= $tgldariDate && $item->created_at <= $tglsampaiDate;
+            });
+        }
+
+
+
+        $currentPage = Paginator::resolveCurrentPage() ?: 1;
+        $currentPageData = $data->slice(($currentPage - 1) * $page, $page)->values();
+        $paginatedData = new LengthAwarePaginator(
+            $currentPageData,
+            $data->count(),
+            $page,
+            $currentPage,
+            ['path' => Paginator::resolveCurrentPath()]
+        );
+
+        foreach ($reqs as $key => $value) {
+            if (!is_null($value)) {
+                $paginatedData->appends($key, $value);
+            }
+        }
+
+        return $paginatedData;
+    }
+
 
 
     public function transaksilama(Request $request)
@@ -131,11 +225,7 @@ class HistorytransaksidsController extends Controller
 
             $transdari = Carbon::createFromFormat('Y-m-d\TH:i', $transdariInput)->format('Y-m-d H:i:s');
             $transhingga = Carbon::createFromFormat('Y-m-d\TH:i', $transhinggaInput)->format('Y-m-d H:i:s');
-
-            $query = $query->whereBetween('created_at', [$transdari, $transhingga]);
-        } else {
-            $transdari = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
-            $transhingga = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
+            $transhingga = substr($transhingga, 0, -2) . '59';
 
             $query = $query->whereBetween('created_at', [$transdari, $transhingga]);
         }
@@ -198,9 +288,15 @@ class HistorytransaksidsController extends Controller
 
     public function export(Request $request)
     {
-        $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 0);
+        $is_old = $request->is_old;
+        if ($is_old) {
+            $data = $this->filterAndPaginateOld(999999999999999);
+            $data = $data->getCollection();
+        } else {
+            $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 0);
+        }
 
-        $data = collect($data);
+        // $data = collect($data);
         return Excel::download(new HistoryTransaksiExport($data), 'Historycoin.xlsx');
     }
 }

@@ -1651,7 +1651,24 @@ class ApiController extends Controller
             return $validasiBearer;
         }
 
-        $data = Product::get();
-        return $data;
+        $portfolio = $request->input('portfolio');
+
+        if (empty($portfolio)) {
+            return response()->json(['error' => 'Portfolio is required'], 400);
+        }
+
+        $data = Product::where('portfolio', $portfolio)->first();
+
+        if ($data) {
+            if ($data->ismaintenance != 0) {
+                $data->message = "Saat ini sedang dalam Pemeliharaan. Silahkan bermain game lain.";
+            } else {
+                $data->message = "";
+            }
+
+            return response()->json($data);
+        } else {
+            return response()->json(['error' => 'No data found for the given portfolio'], 404);
+        }
     }
 }

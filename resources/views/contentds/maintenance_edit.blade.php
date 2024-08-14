@@ -30,7 +30,9 @@
                 @csrf
                 <div class="groupplayerinfo editpromo">
                     <div class="listplayerinfo" style="align-content: center">
-                        <div class="groupradiooption" data-chekced="{{ $data->stsmtncnc }}">
+
+                        <div class="groupradiooption"
+                            data-chekced="{{ isset($data->stsmtncnc) ? $data->stsmtncnc : (isset($data->ismaintenance) ? $data->ismaintenance : 0) }}">
                             <div class="listgrpstatusbank">
                                 <input class="status_online" type="radio" id="active" name="status"
                                     value="1">

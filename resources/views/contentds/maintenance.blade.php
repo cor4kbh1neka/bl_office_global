@@ -131,7 +131,7 @@
                                             <div class="grouptools">
                                                 <button
                                                     class="tombol {{ $item->ismaintenance == '0' ? 'grey' : 'cancel' }} border"
-                                                    data-ismaintenance={{ $item->ismaintenance }}
+                                                    data-ismaintenance="{{ $item->ismaintenance }}"
                                                     data-portfolio="{{ $item->portfolio }}">
                                                     <span
                                                         class="texttombol">{{ $item->ismaintenance == '0' ? 'MT' : 'Run' }}</span>
@@ -231,7 +231,6 @@
             $('.tombol').click(function() {
                 const button = $(this);
                 const portfolio = button.data('portfolio');
-                alert(portfolio);
                 const currentStatus = button.data('ismaintenance');
 
                 // Tentukan status baru berdasarkan status saat ini

@@ -8,7 +8,8 @@
             <h2>{{ $title }}</h2>
             <div class="fullscreen">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
-                    <path fill="currentColor" d="m5.3 6.7l1.4-1.4l-3-3L5 1H1v4l1.3-1.3zm1.4 4L5.3 9.3l-3 3L1 11v4h4l-1.3-1.3zm4-1.4l-1.4 1.4l3 3L11 15h4v-4l-1.3 1.3zM11 1l1.3 1.3l-3 3l1.4 1.4l3-3L15 5V1z" />
+                    <path fill="currentColor"
+                        d="m5.3 6.7l1.4-1.4l-3-3L5 1H1v4l1.3-1.3zm1.4 4L5.3 9.3l-3 3L1 11v4h4l-1.3-1.3zm4-1.4l-1.4 1.4l3 3L11 15h4v-4l-1.3 1.3zM11 1l1.3 1.3l-3 3l1.4 1.4l3-3L15 5V1z" />
                 </svg>
             </div>
         </div>
@@ -44,45 +45,60 @@
                                     <div class="listplayerinfo">
                                         <label for="sitename">nama website</label>
                                         <div class="groupeditinput">
-                                            <input type="text" id="sitename" name="sitename" value="{{ $data->nmwebsite }}" readonly placeholder="nama website">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                                <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
+                                            <input type="text" id="sitename" name="sitename"
+                                                value="{{ $data->nmwebsite }}" readonly placeholder="nama website">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                viewBox="0 0 24 24">
+                                                <path fill="currentColor"
+                                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
                                             </svg>
                                         </div>
                                     </div>
                                     <div class="listplayerinfo">
                                         <label for="urllogo">url logo</label>
                                         <div class="groupeditinput">
-                                            <input type="text" id="urllogo" name="urllogo" value="{{ $data->logrl }}" readonly placeholder="url logo">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                                <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
+                                            <input type="text" id="urllogo" name="urllogo" value="{{ $data->logrl }}"
+                                                readonly placeholder="url logo">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                viewBox="0 0 24 24">
+                                                <path fill="currentColor"
+                                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
                                             </svg>
                                         </div>
                                     </div>
                                     <div class="listplayerinfo">
                                         <label for="urlicon">url icon</label>
                                         <div class="groupeditinput">
-                                            <input type="text" id="urlicon" name="urlicon" value="{{ $data->icrl }}" readonly placeholder="url icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                                <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
+                                            <input type="text" id="urlicon" name="urlicon" value="{{ $data->icrl }}"
+                                                readonly placeholder="url icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                viewBox="0 0 24 24">
+                                                <path fill="currentColor"
+                                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
                                             </svg>
                                         </div>
                                     </div>
                                     <div class="listplayerinfo">
                                         <label for="urlapk">url apk download</label>
                                         <div class="groupeditinput">
-                                            <input type="text" id="urlapk" name="urlapk" value="{{ $data->pkrl }}" readonly placeholder="url download apk">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                                <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
+                                            <input type="text" id="urlapk" name="urlapk" value="{{ $data->pkrl }}"
+                                                readonly placeholder="url download apk">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                viewBox="0 0 24 24">
+                                                <path fill="currentColor"
+                                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
                                             </svg>
                                         </div>
                                     </div>
                                     <div class="listplayerinfo">
                                         <label for="runningtext">running text</label>
                                         <div class="groupeditinput">
-                                            <input type="text" id="runningtext" name="runningtext" value="{{ $data->rnntxt }}" readonly placeholder="isi running text">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                                <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
+                                            <input type="text" id="runningtext" name="runningtext"
+                                                value="{{ $data->rnntxt }}" readonly placeholder="isi running text">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                viewBox="0 0 24 24">
+                                                <path fill="currentColor"
+                                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75z" />
                                             </svg>
                                         </div>
                                     </div>
@@ -112,14 +128,14 @@
             </div>
         </div>
     </div>
-    @if(session('success'))
-    <script>
-        Swal.fire({
-            text: '{{ session('success') }}',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-    </script>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        </script>
     @elseif(session()->has('error'))
         <script>
             Swal.fire({
@@ -162,12 +178,12 @@
         });
 
         // toggle switch
-        $(document).ready(function(){
+        $(document).ready(function() {
             if ($('input[name="switch_active[]"]').val() == 1) {
                 $('#maintenance').prop('checked', true);
             }
 
-            $('label[for="maintenance"]').click(function(){
+            $('label[for="maintenance"]').click(function() {
                 var currentValue = $('input[name="switch_active[]"]').val();
                 var newValue = (currentValue == 1) ? 0 : 1;
                 $('input[name="switch_active[]"]').val(newValue);

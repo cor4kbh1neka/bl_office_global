@@ -131,7 +131,7 @@
                                             <div class="grouptools">
                                                 <button
                                                     class="tombol {{ $item->ismaintenance == '0' ? 'grey' : 'cancel' }} border"
-                                                    data-ismaintenance={{ $item->ismaintenance }}
+                                                    data-ismaintenance="{{ $item->ismaintenance }}"
                                                     data-portfolio="{{ $item->portfolio }}">
                                                     <span
                                                         class="texttombol">{{ $item->ismaintenance == '0' ? 'MT' : 'Run' }}</span>

@@ -148,7 +148,7 @@ class BonusdsController extends Controller
             $dataPortfolio = ['Casino', 'Games', 'SeamlessGame', 'ThirdPartySportsBook'];
         } else {
             /*bonus rolingan*/
-            $dataPortfolio = ['SportsBook', 'VirtualSports'];
+            $dataPortfolio = ['SportsBook', 'VirtualSports', 'Casino', 'Games', 'SeamlessGame', 'ThirdPartySportsBook'];
         }
 
         if ($bonus != null && $gabungdari !== null && $gabunghingga !== null && $pengecualian !== null) {

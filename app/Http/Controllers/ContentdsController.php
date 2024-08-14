@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Settings;
 use App\Models\Companys;
 use App\Models\Currencys;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
@@ -454,15 +455,22 @@ class ContentdsController extends Controller
     public function statusMaintenance()
     {
         $data = $this->apiStatusMaintenance();
+        $dataproduct = Product::get();
         return view('contentds.maintenance', [
             'title' => 'Content',
             'data' => $data,
+            'dataproduct' => $dataproduct,
             'totalnote' => 0
         ]);
     }
-    public function statusMaintenanceEdit()
+    public function statusMaintenanceEdit($portfolio = "")
     {
-        $data = $this->apiStatusMaintenance();
+        if ($portfolio == "") {
+            $data = $this->apiStatusMaintenance();
+        } else {
+            $data = Product::where('portfolio', $portfolio)->first();
+        }
+
         return view('contentds.maintenance_edit', [
             'title' => 'Content',
             'data' => $data,
@@ -484,5 +492,36 @@ class ContentdsController extends Controller
         } else {
             return redirect('contentds/maintenance')->with('error', 'Gagal Edit Data');
         }
+    }
+
+    public function updatestatusmt(Request $request, $portfolio)
+    {
+        $validator = Validator::make($request->all(), [
+            'ismaintenance' => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data input tidak valid',
+            ], 400);
+        }
+
+        $product = Product::where('portfolio', $portfolio)->first();
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan',
+            ], 404);
+        }
+
+        $product->ismaintenance = $request->input('ismaintenance');
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status berhasil diperbarui',
+        ]);
     }
 }

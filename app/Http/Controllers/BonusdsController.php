@@ -145,10 +145,10 @@ class BonusdsController extends Controller
     {
         if ($bonus == 'cashback') {
             /*bonus cahsback*/
-            $dataPortfolio = ['Casino', 'Games', 'SeamlessGame', 'ThirdPartySportsBook'];
+            $dataPortfolio = ['Casino', 'Games', 'ThirdPartySportsBook'];
         } else {
             /*bonus rolingan*/
-            $dataPortfolio = ['SportsBook', 'VirtualSports'];
+            $dataPortfolio = ['SportsBook', 'VirtualSports', 'SeamlessGame'];
         }
 
         if ($bonus != null && $gabungdari !== null && $gabunghingga !== null && $pengecualian !== null) {
@@ -160,6 +160,7 @@ class BonusdsController extends Controller
 
             $query = WinlossbetDay::whereIn('portfolio', $dataPortfolio)
                 ->whereBetween('created_at', [$gabungdari . ' 00:00:00', $gabunghingga . ' 23:59:59'])
+                // ->where('username', 'ibing13')
                 ->select('username', DB::raw('SUM(stake) as totalstake'), DB::raw('SUM(winloss) as totalwinloss'))
                 ->groupBy('username');
 

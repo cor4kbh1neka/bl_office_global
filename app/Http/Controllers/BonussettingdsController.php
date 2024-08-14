@@ -21,7 +21,7 @@ class BonussettingdsController extends Controller
         $dataSettingRollingan = Bonus::where('jenis_bonus', 'rolingan')->first();
 
         $dataPersentase = Persentase::get();
-
+        dd($dataPersentase);
 
         $data = [
             'min' => $dataBetSetting->min ?? 0,

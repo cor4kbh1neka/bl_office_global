@@ -62,8 +62,8 @@ Route::get('/', function () {
 // Route::get('/dashboard', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
 
 /* Login & Logout */
-Route::get('/x314cz9kc141DDX', [LoginController::class, 'index'])->name('login')->Middleware('guest');
-Route::post('/x314cz9kc141DDX', [LoginController::class, 'authenticate']);
+Route::get('/S0oDv1Ch4nG3T1', [LoginController::class, 'index'])->name('login')->Middleware('guest');
+Route::post('/S0oDv1Ch4nG3T1', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout'])->Middleware('auth');
 
 
@@ -157,7 +157,7 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/socialmedia/{id}', [ContentdsController::class, 'socialmediaupdate']);
 
             Route::get('/maintenance', [ContentdsController::class, 'statusMaintenance']);
-            Route::get('/maintenance/status/edit/{portfolio?}', [ContentdsController::class, 'statusMaintenanceEdit']);
+            Route::get('/maintenance/status/edit', [ContentdsController::class, 'statusMaintenanceEdit']);
             Route::put('/maintenance/{status}', [ContentdsController::class, 'statusMaintenanceUpdate']);
             Route::post('/updatestatusmt/{portfolio}', [ContentdsController::class, 'updatestatusmt']);
         });

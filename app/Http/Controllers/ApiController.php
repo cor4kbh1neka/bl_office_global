@@ -85,6 +85,8 @@ class ApiController extends Controller
                     $getLogin["url"] = "";
                     $getLogin["is_maintenance"] = true;
                     $getLogin["is_suspend"] = $statusMember->status == 5 ? true : false;
+
+                    return $getLogin;
                 }
             }
             // dd($getLogin);

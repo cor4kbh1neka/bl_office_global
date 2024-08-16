@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -34,7 +35,7 @@ class LoginController extends Controller
                 return back()->with('loginError', 'Akun Anda telah di Suspend. Silakan hubungi admin.');
             }
 
-            $user->last_login = now(); 
+            $user->last_login = now();
             $user->ip_login = $request->getClientIp();
             $user->save();
 
@@ -43,6 +44,47 @@ class LoginController extends Controller
         }
 
         return back()->with('loginError', 'Log in failed!');
+    }
+
+    public function showValidateForm()
+    {
+        return view('login.pin'); // Ganti dengan nama view yang sesuai
+    }
+
+    public function validatePin(Request $request)
+    {
+        // $validator = Validator::make($request->all(), [
+        //     'pin1' => 'required|numeric',
+        //     'pin2' => 'required|numeric',
+        //     'pin3' => 'required|numeric',
+        //     'pin4' => 'required|numeric',
+        //     'pin5' => 'required|numeric',
+        //     'pin6' => 'required|numeric',
+        // ]);
+
+        // if ($validator->fails()) {
+        //     // return redirect()->back()->withErrors($validator)->withInput();
+        //     return redirect()->back()->with('error', 'PIN yang Anda masukkan salah.');
+        // }
+        $user = Auth::user();
+
+        $pin = $request->pin1 . $request->pin2 . $request->pin3 . $request->pin4 . $request->pin5 . $request->pin6;
+
+        if (Hash::check($pin, $user->pin)) {
+            $user->pin_attempts = 0;
+            $user->save();
+            $request->session()->put('pin_validated', true);
+            return redirect()->intended('/depositds'); // Redirect ke halaman dashboard atau halaman tujuan setelah validasi PIN berhasil
+        } else {
+            $user->pin_attempts += 1;
+
+            if ($user->pin_attempts >= 3) {
+                $user->status = 3;
+            }
+
+            $user->save();
+            return redirect()->back()->with('error', 'PIN yang Anda masukkan salah.'); // Redirect kembali dengan pesan error jika PIN salah
+        }
     }
 
     /**
@@ -100,6 +142,8 @@ class LoginController extends Controller
         request()->session()->invalidate();
 
         request()->session()->regenerateToken();
+
+        request()->session()->forget('pin_validated');
 
         return redirect('/x314cz9kc141DDX');
     }

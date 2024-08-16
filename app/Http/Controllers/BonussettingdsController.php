@@ -13,20 +13,19 @@ class BonussettingdsController extends Controller
     public function index(Request $request)
     {
         $dataBetSetting = BetSetting::where('id', 1)->first();
-        $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
-        $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
-        $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
-        $dataPersentaseSG = Persentase::where('jenis', 'SeamlessGame')->first();
+        // $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
+        // $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
+        // $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
+        // $dataPersentaseSG = Persentase::where('jenis', 'SeamlessGame')->first();
         $dataSettingCashback = Bonus::where('jenis_bonus', 'cashback')->first();
         $dataSettingRollingan = Bonus::where('jenis_bonus', 'rolingan')->first();
+
+        $dataPersentase = Persentase::get();
+
 
         $data = [
             'min' => $dataBetSetting->min ?? 0,
             'max' => $dataBetSetting->max ?? 0,
-            'SportsBook' => $dataPersentaseSB->persentase ?? 0,
-            'VirtualSports' => $dataPersentaseVS->persentase ?? 0,
-            'Games' => $dataPersentaseG->persentase ?? 0,
-            'SeamlessGame' => $dataPersentaseSG->persentase ?? 0,
             'cashback' => $dataSettingCashback->persentase ?? 0,
             'min_lose' => $dataSettingCashback->min ?? 0,
             'rollingan' => $dataSettingRollingan->persentase ?? 0,
@@ -35,23 +34,26 @@ class BonussettingdsController extends Controller
 
         return view('bonussettingds.index', [
             'title' => 'Referral',
-            'data' => $data
+            'data' => $data,
+            'dataPersentase' => $dataPersentase
         ]);
     }
 
     public function update(Request $request)
     {
+        $dataPersentase = Persentase::get();
+
         // Validate the request data
         $request->validate([
             'min' => 'required|numeric|min:0',
             'max' => 'required|numeric|min:0',
-            'sportsbook' => 'required|numeric|min:0|max:100',
-            'virtualsports' => 'required|numeric|min:0|max:100',
-            'games' => 'required|numeric|min:0|max:100',
-            'seamlesgames' => 'required|numeric|min:0|max:100',
             'cashback' => 'required|numeric|min:0|max:100',
             'rollingan' => 'required|numeric|min:0|max:100',
         ]);
+
+        foreach ($dataPersentase as $item) {
+            $rules[$item->jenis] = 'required|numeric|min:0|max:100';
+        }
 
         $max = $request->max;
         $min = $request->min;
@@ -70,53 +72,18 @@ class BonussettingdsController extends Controller
                 BetSetting::create($reqBetSetting);
             }
 
-            $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
-            if ($dataPersentaseSB) {
-                $dataPersentaseSB->update([
-                    'persentase' => $request->sportsbook
-                ]);
-            } else {
-                Persentase::create([
-                    'jenis' => 'SportsBook',
-                    'persentase' => $request->sportsbook
-                ]);
-            }
-
-            $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
-            if ($dataPersentaseVS) {
-                $dataPersentaseVS->update([
-                    'persentase' => $request->virtualsports
-                ]);
-            } else {
-                Persentase::create([
-                    'jenis' => 'SportsBook',
-                    'persentase' => $request->virtualsports
-                ]);
-            }
-
-            $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
-            if ($dataPersentaseG) {
-                $dataPersentaseG->update([
-                    'persentase' => $request->games
-                ]);
-            } else {
-                Persentase::create([
-                    'jenis' => 'SportsBook',
-                    'persentase' => $request->games
-                ]);
-            }
-
-
-            $dataPersentaseSG = Persentase::where('jenis', 'SeamlessGame')->first();
-            if ($dataPersentaseSG) {
-                $dataPersentaseSG->update([
-                    'persentase' => $request->seamlesgames
-                ]);
-            } else {
-                Persentase::create([
-                    'jenis' => 'SeamlessGame',
-                    'persentase' => $request->seamlesgames
-                ]);
+            foreach ($dataPersentase as $item) {
+                $dp = Persentase::where('jenis', $item->jenis)->first();
+                if ($dp) {
+                    $dp->update([
+                        'persentase' => $request->input($item->jenis),
+                    ]);
+                } else {
+                    Persentase::create([
+                        'jenis' => $item->jenis,
+                        'persentase' => $request->input($item->jenis),
+                    ]);
+                }
             }
 
 

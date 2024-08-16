@@ -23,7 +23,12 @@ class HistoryTransaksiExport implements FromCollection, WithHeadings, WithStyles
     public function collection()
     {
         return $this->data->map(function ($item) {
-            $itemArray = $item->toArray();
+            if ($item instanceof \Illuminate\Database\Eloquent\Model) {
+                $itemArray = $item->toArray();
+            } else {
+                $itemArray = is_array($item) ? $item : get_object_vars($item);
+            }
+
             unset($itemArray['id']); // Menghilangkan kolom "id"
             // Format ulang created_at dan updated_at
             if (isset($itemArray['created_at'])) {
@@ -41,28 +46,17 @@ class HistoryTransaksiExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             "Username",
-            "Referral",
-            "Bank",
-            "Namarek",
-            "Norek",
-            "Nohp",
-            "Balance",
+            "Invoice",
+            "Refno",
             "Keterangan",
-            "IP Register",
-            "IP Login",
-            "Lastlogin",
-            "Domain",
-            "Lastlogin2",
-            "Domain2",
-            "Lastlogin3",
-            "Domain3",
-            "Min_bet",
-            "Max_bet",
+            "Portfolio",
             "Status",
-            "Is_notnew",
-            "created_at",
-            "updated_at",
-            "Amount",
+            "Debit",
+            "Kredit",
+            "Balance",
+            "Urutan",
+            "Created At",
+            "Updated At",
         ];
     }
 
@@ -77,10 +71,10 @@ class HistoryTransaksiExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             'A' => 20,
-            'B' => 20,
+            'B' => 30,
             'C' => 15,
             'D' => 30,
-            'E' => 10,
+            'E' => 20,
             'F' => 20,
             'G' => 20,
             'H' => 25,
@@ -88,17 +82,6 @@ class HistoryTransaksiExport implements FromCollection, WithHeadings, WithStyles
             'J' => 20,
             'K' => 25,
             'L' => 25,
-            'M' => 25,
-            'N' => 15,
-            'O' => 10,
-            'P' => 20,
-            'Q' => 20,
-            'R' => 20,
-            'S' => 20,
-            'T' => 20,
-            'U' => 30,
-            'V' => 30,
-            'W' => 20,
         ];
     }
 
@@ -106,7 +89,7 @@ class HistoryTransaksiExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $cellRange = 'A1:R' . (count($this->data) + 1);
+                $cellRange = 'A1:L' . (count($this->data) + 1);
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray([
                     'borders' => [
                         'allBorders' => [

@@ -145,9 +145,10 @@ class BonusdsController extends Controller
     {
         if ($bonus == 'cashback') {
             /*bonus cahsback*/
-            $dataPortfolio = ['Casino', 'Games', 'SeamlessGame', 'ThirdPartySportsBook'];
+            $dataPortfolio = ['Casino', 'Games', 'ThirdPartySportsBook'];
         } else {
             /*bonus rolingan*/
+            // $dataPortfolio = ['SportsBook', 'VirtualSports', 'SeamlessGame'];
             $dataPortfolio = ['SportsBook', 'VirtualSports'];
         }
 
@@ -160,6 +161,7 @@ class BonusdsController extends Controller
 
             $query = WinlossbetDay::whereIn('portfolio', $dataPortfolio)
                 ->whereBetween('created_at', [$gabungdari . ' 00:00:00', $gabunghingga . ' 23:59:59'])
+                // ->where('username', 'ibing13')
                 ->select('username', DB::raw('SUM(stake) as totalstake'), DB::raw('SUM(winloss) as totalwinloss'))
                 ->groupBy('username');
 
@@ -213,11 +215,15 @@ class BonusdsController extends Controller
 
     public function store(Request $request, $bonus, $gabungdari, $gabunghingga, $kecuali)
     {
-
-        $data = $request->request->all();
-
+        $data = $request->request->all()["data"];
         $bonuses = array_column($data, 'bonus');
-        $totalBonus = array_sum($bonuses);
+
+        $totalBonus = 0;
+
+        // Melakukan pembulatan setiap elemen array ke dua angka desimal dan menjumlahkannya
+        foreach ($bonuses as $value) {
+            $totalBonus += round($value, 2);
+        }
 
         $createListbonus = Listbonus::create([
             'no_invoice' => $this->generateInvoiceNumber(),
@@ -232,18 +238,19 @@ class BonusdsController extends Controller
         if ($createListbonus) {
 
             foreach ($data as $d) {
+                $nominalBonus = round($d['bonus'], 2);
                 $createDetail = Listbonusdetail::create([
                     'listbonus_id' => $createListbonus['id'],
                     'username' => $d['username'],
                     'turnover' => $d['stake'],
                     'winlose' => $d['winloss'],
-                    'bonus' => $d['bonus']
+                    'bonus' => $nominalBonus
                 ]);
 
                 if ($createDetail) {
                     // 1. requestApiSeamless
                     $txnid = $this->generateTxnid('D');
-                    $prosesApiDepo = $this->apiDepo($d['username'], $d['bonus'], $txnid);
+                    $prosesApiDepo = $this->apiDepo($d['username'], $nominalBonus, $txnid);
 
                     if ($prosesApiDepo["error"]["id"] === 0) {
                         // 2.create DepoWd DPM
@@ -252,42 +259,24 @@ class BonusdsController extends Controller
                             $balance = $balance->amount;
                         }
                         $keterangan = 'Bonus ' . $bonus;
-                        $this->createDepoWD($d['username'], $d['bonus'], $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 1);
+                        $this->createDepoWD($d['username'], $nominalBonus, $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 1);
 
                         // 3. Process balance
-                        $prosesBalance = $this->processBalance($d['username'], 'DP', $d['bonus']);
+                        $prosesBalance = $this->processBalance($d['username'], 'DP', $nominalBonus);
 
                         //4. Process win Lose
-                        $this->addDataWinLoss($d['username'], $d['bonus'], "deposit");
+                        $this->addDataWinLoss($d['username'], $nominalBonus, "deposit");
 
                         // 5.Create History
-                        $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $d['bonus'], $prosesBalance["balance"]);
-                    }
-
-                    $maxAttempts4404 = 10;
-                    $attempt4404 = 0;
-                    while ($prosesApiDepo["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
-                        $txnid = $this->generateTxnid('D');
-                        $resultsApi = $this->apiDepo($d['username'], $d['bonus'], $txnid);
-                        if ($resultsApi["error"]["id"] === 0) {
-                            // 2.create DepoWd DPM
-                            $balance = Balance::where('username', $d['username'])->first()->amount;
-                            $keterangan = 'Bonus ' . $bonus;
-                            $this->createDepoWD($d['username'], $d['bonus'], $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 'Approved');
-
-                            // 3. Process balance
-                            $prosesBalance = $this->processBalance($d['username'], 'DP', $d['bonus']);
-
-                            //4. Process win Lose
-                            $this->addDataWinLoss($d['username'], $d['bonus'], "deposit");
-
-                            // 5.Create History
-                            $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $d['bonus'], $prosesBalance["balance"]);
-                        }
-                        $attempt4404++;
-                    }
-
-                    if ($prosesApiDepo["error"]["id"] !== 0) {
+                        $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $nominalBonus, $prosesBalance["balance"]);
+                    } else {
+                        $createDetail->delete();
+                        $failedUsernames[] = $d['username'];
+                        ListError::create([
+                            'fungsi' => 'storebonusds',
+                            'pesan_error' => $prosesApiDepo["error"]["id"],
+                            'keterangan' => $d['username'] . ' / '  . $prosesApiDepo["error"]["msg"]
+                        ]);
                     }
                 }
             }

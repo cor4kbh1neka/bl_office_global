@@ -74,6 +74,9 @@ class MemodsController extends Controller
         $results = [];
         if ($response->json()['status'] !== 'fail') {
             $results = $response->json()["data"];
+            usort($results, function ($a, $b) {
+                return strtotime($b['created_at']) - strtotime($a['created_at']);
+            });
         }
         $data = $this->filterAndPaginate($results, 20);
         return view('memods.delivered_memo', [

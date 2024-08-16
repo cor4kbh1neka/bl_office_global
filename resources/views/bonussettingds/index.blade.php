@@ -39,26 +39,13 @@
                             <div class="listplayerinfo ssreff">
                                 <span class="labelbonusreff">Bonus Referral</span>
                                 <div class="groupbnsreff">
-                                    <div class="listreff">
-                                        <label for="sportsbook">sportsbook (%)</label>
-                                        <input type="number" id="sportsbook" name="sportsbook"
-                                            value="{{ $data['SportsBook'] }}" step="0.01" placeholder="% referral">
-                                    </div>
-                                    <div class="listreff">
-                                        <label for="virtualsports">virtualsports (%)</label>
-                                        <input type="number" id="virtualsports" name="virtualsports"
-                                            value="{{ $data['VirtualSports'] }}" step="0.01" placeholder="% referral">
-                                    </div>
-                                    <div class="listreff">
-                                        <label for="games">games (%)</label>
-                                        <input type="number" id="games" name="games" value="{{ $data['Games'] }}"
-                                            step="0.01" placeholder="% games">
-                                    </div>
-                                    <div class="listreff">
-                                        <label for="seamlesgames">seamlesgames (%)</label>
-                                        <input type="number" id="seamlesgames" name="seamlesgames"
-                                            value="{{ $data['SeamlessGame'] }}" step="0.01" placeholder="% seamlesgames">
-                                    </div>
+                                    @foreach ($dataPersentase as $item)
+                                        <div class="listreff">
+                                            <label for="{{ $item->jenis }}">{{ $item->jenis }} (%)</label>
+                                            <input type="number" id="{{ $item->jenis }}" name="{{ $item->jenis }}"
+                                                value="{{ $item->persentase }}" step="0.01" placeholder="% referral">
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                             <div class="listplayerinfo ssreff">

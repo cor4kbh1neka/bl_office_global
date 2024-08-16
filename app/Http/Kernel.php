@@ -90,5 +90,6 @@ class Kernel extends HttpKernel
         'memo_other' => \App\Http\Middleware\UserAccess::class . ':memo_other',
         'seamless' => \App\Http\Middleware\UserAccess::class . ':seamless',
         'refeerral_bonus' => \App\Http\Middleware\UserAccess::class . ':refeerral_bonus',
+        'verify.pin' => \App\Http\Middleware\VerifyPin::class,
     ];
 }

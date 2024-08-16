@@ -45,7 +45,29 @@
                             <label for="repassword">retype password</label>
                             <div class="groupeditinput">
                                 <input type="password" id="repassword" name="repassword" value=""
-                                    placeholder="input password agent">
+                                    placeholder="input retype password agent">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                                    <path fill="currentColor"
+                                        d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="listplayerinfo">
+                            <label for="pin">pin</label>
+                            <div class="groupeditinput">
+                                <input type="password" id="pin" name="pin" maxlength="6" pattern="\d*"
+                                    inputmode="numeric" placeholder="Input PIN agent" required>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                                    <path fill="currentColor"
+                                        d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="listplayerinfo">
+                            <label for="repin">Retype pin</label>
+                            <div class="groupeditinput">
+                                <input type="password" id="repin" name="repin" maxlength="6" pattern="\d*"
+                                    inputmode="numeric" placeholder="Input retype PIN agent" required>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                     <path fill="currentColor"
                                         d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0" />
@@ -153,6 +175,9 @@
                 var password = $('#password').val();
                 var repassword = $('#repassword').val();
 
+                var pin = $('#pin').val();
+                var repin = $('#repin').val();
+
                 if (password !== repassword) {
                     Swal.fire({
                         title: 'Error!',
@@ -160,8 +185,22 @@
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
+                } else if (pin !== repin) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Pin dan Retypepin harus sama',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 } else {
                     this.submit(); // If passwords match, submit the form
+                }
+            });
+
+            $('#pin, #repin').on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length > 6) {
+                    this.value = this.value.slice(0, 6);
                 }
             });
         });

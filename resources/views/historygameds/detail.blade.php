@@ -49,7 +49,7 @@
 
                     </span>
                 </div>
-                @if ($portfolio != 'SeamlessGame')
+                @if ($portfolio != 'SeamlessGame' && $portfolio != 'Casino' && $portfolio != 'Games')
                     <div class="listheaddetail">
                         <span class="label">Odds Type</span>
                         <span class="gap">:</span>
@@ -80,7 +80,7 @@
         <div class="table_detailhistorygameds">
             <table>
                 <tbody>
-                    @if ($portfolio != 'SeamlessGame')
+                    @if ($portfolio == 'SporsBooks' || $portfolio == 'VirtualSports')
                         @foreach ($data['subBet'] as $i => $d)
                             <tr>
                                 <td class="bagnomor">{{ $i + 1 }}</td>
@@ -101,27 +101,33 @@
                                             </div>
                                         </div>
                                         {{-- @dd($d) --}}
-                                        <div class="kickoffgroup">
-                                            <div class="listkickoff">
-                                                <span class="labelkick">Kickoff Time :</span>
-                                                <span class="datakick">{{ date('d-m-Y H:i:s', strtotime($d['kickOffTime'])) }}
-                                                </span>
-                                            </div>
-                                            <div class="listkickoff">
-                                                @php
-                                                    $orderTime = date('d-m-Y H:i:s', strtotime($data['orderTime']));
-                                                    $kickOffTime = date('d-m-Y H:i:s', strtotime($d['kickOffTime']));
+                                        @if ($portfolio != 'SeamlessGame' && $portfolio != 'Casino' && $portfolio != 'Games' && $portfolio != 'VirtualSports')
+                                            <div class="kickoffgroup">
+                                                <div class="listkickoff">
+                                                    <span class="labelkick">Kickoff Time :</span>
+                                                    <span
+                                                        class="datakick">{{ date('d-m-Y H:i:s', strtotime($d['kickOffTime'])) }}
+                                                    </span>
+                                                </div>
+                                                <div class="listkickoff">
+                                                    @php
+                                                        $orderTime = date('d-m-Y H:i:s', strtotime($data['orderTime']));
+                                                        $kickOffTime = date(
+                                                            'd-m-Y H:i:s',
+                                                            strtotime($d['kickOffTime']),
+                                                        );
 
-                                                    $timestamp1 = strtotime($orderTime);
-                                                    $timestamp2 = strtotime($kickOffTime);
-                                                    
+                                                        $timestamp1 = strtotime($orderTime);
+                                                        $timestamp2 = strtotime($kickOffTime);
 
-                                                @endphp
-                                                <span class="labelkick">Bola Jalan :</span>
-                                                <span class="datakick">{{ $timestamp1 > $timestamp2 ? 'True' : 'False' }}
-                                                </span>
+                                                    @endphp
+                                                    <span class="labelkick">Bola Jalan :</span>
+                                                    <span
+                                                        class="datakick">{{ $timestamp1 > $timestamp2 ? 'True' : 'False' }}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endif
                                         @if (isset($d['isHalfWonLose']))
                                             <span class="detailbetting">detail bet : <span class="htft isHalfWonLose"
                                                     data-isHalfWonLose="{{ $d['isHalfWonLose'] }}"></span></span>

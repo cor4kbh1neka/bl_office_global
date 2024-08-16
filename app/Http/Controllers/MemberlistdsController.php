@@ -68,7 +68,7 @@ class MemberlistdsController extends Controller
 
     private function getApiDataGroupBank()
     {
-        
+
         $url = env('DOMAIN') . '/banks/group';
         $response = Http::withHeaders([
             'Content-Type' => 'application/json; charset=UTF-8',
@@ -77,14 +77,14 @@ class MemberlistdsController extends Controller
         $response = $response->json();
         $groupdp = [];
         $groupwd = [];
-        if($response['status'] == 'success') {
-            foreach($response['data'] as $i => $d){
-                if($i != 'nongroup' && $i != 'nongroupwd'){
-                   if($d['grouptype'] == 1){
-                    $groupdp[] = $i;
-                   } else {
-                    $groupwd[] = $i;
-                   };
+        if ($response['status'] == 'success') {
+            foreach ($response['data'] as $i => $d) {
+                if ($i != 'nongroup' && $i != 'nongroupwd') {
+                    if ($d['grouptype'] == 1) {
+                        $groupdp[] = $i;
+                    } else {
+                        $groupwd[] = $i;
+                    };
                 }
             }
         }
@@ -94,7 +94,7 @@ class MemberlistdsController extends Controller
             'groupwd' => $groupwd
         ];
 
-        return $data;   
+        return $data;
     }
 
     private function getApiUser($username)
@@ -131,7 +131,7 @@ class MemberlistdsController extends Controller
                     "xxybanknumberxy" => $request->xxybanknumberxy,
                 ];
                 $updateUser = $this->reqApiUpdateUser($data, $request->xyusernamexxy);
-               
+
                 if ($updateUser["status"] === 'success') {
 
                     $this->updateIsVerif($request->xyusernamexxy, $request->isverified);
@@ -215,7 +215,7 @@ class MemberlistdsController extends Controller
         } else {
             try {
                 $dataMember = Member::where('id', $id)->first();
-                if(!$dataMember){
+                if (!$dataMember) {
                     $dataMember = Member::where('username', $id)->first();
                 }
 
@@ -346,6 +346,7 @@ class MemberlistdsController extends Controller
         if (request('gabungdari') && request('gabunghingga')) {
             $gabungdari = request('gabungdari') . " 00:00:00";
             $gabunghingga = request('gabunghingga') . " 23:59:59";
+
             $query = $query->filter(function ($item) use ($gabungdari, $gabunghingga) {
                 return $item['created_at'] >= $gabungdari && $item['created_at'] <= $gabunghingga;
             });
@@ -502,10 +503,12 @@ class MemberlistdsController extends Controller
         //     ->select('member.*', 'balance.amount')->orderByDesc('created_at')->get();
 
         $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
-            ->select('member.username', 'member.referral',
-            DB::raw("CONCAT(member.bank, ', ', member.namarek, ', ', member.norek) as bank"),
-            'balance.amount as balance', 
-            DB::raw("
+            ->select(
+                'member.username',
+                'member.referral',
+                DB::raw("CONCAT(member.bank, ', ', member.namarek, ', ', member.norek) as bank"),
+                'balance.amount as balance',
+                DB::raw("
                 CASE 
                     WHEN member.status = 9 THEN 'NEW MEMBER'
                     WHEN member.status = 1 THEN 'DEFAULT'
@@ -516,7 +519,9 @@ class MemberlistdsController extends Controller
                     ELSE 'UNKNOWN'
                 END as status_label
             "),
-            'member.keterangan as informasi', 'member.created_at as tglgabung', 'member.lastlogin'
+                'member.keterangan as informasi',
+                'member.created_at as tglgabung',
+                'member.lastlogin'
             )->orderByDesc('member.created_at')->get();
         $proses = $this->filterAndPaginate($query, 999999999999999);
         $data = $proses->getCollection();
@@ -536,28 +541,56 @@ class MemberlistdsController extends Controller
                 "CompanyKey" => env('COMPANY_KEY'),
                 "ServerId" => env('SERVERID')
             ];
-    
+
             $url = env('BODOMAIN') . '/web-root/restricted/player/update-player-status.aspx';
-    
+
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json; charset=UTF-8'
             ])->post($url, $data);
-    
+
             $responseData = $response->json();
             if ($responseData["error"]["id"] === 0) {
                 $member->update([
                     'status' => $status
                 ]);
-                
+
                 return response()->json(['success' => true, 'message' => 'Pemain telah dinonaktifkan.']);
             } else {
                 return response()->json(['success' => false, 'message' => $responseData["error"]["msg"]], 400);
             }
-
-          
         } else {
             return response()->json(['success' => false, 'message' => 'Pemain tidak ditemukan.'], 404);
         }
-        
+    }
+
+    public function historylog($username)
+    {
+        $data = [
+            'username' => $username,
+        ];
+
+        $apiUrl = env('GETDOMAIN') . 'api/getdatalogmember';
+
+        try {
+            $response = Http::withHeaders([
+                'utilitiesgenerate' => '22b8a8bba31e8c78b6e20ce8732c5b5503a73e04ad6fe328acb5ecca19435eebad54383cc873d2ad4b2a35da9f2a3707815765290e648ecef5a56385ce69d910'
+            ])->post($apiUrl, $data);
+
+            if ($response->successful()) {
+                $results = $response->json();
+            } else {
+                $results = null;
+            }
+        } catch (\Exception $e) {
+            // dd($e->getMessage());
+            $results = null;
+        }
+
+        return view('memberlistds.historylog', [
+            'title' => 'Aktifitas Akun',
+            'totalnote' => 0,
+            'data' => $results,
+            'username' => $username
+        ]);
     }
 }

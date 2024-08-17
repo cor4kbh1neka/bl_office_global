@@ -80,7 +80,7 @@
         <div class="table_detailhistorygameds">
             <table>
                 <tbody>
-                    @if ($portfolio == 'SportsBooks' || $portfolio == 'VirtualSports')
+                    @if ($portfolio == 'SportsBook' || $portfolio == 'VirtualSports')
                         @foreach ($data['subBet'] as $i => $d)
                             <tr>
                                 <td class="bagnomor">{{ $i + 1 }}</td>

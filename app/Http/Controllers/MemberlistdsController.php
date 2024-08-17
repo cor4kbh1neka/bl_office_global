@@ -570,10 +570,9 @@ class MemberlistdsController extends Controller
         ];
 
         $apiUrl = env('GETDOMAIN') . '/api/getdatalogmember';
-        dd(env('UTILITIES_GENERATE2'));
         try {
             $response = Http::withHeaders([
-                'utilitiesgenerate' => env('UTILITIES_GENERATE2')
+                'utilitiesgenerate' => '117fcdc48ab21ae9407564be2e405c55b59d158a8a9779e3b272aaeb4aa24dbcbebb51e69eb0140013d75d92183660a94210d81a1b3be59a61fbb6ba2626e215'
             ])->post($apiUrl, $data);
 
             if ($response->successful()) {

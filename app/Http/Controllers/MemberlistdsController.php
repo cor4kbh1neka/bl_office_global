@@ -586,6 +586,21 @@ class MemberlistdsController extends Controller
             $results = null;
         }
 
+        // $results = [
+        //     [
+        //         "username" => "jakartacity",
+        //         "jenis" => "login",
+        //         "ipaddress" => "10.01.01.01",
+        //         "updated_at" => "2021-01-20 17:50:33"
+        //     ],
+        //     [
+        //         "username" => "jakartacity",
+        //         "jenis" => "ubah password",
+        //         "ipaddress" => "10.01.01.01",
+        //         "updated_at" => "2021-01-20 17:50:33"
+        //     ],
+        // ];
+
         return view('memberlistds.historylog', [
             'title' => 'Aktifitas Akun',
             'totalnote' => 0,

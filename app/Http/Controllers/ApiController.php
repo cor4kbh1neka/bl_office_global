@@ -760,6 +760,7 @@ class ApiController extends Controller
 
         // Check status maintenance & suspend
         $apiMt = $this->apiStatusMaintenance();
+        dd($apiMt);
         $is_maintenance = $apiMt->stsmtncnc == '2';
 
         $statusMember = Member::where('username', $username)->first();

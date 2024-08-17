@@ -565,7 +565,6 @@ class MemberlistdsController extends Controller
 
     public function historylog($username)
     {
-        dd('test');
         $data = [
             'username' => $username,
         ];
@@ -583,7 +582,7 @@ class MemberlistdsController extends Controller
                 $results = null;
             }
         } catch (\Exception $e) {
-            // dd($e->getMessage());
+            dd($e->getMessage());
             $results = null;
         }
 

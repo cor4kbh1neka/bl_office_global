@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\DepoWdExport;
 use App\Models\DepoWd;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -17,9 +18,11 @@ class HistorycoindsController extends Controller
     public function index()
     {
         $data = $this->filterAndPaginate(20);
+        $dataagent = User::pluck('username');
         return view('historycoinds.index', [
             'title' => 'List History',
             'data' => $data,
+            'dataagent' => $dataagent,
             'is_old' => false
         ]);
     }

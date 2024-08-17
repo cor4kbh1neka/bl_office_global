@@ -130,6 +130,7 @@ class ApiController extends Controller
         $url = env('DOMAIN') . '/content/sts';
         $response = Http::withTokenHeader()->get($url);
         $raw = json_decode($response);
+        dd($raw);
         $data = $raw->data;
         return $data;
     }
@@ -758,7 +759,6 @@ class ApiController extends Controller
 
         // Check status maintenance & suspend
         $apiMt = $this->apiStatusMaintenance();
-        dd($apiMt);
         $is_maintenance = $apiMt->stsmtncnc == '2';
 
         $statusMember = Member::where('username', $username)->first();

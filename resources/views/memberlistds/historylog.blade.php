@@ -23,21 +23,19 @@
             <select name="status" id="status">
                 <option value="" selected="" place="" style="color: #838383; font-style: italic;">Pilih
                     status</option>
-                <option value="9">new member</option>
-                <option value="1">default</option>
-                <option value="2">VVIP</option>
-                <option value="3">bandar</option>
-                <option value="4">warning</option>
-                <option value="5">suspend</option>
+                <option value="login">login</option>
+                <option value="ubah password">ubah password</option>
             </select>
             <table>
-                <tbody>
+                <thead>
                     <tr>
                         <th class="bagxdate">username</th>
                         <th class="bagxdate">jenis</th>
                         <th class="bagxdate">ipaddress</th>
                         <th class="bagxdate">tanggal</th>
                     </tr>
+                </thead>
+                <tbody>
                     @if (!empty($data) && count($data) > 0)
                         @foreach ($data as $d)
                             <tr>
@@ -158,5 +156,26 @@
         $(".subtotal").text(totalTotal.toLocaleString('en', {
             maximumFractionDigits: 2
         }));
+    });
+
+    $(document).ready(function() {
+        // When the status dropdown changes
+        $('#status').change(function() {
+            // Get the selected value
+            var selectedStatus = $(this).val();
+
+            // Loop through each row in the tbody
+            $('table tbody tr').each(function() {
+                var jenis = $(this).find('td:nth-child(2)').text().toLowerCase();
+
+                // If the selected value is empty or matches the 'jenis', show the row
+                if (selectedStatus === "" || jenis === selectedStatus) {
+                    $(this).show();
+                } else {
+                    // Otherwise, hide the row
+                    $(this).hide();
+                }
+            });
+        });
     });
 </script>

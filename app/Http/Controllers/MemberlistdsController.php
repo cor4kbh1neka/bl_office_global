@@ -570,7 +570,7 @@ class MemberlistdsController extends Controller
         ];
 
         $apiUrl = env('GETDOMAIN') . '/api/getdatalogmember';
-
+        dd($apiUrl);
         try {
             $response = Http::withHeaders([
                 'utilitiesgenerate' => env('UTILITIES_GENERATE')
@@ -582,7 +582,7 @@ class MemberlistdsController extends Controller
                 $results = null;
             }
         } catch (\Exception $e) {
-            dd($e->getMessage());
+
             $results = null;
         }
 

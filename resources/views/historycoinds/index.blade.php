@@ -51,8 +51,11 @@
                             <select name="approved_by" id="approved_by">
                                 <option value="" selected="" place=""
                                     style="color: #838383; font-style: italic;">Pilih Agent</option>
-                                <option value="gl0b4l#21" {{ request('approved_by') == 'gl0b4l#21' ? 'selected' : '' }}>
-                                    gl0b4l#21</option>
+                                @foreach ($dataagent as $item)
+                                    <option value="{{ $item }}"
+                                        {{ request('approved_by') == $item ? 'selected' : '' }}>
+                                        {{ $item }}</option>
+                                @endforeach
                             </select>
                         </div>
                         @php

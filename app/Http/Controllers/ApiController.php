@@ -130,7 +130,6 @@ class ApiController extends Controller
         $url = env('DOMAIN') . '/content/sts';
         $response = Http::withTokenHeader()->get($url);
         $raw = json_decode($response);
-        dd(env('XCUSTOMBLHDRS'));
         $data = $raw->data;
         return $data;
     }

@@ -573,7 +573,7 @@ class MemberlistdsController extends Controller
 
         try {
             $response = Http::withHeaders([
-                'utilitiesgenerate' => '22b8a8bba31e8c78b6e20ce8732c5b5503a73e04ad6fe328acb5ecca19435eebad54383cc873d2ad4b2a35da9f2a3707815765290e648ecef5a56385ce69d910'
+                'utilitiesgenerate' => env('UTILITIES_GENERATE')
             ])->post($apiUrl, $data);
 
             if ($response->successful()) {

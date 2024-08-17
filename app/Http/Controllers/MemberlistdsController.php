@@ -569,7 +569,7 @@ class MemberlistdsController extends Controller
             'username' => $username,
         ];
 
-        $apiUrl = env('GETDOMAIN') . 'api/getdatalogmember';
+        $apiUrl = env('GETDOMAIN') . '/api/getdatalogmember';
 
         try {
             $response = Http::withHeaders([

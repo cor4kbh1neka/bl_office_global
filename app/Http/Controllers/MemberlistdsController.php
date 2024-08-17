@@ -574,6 +574,7 @@ class MemberlistdsController extends Controller
             $response = Http::withHeaders([
                 'utilitiesgenerate' => env('UTILITIES_GENERATE')
             ])->post($apiUrl, $data);
+            dd($response->json());
             if ($response->successful()) {
                 $results = $response->json();
             } else {

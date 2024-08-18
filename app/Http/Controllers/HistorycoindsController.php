@@ -178,8 +178,8 @@ class HistorycoindsController extends Controller
             // $tgldari = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
             // $tglsampai = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
 
-            $tgldari = date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d'))));
-            $tglsampai = date('Y-m-d');
+            $tgldari = date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))) . " 00:00:00";
+            $tglsampai = date('Y-m-d') . " 23:59:59";
             $query->whereBetween('created_at', [$tgldari, $tglsampai]);
         }
 

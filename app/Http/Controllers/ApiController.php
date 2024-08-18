@@ -460,6 +460,7 @@ class ApiController extends Controller
 
     public function withdrawal(Request $request)
     {
+        dd('test');
         $validasiBearer = $this->validasiBearer($request);
         if ($validasiBearer !== true) {
             return $validasiBearer;

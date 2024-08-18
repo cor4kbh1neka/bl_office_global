@@ -46,7 +46,7 @@ Route::post('/register', [ApiController::class, 'register']);
 Route::post('/get-recommend-matches', [ApiController::class, 'getRecomMatch']);
 Route::post('/cekuserreferral', [ApiController::class, 'cekuserreferral']);
 Route::post('/deposit', [ApiController::class, 'deposit']);
-Route::post('/withdraw\al', [ApiController::class, 'withdrawal']);
+Route::post('/withdraw', [ApiController::class, 'withdrawal']);
 Route::post('/getHistoryDw', [ApiController::class, 'getHistoryDepoWd']);
 Route::post('/checkLastTransaction', [ApiController::class, 'getLastStatusTransaction']);
 Route::post('/checkBalance', [ApiController::class, 'getBalance']);

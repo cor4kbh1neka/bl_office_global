@@ -28,18 +28,12 @@
                                 <option value="" style="color: #838383; font-style: italic;" disabled="" selected>
                                     pilih
                                     jenis</option>
-                                <option value="SportsBook" {{ request('portfolio') == 'SportsBook' ? 'selected' : '' }}>
-                                    SportsBook
-                                </option>
-                                <option value="VirtualSports"
-                                    {{ request('portfolio') == 'VirtualSports' ? 'selected' : '' }}>
-                                    VirtualSports
-                                </option>
-                                <option value="Games" {{ request('portfolio') == 'Games' ? 'selected' : '' }}>Games
-                                </option>
-                                <option value="SeamlessGame" {{ request('portfolio') == 'SeamlessGame' ? 'selected' : '' }}>
-                                    SeamlessGame</option>
-
+                                @foreach ($dataproduct as $item)
+                                    <option value="{{ $item->portfolio }}"
+                                        {{ request('portfolio') == $item->portfolio ? 'selected' : '' }}>
+                                        {{ $item->portfolio }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="listinputmember">
@@ -119,11 +113,10 @@
                                     <td>{{ date('d-m-Y H:i:s', strtotime($d['orderTime'])) }}</td>
                                     <td class="data refNo refnodetail">{{ $d['refNo'] }}</td>
                                     <td>
-                                        @if($portfolio == 'SeamlessGame')
+                                        @if ($portfolio == 'SeamlessGame')
                                             <a href="/historygameds/detail/{{ $d['refNo'] }}/{{ $portfolio }}"
                                                 target="_blank" class="detailbetingan">
-                                                <span
-                                                    class="texttypebet sportsType">{{  $d['gameType'] }}</span>
+                                                <span class="texttypebet sportsType">{{ $d['gameType'] }}</span>
                                                 <span class="klikdetail">(selengkapnya)</span>
                                             </a>
                                         @elseif ($portfolio != 'Games')
@@ -139,7 +132,8 @@
                                         @endif
                                     </td>
                                     <td class="valuenominal odds"
-                                        data-odds="{{ $portfolio !== 'Games' && $portfolio !== 'SeamlessGame' ? $d['odds'] : 0.1 }}"></td>
+                                        data-odds="{{ $portfolio !== 'Games' && $portfolio !== 'SeamlessGame' ? $d['odds'] : 0.1 }}">
+                                    </td>
                                     <td class="valuenominal stake" data-stake="{{ $d['stake'] }}"></td>
                                     <td class="valuenominal winLost" data-winLost="{{ $d['winLost'] }}"
                                         data-status="{{ $d['status'] }}"></td>

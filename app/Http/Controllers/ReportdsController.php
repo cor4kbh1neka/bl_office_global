@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Balance;
+use App\Models\Product;
 use App\Models\WinlossbetDay;
 use Carbon\Carbon;
 use DateTime;
@@ -53,6 +54,8 @@ class ReportdsController extends Controller
                 $data[0]['username'] = $request->query('username');
             }
         }
+
+        $dataproduct = Product::get();
         return view('reportds.index', [
             'title' => 'Report',
             'data' => $data,
@@ -61,6 +64,7 @@ class ReportdsController extends Controller
             'portfolio' => $portfolio,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'dataproduct' => $dataproduct
         ]);
     }
 
@@ -243,7 +247,7 @@ class ReportdsController extends Controller
             return $item;
         })->toArray();
 
-
+        $dataproduct = Product::get();
         return view('reportds.winlosematch', [
             'title' => 'Report',
             'totalnote' => 0,
@@ -256,7 +260,8 @@ class ReportdsController extends Controller
             'status' => $status,
             'sportsType' => $sportsType,
             'Message' => $Message,
-            'data_filter_sportsTypes' => $data_filter_sportsTypes
+            'data_filter_sportsTypes' => $data_filter_sportsTypes,
+            'dataproduct' => $dataproduct
         ]);
     }
 
@@ -297,6 +302,7 @@ class ReportdsController extends Controller
         $username = $request->input('username');
 
         $results = $this->getDataBonus($portfolio, $gabungdari, $gabunghingga, $username);
+        $dataproduct = Product::get();
 
         return view('reportds.to_wl', [
             'title' => 'TURN OVER & WINLOSE',
@@ -308,7 +314,8 @@ class ReportdsController extends Controller
             'username' => $username,
             'totaluser' => $results->count(),
             'total_to' => $results->sum('totalstake'),
-            'total_wl' => $results->sum('totalwinloss')
+            'total_wl' => $results->sum('totalwinloss'),
+            'dataproduct' => $dataproduct
         ]);
     }
 

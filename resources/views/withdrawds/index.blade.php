@@ -49,7 +49,7 @@
                                 <th class="baguser">Username</th>
                                 <th class="bagtanggal">tanggal</th>
                                 <th class="bagnominal">jumlah Withdraw</th>
-                                <th class="bagnominal">Sisa Saldo</th>
+                                <th class="bagnominal">Saldo Terkahir</th>
                                 <th>Transfer ke</th>
                             </tr>
 
@@ -93,8 +93,10 @@
                                             <span class="waktu">{{ $parts[1] }}</span>
                                         </div>
                                     </td>
-                                    <td class="valuenominal debit">{{ number_format($d->amount * 1000, 0, '.', ',') }}</td>
-                                    <td class="valuenominal">{{ number_format($d->balance * 1000, 0, '.', ',') }}</td>
+                                    <td class="valuenominal colorwd">{{ number_format($d->amount * 1000, 0, '.', ',') }}
+                                    </td>
+                                    <td class="valuenominal colorsa">
+                                        {{ number_format($d->balance * 1000, 0, '.', ',') }}</td>
                                     <td class="valuebank">{{ $d->mbank }}, {{ $d->mnamarek }}, {{ $d->mnorek }}
                                     </td>
                                 </tr>

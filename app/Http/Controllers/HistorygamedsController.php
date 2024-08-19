@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HistoryGameExport;
+use App\Models\Product;
 use Carbon\Carbon;
 
 class HistorygamedsController extends Controller
@@ -24,6 +25,8 @@ class HistorygamedsController extends Controller
 
         $getDataHistoryGame = $this->getDataHistoryGame($username, $portfolio, $startDate, $endDate, $refNo, $sportsType, $status);
         $data = $this->filterAndPaginate(collect($getDataHistoryGame['data']), 20);
+
+        $dataproduct = Product::get();
 
         //DATA SPORT TYPE   
         // $dataSportType = [
@@ -42,7 +45,8 @@ class HistorygamedsController extends Controller
             'status' => $status,
             // 'dataSportType' => $dataSportType,
             'Message' => $getDataHistoryGame['Message'],
-            'data_filter_sportsTypes' => $getDataHistoryGame['data_filter_sportsTypes']
+            'data_filter_sportsTypes' => $getDataHistoryGame['data_filter_sportsTypes'],
+            'dataproduct' => $dataproduct
         ]);
     }
 

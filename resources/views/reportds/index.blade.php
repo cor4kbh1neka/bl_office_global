@@ -59,15 +59,12 @@
                                             selected>
                                             pilih
                                             jenis</option>
-                                        <option value="SportsBook" {{ $portfolio == 'SportsBook' ? 'selected' : '' }}>
-                                            SportsBook
-                                        </option>
-                                        <option value="VirtualSports" {{ $portfolio == 'VirtualSports' ? 'selected' : '' }}>
-                                            VirtualSports
-                                        </option>
-                                        <option value="Games" {{ $portfolio == 'Games' ? 'selected' : '' }}>Games</option>
-                                        <option value="SeamlessGame" {{ $portfolio == 'SeamlessGame' ? 'selected' : '' }}>
-                                            SeamlessGame</option>
+                                        @foreach ($dataproduct as $item)
+                                            <option value="{{ $item->portfolio }}"
+                                                {{ $portfolio == $item->portfolio ? 'selected' : '' }}>
+                                                {{ $item->portfolio }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="listinputmember">
@@ -156,7 +153,6 @@
                                     </tr>
 
                                     @foreach ($data as $i => $d)
-                                    
                                         <tr>
                                             <td>{{ $i + 1 }}</td>
                                             <td>{{ $d['username'] }}</td>
@@ -182,7 +178,7 @@
                                 </tbody>
                             </table>
                             <div class="grouppagination" style="padding: 25px;">
-                                
+
                             </div>
                         </div>
                     </div>

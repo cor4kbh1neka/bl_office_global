@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ReferralExport;
+use App\Models\Product;
 
 class ReferraldsController extends Controller
 {
@@ -33,6 +34,7 @@ class ReferraldsController extends Controller
         $gabunghingga = $request->input('gabunghingga', date('Y-m-d'));
 
         $results = $this->getDataReferral($upline, $portfolio, $gabungdari, $gabunghingga);
+        $dataproduct = Product::get();
 
         return view('referralds.index', [
             'title' => 'Referral',
@@ -44,7 +46,8 @@ class ReferraldsController extends Controller
             'gabunghingga' => $gabunghingga,
             'query' => $query,
             'total_upline' => 0,
-            'total_bonus' => 0
+            'total_bonus' => 0,
+            'dataproduct' => $dataproduct
         ]);
     }
 

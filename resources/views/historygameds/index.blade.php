@@ -28,18 +28,12 @@
                                 <option value="" style="color: #838383; font-style: italic;" disabled="" selected>
                                     pilih
                                     jenis</option>
-                                <option value="SportsBook" {{ request('portfolio') == 'SportsBook' ? 'selected' : '' }}>
-                                    SportsBook
-                                </option>
-                                <option value="VirtualSports"
-                                    {{ request('portfolio') == 'VirtualSports' ? 'selected' : '' }}>
-                                    VirtualSports
-                                </option>
-                                <option value="Games" {{ request('portfolio') == 'Games' ? 'selected' : '' }}>Games
-                                </option>
-                                <option value="SeamlessGame" {{ request('portfolio') == 'SeamlessGame' ? 'selected' : '' }}>
-                                    SeamlessGame</option>
-
+                                @foreach ($dataproduct as $item)
+                                    <option value="{{ $item->portfolio }}"
+                                        {{ request('portfolio') == $item->portfolio ? 'selected' : '' }}>
+                                        {{ $item->portfolio }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="listinputmember">

@@ -29,15 +29,11 @@
                                     <label for="portfolio">jenis game</label>
                                     <select name="portfolio" id="portfolio">
                                         <option value="">all games</option>
-                                        <option value="SportsBook" {{ $portfolio == 'SportsBook' ? 'selected' : '' }}>
-                                            SportsBook</option>
-                                        <option value="VirtualSports" {{ $portfolio == 'VirtualSports' ? 'selected' : '' }}>
-                                            VirtualSports</option>
-                                        <option value="Games" {{ $portfolio == 'Games' ? 'selected' : '' }}>Games
-                                        </option>
-                                        <option value="SeamlessGame" {{ $portfolio == 'SeamlessGame' ? 'selected' : '' }}>
-                                            SeamlessGame
-                                        </option>
+                                        @foreach ($dataproduct as $item)
+                                            <option value="{{ $item->portfolio }}"
+                                                {{ $portfolio == $item->portfolio ? 'selected' : '' }}>
+                                                {{ $item->portfolio }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="listinputmember">

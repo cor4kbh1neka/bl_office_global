@@ -27,7 +27,6 @@ class HistorytransaksidsController extends Controller
         if ($request->getQueryString() && request('username')) {
             $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
         }
-        dd($data);
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
             'data' => $data,
@@ -207,6 +206,8 @@ class HistorytransaksidsController extends Controller
         $parameters = [
             'status'
         ];
+
+        dd($query);
 
         foreach ($parameters as $searchParam) {
             if (request($searchParam)) {

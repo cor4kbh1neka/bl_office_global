@@ -24,10 +24,10 @@ class HistorytransaksidsController extends Controller
     public function index(Request $request)
     {
         $data = [];
-        dd($request->getQueryString() && request('username'));
         if ($request->getQueryString() && request('username')) {
             $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
         }
+        dd($data);
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
             'data' => $data,

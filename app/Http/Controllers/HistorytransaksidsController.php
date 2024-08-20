@@ -202,12 +202,13 @@ class HistorytransaksidsController extends Controller
     }
     public function filterAndPaginate($data, $page) // Untuk beberapa kondisi pisahkan array dari parameter agar lolos $query
     {
+        dd($data);
+
         $query = collect($data);
         $parameters = [
             'status'
         ];
 
-        dd($query);
 
         foreach ($parameters as $searchParam) {
             if (request($searchParam)) {

@@ -24,6 +24,9 @@ class HistorytransaksidsController extends Controller
     public function index(Request $request)
     {
         $data = [];
+        dd(HistoryTransaksi::orderByDesc('created_at')
+            ->orderByDesc('urutan')
+            ->get());
         if ($request->query('username')) {  // Mengecek apakah ada query parameter 'username'
             $data = $this->filterAndPaginate(
                 HistoryTransaksi::orderByDesc('created_at')

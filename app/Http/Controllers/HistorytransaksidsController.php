@@ -23,6 +23,7 @@ class HistorytransaksidsController extends Controller
 {
     public function index(Request $request)
     {
+        dd('test');
         $data = [];
 
         if ($request->getQueryString() && request('username')) {

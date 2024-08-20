@@ -32,5 +32,5 @@ class HistoryTransaksi extends Model
     //     });
     // }
 
-    protected $table = 'history_transaksi';
+    protected $table = 'balance';
 }

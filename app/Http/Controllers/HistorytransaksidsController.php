@@ -25,6 +25,7 @@ class HistorytransaksidsController extends Controller
     {
         $data = [];
         if ($request->getQueryString() && request('username')) {
+            dd(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get());
             $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
         }
         return view('historytransaksids.index', [

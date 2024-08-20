@@ -35,6 +35,7 @@ use App\Http\Controllers\PersentasedsController;
 use App\Http\Controllers\BonusdsController;
 use App\Http\Controllers\MaintenancedsController;
 use App\Http\Controllers\BonussettingdsController;
+use App\Http\Controllers\LinkalternatifdsController;
 use App\Http\Controllers\PinController;
 use App\Models\Xdpwd;
 use App\Models\Outstanding;
@@ -358,8 +359,13 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/memotouserds/delivered', [MemotouserdsController::class, 'delivered']);
             Route::get('/memotouserds/read', [MemotouserdsController::class, 'deliveredread']);
         });
-        /*-- Notifikasids --*/
 
+
+        /* LinkAlternatif */
+        Route::get('/linkalternatifds', [LinkalternatifdsController::class, 'index']);
+
+
+        /*-- Notifikasids --*/
         Route::get('/notifikasids', [NotifikasidsController::class, 'index']);
         Route::get('/notifikasids/read', [NotifikasidsController::class, 'readinformasi']);
 

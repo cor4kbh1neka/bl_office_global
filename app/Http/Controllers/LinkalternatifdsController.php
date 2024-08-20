@@ -1,0 +1,357 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\BetSetting;
+use App\Models\Settings;
+use App\Models\Companys;
+use App\Models\Currencys;
+use App\Models\Persentase;
+use App\Models\UserAccess;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+
+class LinkalternatifdsController extends Controller
+{
+    public function index(Request $request)
+    {
+        $url = 'https://api.cloudflare.com/client/v4/zones';
+        $response = Http::withHeaders([
+            'X-Auth-Email' => env('EMAIL'),
+            'X-Auth-Key' => env('TOKENCF'),
+        ])->get($url);
+        if ($response->successful()) {
+            $responseData = $response->json()["result"];
+            foreach ($responseData as &$item) {
+                $createdOn = Carbon::parse($item['created_on']);
+                $item['created_on'] = $createdOn->format('Y-m-d');
+            }
+        } else {
+            $responseData = [];
+        }
+
+        return view('linkalternatifds.index', [
+            'title' => 'Link Alternatif',
+            'data' => $responseData,
+            'totalnote' => 0,
+        ]);
+    }
+
+    public function create()
+    {
+        $dataAccess = UserAccess::get();
+        return view('linkalternatifds.create', [
+            'title' => 'Add New Link Alternatif',
+            'totalnote' => 0,
+            'dataAccess' => $dataAccess
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+            'pin' => 'required',
+            'divisi' => 'required',
+        ]);
+
+        $user = new User();
+        $user->name = $request->username;
+        $user->username = $request->username;
+        $user->divisi = $request->divisi;
+        $user->password = bcrypt($request->password);
+        $user->pin = bcrypt($request->pin);
+        $user->image = "";
+        $user->status = 1;
+
+        $user->save();
+
+        return redirect('/linkalternatifds')->with('success', 'Aget berhasil ditambahkan.');
+    }
+
+    public function linkalternatifupdate($id)
+    {
+        $data = User::where('id', $id)->first();
+
+        if (auth()->user()->divisi != 'superadmin' && $data->divisi == 'superadmin') {
+            abort(403);
+        }
+
+        $dataAccess = UserAccess::get();
+        return view('linkalternatifds.linkalternatif_update', [
+            'title' => 'Update Link Alternatif',
+            'totalnote' => 0,
+            'data' => $data,
+            'dataAccess' => $dataAccess
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'divisi' => 'required',
+            'newpassword' => 'nullable',
+            'newpin' => 'nullable',
+        ]);
+
+        if (auth()->user()->divisi != 'superadmin' && $request->divisi == 'superadmin') {
+            abort(403);
+        }
+
+        $user = User::findOrFail($request->id);
+        if ($request->filled('newpassword')) {
+            $user->password = bcrypt($request->newpassword);
+        }
+        if ($request->filled('newpin')) {
+            $user->pin = bcrypt($request->newpin);
+        }
+
+        $user->divisi = $request->divisi;
+        $user->save();
+
+        Cache::forget('user_access_' . $user->id);
+
+        return redirect()->back()->with('success', 'Data Link Alternatif berhasil diupdate.');
+    }
+
+    public function linkalternatifinfo()
+    {
+
+        return view('linkalternatifds.linkalternatif_info', [
+            'title' => 'Informasi Link Alternatif',
+            'totalnote' => 0,
+        ]);
+    }
+
+    public function access()
+    {
+        $data = UserAccess::get();
+        return view('linkalternatifds.access', [
+            'title' => 'Access Link Alternatif',
+            'totalnote' => 0,
+            'data' => $data
+        ]);
+    }
+
+    public function accessupdate($id)
+    {
+        $data = UserAccess::where('id', $id)->first();
+        return view('linkalternatifds.access_update', [
+            'title' => 'Access Link Alternatif Update',
+            'totalnote' => 0,
+            'data' => $data
+        ]);
+    }
+
+    public function accessadd()
+    {
+        return view('linkalternatifds.access_add', [
+            'title' => 'Add Access Link Alternatif',
+            'totalnote' => 0,
+        ]);
+    }
+
+    public function store_access(Request $request)
+    {
+
+        $request->validate([
+            'name_access' => 'required'
+        ]);
+
+        $user = new UserAccess();
+        $user->name_access = $request->name_access;
+        $user->deposit = isset($request->deposit) ? true : false;
+        $user->withdraw = isset($request->withdraw) ? true : false;
+        $user->manual_transaction = isset($request->manual_transaction) ? true : false;
+        $user->history_coin = isset($request->history_coin) ? true : false;
+
+        $user->member_list = isset($request->member_list) ? true : false;
+        $user->member_seamless = isset($request->member_seamless) ? true : false;
+        $user->referral = isset($request->referral) ? true : false;
+        $user->history_game = isset($request->history_game) ? true : false;
+        $user->member_outstanding = isset($request->member_outstanding) ? true : false;
+        $user->history_transaction = isset($request->history_transaction) ? true : false;
+        $user->cashback_rollingan = isset($request->cashback_rollingan) ? true : false;
+        $user->report = isset($request->report) ? true : false;
+
+        $user->bank = isset($request->bank) ? true : false;
+        $user->refeerral_bonus = isset($request->refeerral_bonus) ? true : false;
+        $user->memo = isset($request->memo) ? true : false;
+
+        $user->linkalternatif = isset($request->linkalternatif) ? true : false;
+        $user->analytic = isset($request->analytic) ? true : false;
+        $user->content = isset($request->content) ? true : false;
+        $user->apk_setting = isset($request->apk_setting) ? true : false;
+        $user->memo_other = isset($request->memo_other) ? true : false;
+        $user->save();
+
+        return redirect('/linkalternatifds/access')->with('success', 'Access linkalternatif berhasil ditambahkan.');
+    }
+
+    public function destroy_access($id)
+    {
+        $data = UserAccess::findOrFail($id);
+        $data->delete();
+
+        return redirect()->back()->with('success', 'Access linkalternatif berhasil dihapus.');
+    }
+
+    public function update_access(Request $request)
+    {
+
+        $request->validate([
+            'id' => 'required',
+            'name_access' => 'required'
+        ]);
+
+        $id = $request->id;
+        $user = UserAccess::findOrFail($id);
+
+        $user->name_access = $request->name_access;
+        $user->deposit = isset($request->deposit) ? true : false;
+        $user->withdraw = isset($request->withdraw) ? true : false;
+        $user->manual_transaction = isset($request->manual_transaction) ? true : false;
+        $user->history_coin = isset($request->history_coin) ? true : false;
+
+        $user->member_list = isset($request->member_list) ? true : false;
+        $user->member_seamless = isset($request->member_seamless) ? true : false;
+        $user->referral = isset($request->referral) ? true : false;
+        $user->history_game = isset($request->history_game) ? true : false;
+        $user->member_outstanding = isset($request->member_outstanding) ? true : false;
+        $user->history_transaction = isset($request->history_transaction) ? true : false;
+        $user->cashback_rollingan = isset($request->cashback_rollingan) ? true : false;
+        $user->report = isset($request->report) ? true : false;
+
+        $user->bank = isset($request->bank) ? true : false;
+        $user->refeerral_bonus = isset($request->refeerral_bonus) ? true : false;
+        $user->memo = isset($request->memo) ? true : false;
+
+        $user->linkalternatif = isset($request->linkalternatif) ? true : false;
+        $user->analytic = isset($request->analytic) ? true : false;
+        $user->content = isset($request->content) ? true : false;
+        $user->apk_setting = isset($request->apk_setting) ? true : false;
+        $user->memo_other = isset($request->memo_other) ? true : false;
+        $user->save();
+
+        Cache::flush();
+
+        return redirect()->back()->with('success', 'Access linkalternatif berhasil diupdate.');
+    }
+
+    // public function storesetting(Request $request)
+    // {
+    //     $request->validate([
+    //         'min' => 'required',
+    //         'max' => 'required',
+    //         'sportsbook' => 'required',
+    //         'virtualsports' => 'required',
+    //         'games' => 'required'
+    //     ]);
+
+    //     $dataBetSetting = BetSetting::where('id', 1)->first();
+    //     $reqBetSetting = [
+    //         'min' => $request->min,
+    //         'max' => $request->max
+    //     ];
+    //     if ($dataBetSetting) {
+    //         $dataBetSetting->update($reqBetSetting);
+    //     } else {
+    //         BetSetting::create($reqBetSetting);
+    //     }
+
+    //     $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
+    //     if ($dataPersentaseSB) {
+    //         $dataPersentaseSB->update([
+    //             'persentase' => $request->sportsbook
+    //         ]);
+    //     } else {
+    //         Persentase::create([
+    //             'jenis' => 'SportsBook',
+    //             'persentase' => $request->sportsbook
+    //         ]);
+    //     }
+
+
+    //     $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
+    //     if ($dataPersentaseVS) {
+    //         $dataPersentaseVS->update([
+    //             'persentase' => $request->virtualsports
+    //         ]);
+    //     } else {
+    //         Persentase::create([
+    //             'jenis' => 'SportsBook',
+    //             'persentase' => $request->virtualsports
+    //         ]);
+    //     }
+
+    //     $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
+    //     if ($dataPersentaseG) {
+    //         $dataPersentaseG->update([
+    //             'persentase' => $request->games
+    //         ]);
+    //     } else {
+    //         Persentase::create([
+    //             'jenis' => 'SportsBook',
+    //             'persentase' => $request->games
+    //         ]);
+    //     }
+
+
+
+    //     $user = new User();
+    //     $user->name = $request->username;
+    //     $user->username = $request->username;
+    //     $user->divisi = $request->divisi;
+    //     $user->password = bcrypt($request->password);
+    //     $user->image = "";
+    //     $user->status = 1;
+
+    //     $user->save();
+
+    //     return redirect('/linkalternatifds')->with('success', 'Aget berhasil ditambahkan.');
+    // }
+
+    public function userAndUserAccess()
+    {
+        $user = auth()->user();
+        $userWithAccess = User::with('userAccess')->find($user->id);
+        // $userWithAccess = User::with('userAccess')->find($user->id); 
+        // userAccess di atas adalah penghubung ke method userAccess di model User.php
+        // Cara bacanya User yang memiliki hubungan ke model UserAccess dengan name_access yang serupa dengan divisi milik model User
+        // Maka temukan ID nya si auth user dan 
+        $result = $userWithAccess->toArray();
+        if ($result['user_access']['deposit'] = 1) {
+            dd('masuk');
+        } else {
+            dd('keluar');
+        }
+
+        return $result;
+    }
+
+    public function changeStatus(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (auth()->user()->divisi != 'superadmin' && $user->divisi == 'superadmin') {
+            abort(403);
+        }
+
+        if ($user) {
+            $user->status = $request->status;
+            $user->pin_attempts = 0;
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'Status linkalternatif telah diubah.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Pengguna tidak ditemukan.']);
+        }
+    }
+}

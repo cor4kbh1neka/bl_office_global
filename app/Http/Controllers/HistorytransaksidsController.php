@@ -39,6 +39,11 @@ class HistorytransaksidsController extends Controller
             'is_old' => false
         ]);
     }
+    public function crot()
+    {
+        $data = HistoryTransaksi::all();
+        return $data;
+    }
 
     public function index_old(Request $request)
     {

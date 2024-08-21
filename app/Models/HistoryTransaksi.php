@@ -18,10 +18,6 @@ class HistoryTransaksi extends Model
 
     protected $keyType = 'string';
 
-    // protected $casts = [
-    //     'id' => 'string',
-    // ];
-
     protected static function boot()
     {
         parent::boot();

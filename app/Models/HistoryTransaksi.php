@@ -18,19 +18,19 @@ class HistoryTransaksi extends Model
 
     protected $keyType = 'string';
 
-    protected $casts = [
-        'id' => 'string',
-    ];
+    // protected $casts = [
+    //     'id' => 'string',
+    // ];
 
-    // protected static function boot()
-    // {
-    //     parent::boot();
+    protected static function boot()
+    {
+        parent::boot();
 
-    //     static::creating(function ($transaction) {
-    //         $transaction->id = Str::uuid()->toString();
-    //         $transaction->urutan = static::where('username', $transaction->username)->max('urutan') + 1;
-    //     });
-    // }
+        static::creating(function ($transaction) {
+            $transaction->id = Str::uuid()->toString();
+            $transaction->urutan = static::where('username', $transaction->username)->max('urutan') + 1;
+        });
+    }
 
     protected $table = 'history_transaksi';
 }

@@ -14,7 +14,7 @@ class HistoryTransaksi extends Model
 
     protected $fillable = ['username', 'invoice', 'refno', 'keterangan', 'portfolio', 'status', 'debit', 'kredit', 'balance'];
 
-    // protected $primaryKey = 'id';
+    protected $primaryKey = 'id';
 
     // protected $keyType = 'string';
 

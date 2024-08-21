@@ -409,5 +409,4 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getdatareferralfail', [ApiController::class, 'getDataReferralFail']);
     });
 });
-Route::get('/asimilikiti110011', [HistorytransaksidsController::class, 'crot']);
 // });

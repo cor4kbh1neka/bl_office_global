@@ -363,6 +363,13 @@ Route::middleware(['auth'])->group(function () {
 
         /* LinkAlternatif */
         Route::get('/linkalternatifds', [LinkalternatifdsController::class, 'index']);
+        Route::get('/linkalternatifds/create', [LinkalternatifdsController::class, 'create']);
+        Route::post('/linkalternatifds/store', [LinkalternatifdsController::class, 'store']);
+        Route::get('/linkalternatifds/edit/{id}', [LinkalternatifdsController::class, 'edit']);
+        Route::delete('/linkalternatifds/delete/{zoneid}/{id}', [LinkalternatifdsController::class, 'delete']);
+        Route::post('/linkalternatifds/updatedns', [LinkalternatifdsController::class, 'updatedns']);
+        Route::post('/linkalternatifds/storedns', [LinkalternatifdsController::class, 'storedns']);
+        Route::delete('/linkalternatifds/remove/{id}/{link}', [LinkalternatifdsController::class, 'removeDomain']);
 
 
         /*-- Notifikasids --*/

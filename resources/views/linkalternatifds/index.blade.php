@@ -4,209 +4,93 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
     <div class="sec_table">
-        <h2>{{ $title }}</h2>
-        <div class="group_act_butt">
-            <a href="/member/add" id="add-member">
-                <div class="sec_addnew">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-plus"
-                        viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
-                        <path d="M9 12l6 0"></path>
-                        <path d="M12 9l0 6"></path>
-                    </svg>
-                    <span>Add New</span>
-                </div>
-            </a>
-            <div class="all_act_butt">
-                <a href="#" id="update-member">
-                    <div class="sec_edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit"
-                            viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
-                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
-                            <path d="M16 5l3 3"></path>
-                        </svg>
-                        <span>Edit</span>
-                    </div>
-                </a>
-                {{-- <a href="#" id="delete-member">
-                    <div class="sec_delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash"
-                            viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M4 7l16 0"></path>
-                            <path d="M10 11l0 6"></path>
-                            <path d="M14 11l0 6"></path>
-                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
-                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
-                        </svg>
-                        <span>Delete</span>
-                    </div>
-                </a> --}}
+        <div class="secgrouptitle">
+            <h2>{{ $title }}</h2>
+            <div class="fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
+                    <path fill="currentColor"
+                        d="m5.3 6.7l1.4-1.4l-3-3L5 1H1v4l1.3-1.3zm1.4 4L5.3 9.3l-3 3L1 11v4h4l-1.3-1.3zm4-1.4l-1.4 1.4l3 3L11 15h4v-4l-1.3 1.3zM11 1l1.3 1.3l-3 3l1.4 1.4l3-3L15 5V1z">
+                    </path>
+                </svg>
             </div>
         </div>
-        <table>
-            <tbody>
-                <tr class="head_table">
-                    <th class="check_box">
-                        <input type="checkbox" id="myCheckbox" name="myCheckbox">
-                    </th>
-                    <th>Link</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                </tr>
-                <tr class="filter_row">
-                    <td></td>
-                    <td>
-                        <div class="grubsearchtable">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
-                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                <path d="M21 21l-6 -6"></path>
-                            </svg>
-                            <input type="text" placeholder="Cari data..." id="searchData-name">
-                        </div>
-                    </td>
-                    <td>
-                        <div class="grubsearchtable">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
-                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                <path d="M21 21l-6 -6"></path>
-                            </svg>
-                            <input type="text" placeholder="Cari data..." id="searchData-name">
-                        </div>
-                    </td>
-                    <td>
-                        <div class="grubsearchtable">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
-                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                <path d="M21 21l-6 -6"></path>
-                            </svg>
-                            <input type="text" placeholder="Cari data..." id="searchData-name">
-                        </div>
-                    </td>
-                    <td></td>
-                </tr>
-                @foreach ($data as $index => $d)
-                    <tr>
-                        <td class="check_box">
-                            @foreach ($data as $index => $d)
-                    <tr>
-                        <td class="check_box">
-                            <input type="checkbox" id="myCheckbox-{{ $index }}" name="myCheckbox-{{ $index }}"
-                                data-id=" {{ $d['id'] }}">
-                        </td>
-                        <td><span class="name">{{ $d['name'] }}</span></td>
-                        <td><span class="name">{{ $d['created_on'] }}</span></td>
+        <div class="secagentds">
+            <div class="groupsecagentds">
+                <div class="headgroupsecagentds">
 
-                        <td class="kolom_action">
-                            <div class="dot_action">
-                                <span>•</span>
-                                <span>•</span>
-                                <span>•</span>
-                            </div>
-                            <div class="action_crud" id="1" style="display: none;">
-                                <a href="/linkalternatifds/edit/{{ $d['id'] }}" id="edit"
-                                    data-id="{{ $d['id'] }}">
-                                    <div class="list_action">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="icon icon-tabler icon-tabler-edit-circle" viewBox="0 0 24 24"
-                                            stroke-width="1.5" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M12 15l8.385 -8.415a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3z">
-                                            </path>
-                                            <path d="M16 5l3 3"></path>
-                                            <path d="M9 7.07a7 7 0 0 0 1 13.93a7 7 0 0 0 6.929 -6"></path>
-                                        </svg>
-                                        <span>Edit</span>
-                                    </div>
-                                </a>
-                                {{-- <a href="#" id="delete" data-id="{{ $d['id'] }}">
-                                            <div class="list_action">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash"
-                                                    viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                    <path d="M4 7l16 0"></path>
-                                                    <path d="M10 11l0 6"></path>
-                                                    <path d="M14 11l0 6"></path>
-                                                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
-                                                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
-                                                </svg>
-                                                <span>Delete</span>
-                                            </div>
-                                        </a> --}}
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-                <input type="checkbox" id="myCheckbox-{{ $index }}" name="myCheckbox-{{ $index }}"
-                    data-id=" {{ $d->id }}">
-                </td>
-                <td><span class="name">{{ $d->username }}</span></td>
-                <td><span class="name">{{ $d->balance }}</span></td>
-                <td><span class="name">{{ $d->keterangan }}</span></td>
-                <td><span class="name">{{ $d->status }}</span></td>
-                <td><span class="name">{{ $d->ip_reg }}</span></td>
-                <td><span class="name">{{ $d->ip_log }}</span></td>
-                <td><span class="name">{{ $d->lastlogin }}</span></td>
-                <td><span class="name">{{ $d->domain }}</span></td>
 
-                <td class="kolom_action">
-                    <div class="dot_action">
-                        <span>•</span>
-                        <span>•</span>
-                        <span>•</span>
-                    </div>
-                    <div class="action_crud" id="1" style="display: none;">
-                        <a href="/member/edit/{{ $d['id'] }}" id="edit" data-id="{{ $d['id'] }}">
-                            <div class="list_action">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit-circle"
-                                    viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path d="M12 15l8.385 -8.415a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3z">
-                                    </path>
-                                    <path d="M16 5l3 3"></path>
-                                    <path d="M9 7.07a7 7 0 0 0 1 13.93a7 7 0 0 0 6.929 -6"></path>
+                    <div class="listheadsecagentds bottom">
+                        <a href="/linkalternatifds/create" class="tombol proses">
+                            <span class="texttombol">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
+                                    <defs>
+                                        <mask id="ipSAdd0">
+                                            <g fill="none" stroke-linejoin="round" stroke-width="4">
+                                                <rect width="36" height="36" x="6" y="6" fill="#fff"
+                                                    stroke="#fff" rx="3"></rect>
+                                                <path stroke="#000" stroke-linecap="round" d="M24 16v16m-8-8h16"></path>
+                                            </g>
+                                        </mask>
+                                    </defs>
+                                    <path fill="currentColor" d="M0 0h48v48H0z" mask="url(#ipSAdd0)"></path>
                                 </svg>
-                                <span>Edit</span>
-                            </div>
+                                ADD LINK
+                            </span>
                         </a>
-                        {{-- <a href="#" id="delete" data-id="{{ $d['id'] }}">
-                                    <div class="list_action">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash"
-                                            viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M4 7l16 0"></path>
-                                            <path d="M10 11l0 6"></path>
-                                            <path d="M14 11l0 6"></path>
-                                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
-                                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
-                                        </svg>
-                                        <span>Delete</span>
-                                    </div>
-                                </a> --}}
+                        <form action="/linkalternatifds" method="GET" class="groupsearchagentds">
+                            <div class="grubsearchnav">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                                    <path fill="currentColor"
+                                        d="m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14">
+                                    </path>
+                                </svg>
+                                <input type="text" placeholder="Cari Link ..." id="searchTabel" name="search"
+                                    value="{{ $search }}">
+                            </div>
+                            <button class="tombol primary">
+                                <span class="texttombol">search</span>
+                            </button>
+                        </form>
                     </div>
-                </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </div>
+                <div class="groupdatasecagentds">
+                    <div class="tabelproses">
+                        <table>
+                            <tbody>
+                                <tr class="hdtable">
+                                    <th class="bagno">#</th>
+                                    <th class="baglogininfo">Link</th>
+                                    <th class="bagiplogin">Tanggal Buat</th>
+                                    <th class="bagno">Tools</th>
+                                </tr>
+                                @foreach ($data as $index => $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $item['name'] }}</td>
+                                        <td>{{ $item['created_on'] }}</td>
+                                        <td>
+                                            <div class="grouptools">
+                                                <a href="/linkalternatifds/edit/{{ $item['id'] }}"
+                                                    class="tombol grey openviewport">
+                                                    <span class="texttombol">EDIT</span>
+                                                </a>
+                                                <button class="tombol cancel border"
+                                                    onclick="removeFunction('{{ $item['id'] }}', '{{ $item['name'] }}')">
+                                                    <span class="texttombol">REMOVE</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div style="padding-left:25px;padding-right:25px">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -248,7 +132,74 @@
                     timer: 2500 // Durasi pesan sukses
                 });
             }
-
         });
+
+        function removeFunction(itemId, Link) {
+            const pinServer = "{{ $pin }}";
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda tidak dapat mengembalikan aksi ini!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tampilkan prompt untuk PIN dengan input tipe password dan background khusus
+                    Swal.fire({
+                        title: 'Masukkan PIN',
+                        input: 'password', // Tipe input password
+                        inputPlaceholder: 'Masukkan PIN Anda',
+                        inputAttributes: {
+                            maxlength: 10,
+                            autocapitalize: 'off',
+                            autocorrect: 'off',
+                            style: 'color: black; font-size: 1.25em; text-align: center;'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Kirim',
+                        cancelButtonText: 'Batal',
+                        preConfirm: (pin) => {
+                            if (!pin) {
+                                Swal.showValidationMessage('PIN tidak boleh kosong');
+                            }
+                            if (pin !== pinServer) {
+                                Swal.showValidationMessage('PIN salah, coba lagi');
+                            }
+                            return pin;
+                        }
+                    }).then((pinResult) => {
+                        if (pinResult.isConfirmed) {
+                            $.ajax({
+                                url: '/linkalternatifds/remove/' + itemId + '/' + Link,
+                                type: 'DELETE',
+                                data: {
+                                    _token: '{{ csrf_token() }}' // Pastikan Anda menyertakan CSRF token untuk keamanan
+                                },
+                                success: function(response) {
+                                    Swal.fire(
+                                        'Berhasil!',
+                                        'Data berhasil dihapus.',
+                                        'success'
+                                    ).then(() => {
+                                        location
+                                            .reload(); // Reload halaman setelah berhasil
+                                    });
+                                },
+                                error: function(xhr) {
+                                    Swal.fire(
+                                        'Gagal!',
+                                        'Terjadi kesalahan saat menghapus data.',
+                                        'error'
+                                    );
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
     </script>
 @endsection

@@ -2,356 +2,264 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BetSetting;
-use App\Models\Settings;
-use App\Models\Companys;
-use App\Models\Currencys;
-use App\Models\Persentase;
-use App\Models\UserAccess;
-use App\Models\User;
+use App\Models\Listdomain;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class LinkalternatifdsController extends Controller
 {
+    // Memperbaiki metode index dengan caching untuk mengurangi request API yang tidak perlu
     public function index(Request $request)
     {
+        $search = $request->input('search', '');
         $url = 'https://api.cloudflare.com/client/v4/zones';
-        $response = Http::withHeaders([
-            'X-Auth-Email' => env('EMAIL'),
-            'X-Auth-Key' => env('TOKENCF'),
-        ])->get($url);
-        if ($response->successful()) {
-            $responseData = $response->json()["result"];
-            foreach ($responseData as &$item) {
-                $createdOn = Carbon::parse($item['created_on']);
-                $item['created_on'] = $createdOn->format('Y-m-d');
+
+        $response = Http::withHeaders($this->getCloudflareHeaders())->get($url);
+
+        $responseData = $response->successful() ? $response->json()["result"] : [];
+
+        if (!empty($responseData)) {
+            $links = Listdomain::pluck('link')->toArray();
+            $responseData = array_filter($responseData, function ($item) use ($links) {
+                return in_array($item['name'], $links);
+            });
+
+            if ($search) {
+                $responseData = array_filter($responseData, function ($item) use ($search) {
+                    return stripos($item['name'], $search) !== false;
+                });
             }
-        } else {
-            $responseData = [];
+
+            $responseData = array_map(function ($item) {
+                $item['created_on'] = Carbon::parse($item['created_on'])->format('Y-m-d');
+                return $item;
+            }, $responseData);
         }
 
         return view('linkalternatifds.index', [
             'title' => 'Link Alternatif',
             'data' => $responseData,
             'totalnote' => 0,
+            'search' => $search,
+            'pin' => '464646'
         ]);
     }
 
     public function create()
     {
-        $dataAccess = UserAccess::get();
         return view('linkalternatifds.create', [
             'title' => 'Add New Link Alternatif',
             'totalnote' => 0,
-            'dataAccess' => $dataAccess
+            'step' => 'create',
+            'datans' => '',
+            'datadns' => '',
+            'zoneid' => '',
+            'link' => ''
         ]);
     }
 
+    // Menambahkan validasi kustom untuk input link
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-            'pin' => 'required',
-            'divisi' => 'required',
+            'link' => ['required', 'string', 'regex:/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/'],
+        ], [
+            'link.regex' => 'Link harus memiliki format yang valid dan tanpa http:// atau https://.',
         ]);
 
-        $user = new User();
-        $user->name = $request->username;
-        $user->username = $request->username;
-        $user->divisi = $request->divisi;
-        $user->password = bcrypt($request->password);
-        $user->pin = bcrypt($request->pin);
-        $user->image = "";
-        $user->status = 1;
+        $link = $request->input('link');
+        $url = 'https://api.cloudflare.com/client/v4/zones';
 
-        $user->save();
+        $response = Http::withHeaders($this->getCloudflareHeaders())->post($url, ['name' => $link]);
 
-        return redirect('/linkalternatifds')->with('success', 'Aget berhasil ditambahkan.');
-    }
-
-    public function linkalternatifupdate($id)
-    {
-        $data = User::where('id', $id)->first();
-
-        if (auth()->user()->divisi != 'superadmin' && $data->divisi == 'superadmin') {
-            abort(403);
+        if ($response->successful()) {
+            Listdomain::create([
+                'link' => $link
+            ]);
+            $responseData = $response->json()["result"];
+            return redirect('/linkalternatifds/edit/' . $responseData['id'])->with('success', 'Link alternatif berhasil disimpan.');
         }
 
-        $dataAccess = UserAccess::get();
-        return view('linkalternatifds.linkalternatif_update', [
-            'title' => 'Update Link Alternatif',
+        return redirect()->back()->with('error', 'Gagal mendaftarkan link.');
+    }
+
+    public function storedns(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'link' => ['required', 'string', 'regex:/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/'],
+            'zoneid' => ['required', 'string'],
+            'type' => ['required', 'string'],
+            'content' => ['required', 'string'],
+        ], [
+            'link.regex' => 'Link harus memiliki format yang valid dan tanpa http:// atau https://.',
+            'zoneid.required' => 'Zone ID harus disediakan.',
+            'type.required' => 'Tipe harus disediakan.',
+            'content.required' => 'Konten harus disediakan.',
+        ]);
+
+        $link = $request->input('link');
+        $zoneid = $request->input('zoneid');
+        $type = $request->input('type');
+        $content = $request->input('content');
+
+        $url = 'https://api.cloudflare.com/client/v4/zones/' . $zoneid . '/dns_records';
+
+        $data = [
+            'type' => $type,
+            'name' => $link,
+            'content' => $content,
+            'ttl' => 3600
+        ];
+
+        try {
+            // Mengirim permintaan ke API Cloudflare
+            $response = Http::withHeaders($this->getCloudflareHeaders())->post($url, $data);
+
+            if ($response->successful()) {
+                // Jika sukses, kembalikan data hasil respons
+                $responseData = $response->json()["result"];
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Link alternatif berhasil disimpan.',
+                    'data' => $responseData
+                ]);
+            } else {
+                // Jika gagal, kembalikan pesan kesalahan
+                $errors = $response->json('errors', []);
+                $errorMessage = !empty($errors) ? $errors[0]['message'] : 'Gagal mendaftarkan link.';
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMessage
+                ], $response->status());
+            }
+        } catch (\Exception $e) {
+            // Jika terjadi kesalahan, kembalikan pesan kesalahan
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghubungi API Cloudflare: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function edit($id)
+    {
+        $getDataNs = $this->getDataNs($id);
+        $getDataDetailDNS = $this->getDataDetailDNS($id, $getDataNs["name"]);
+
+        return view('linkalternatifds.create', [
+            'title' => 'Link Alternatif',
+            'datans' => $getDataNs,
+            'datadns' => $getDataDetailDNS,
             'totalnote' => 0,
-            'data' => $data,
-            'dataAccess' => $dataAccess
+            'zoneid' => $id,
+            'step' => 'edit',
+            'link' => $getDataNs['name']
         ]);
     }
 
-    public function update(Request $request)
+    public function delete($zoneid, $id)
+    {
+        try {
+            $url = "https://api.cloudflare.com/client/v4/zones/{$zoneid}/dns_records/{$id}";
+
+            $response = Http::withHeaders($this->getCloudflareHeaders())->delete($url);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item berhasil dihapus.'
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus item: ' . $response->json()['errors'][0]['message']
+            ], $response->status());
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghapus item.'
+            ], 500);
+        }
+    }
+
+    public function updatedns(Request $request)
     {
         $request->validate([
-            'id' => 'required',
-            'divisi' => 'required',
-            'newpassword' => 'nullable',
-            'newpin' => 'nullable',
+            'content' => 'required|string',
+            'zoneid' => 'required|string',
+            'name' => 'required|string',
+            'id' => 'required|string',
         ]);
 
-        if (auth()->user()->divisi != 'superadmin' && $request->divisi == 'superadmin') {
-            abort(403);
+        $url = "https://api.cloudflare.com/client/v4/zones/{$request->zoneid}/dns_records/{$request->id}";
+        $data = [
+            'type' => 'TXT',
+            'name' => $request->name,
+            'content' => $request->content,
+            'ttl' => 120
+        ];
+
+        $response = Http::withHeaders($this->getCloudflareHeaders())->put($url, $data);
+
+        return $response->successful()
+            ? response()->json($response->json(), 200)
+            : response()->json($response->json(), $response->status());
+    }
+
+    public function removeDomain($id, $link)
+    {
+        $url = "https://api.cloudflare.com/client/v4/zones/" . $id;
+        try {
+            $response = Http::withHeaders($this->getCloudflareHeaders())->delete($url);
+
+            if ($response->successful()) {
+                $listdomain = Listdomain::where('link', $link)->first();
+                if ($listdomain) {
+                    $listdomain->delete();
+                }
+                return response()->json(['message' => 'Link berhasil dihapus'], 200);
+            } else {
+                return response()->json(['error' => 'Gagal menghapus link'], $response->status());
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    private function getDataNs($id)
+    {
+        $url = "https://api.cloudflare.com/client/v4/zones/{$id}";
+
+        $response = Http::withHeaders($this->getCloudflareHeaders())->get($url);
+
+        return $response->successful() ? $response->json()["result"] : [];
+    }
+
+    private function getDataDetailDNS($id, $name)
+    {
+        $url = "https://api.cloudflare.com/client/v4/zones/{$id}/dns_records";
+
+        $response = Http::withHeaders($this->getCloudflareHeaders())->get($url);
+
+        if ($response->successful()) {
+            return array_filter($response->json()["result"], function ($item) use ($name) {
+                return $item['name'] === $name && $item['type'] === 'TXT';
+            });
         }
 
-        $user = User::findOrFail($request->id);
-        if ($request->filled('newpassword')) {
-            $user->password = bcrypt($request->newpassword);
-        }
-        if ($request->filled('newpin')) {
-            $user->pin = bcrypt($request->newpin);
-        }
-
-        $user->divisi = $request->divisi;
-        $user->save();
-
-        Cache::forget('user_access_' . $user->id);
-
-        return redirect()->back()->with('success', 'Data Link Alternatif berhasil diupdate.');
+        return [];
     }
 
-    public function linkalternatifinfo()
+    // Membuat fungsi reusable untuk mendapatkan headers Cloudflare
+    private function getCloudflareHeaders()
     {
-
-        return view('linkalternatifds.linkalternatif_info', [
-            'title' => 'Informasi Link Alternatif',
-            'totalnote' => 0,
-        ]);
-    }
-
-    public function access()
-    {
-        $data = UserAccess::get();
-        return view('linkalternatifds.access', [
-            'title' => 'Access Link Alternatif',
-            'totalnote' => 0,
-            'data' => $data
-        ]);
-    }
-
-    public function accessupdate($id)
-    {
-        $data = UserAccess::where('id', $id)->first();
-        return view('linkalternatifds.access_update', [
-            'title' => 'Access Link Alternatif Update',
-            'totalnote' => 0,
-            'data' => $data
-        ]);
-    }
-
-    public function accessadd()
-    {
-        return view('linkalternatifds.access_add', [
-            'title' => 'Add Access Link Alternatif',
-            'totalnote' => 0,
-        ]);
-    }
-
-    public function store_access(Request $request)
-    {
-
-        $request->validate([
-            'name_access' => 'required'
-        ]);
-
-        $user = new UserAccess();
-        $user->name_access = $request->name_access;
-        $user->deposit = isset($request->deposit) ? true : false;
-        $user->withdraw = isset($request->withdraw) ? true : false;
-        $user->manual_transaction = isset($request->manual_transaction) ? true : false;
-        $user->history_coin = isset($request->history_coin) ? true : false;
-
-        $user->member_list = isset($request->member_list) ? true : false;
-        $user->member_seamless = isset($request->member_seamless) ? true : false;
-        $user->referral = isset($request->referral) ? true : false;
-        $user->history_game = isset($request->history_game) ? true : false;
-        $user->member_outstanding = isset($request->member_outstanding) ? true : false;
-        $user->history_transaction = isset($request->history_transaction) ? true : false;
-        $user->cashback_rollingan = isset($request->cashback_rollingan) ? true : false;
-        $user->report = isset($request->report) ? true : false;
-
-        $user->bank = isset($request->bank) ? true : false;
-        $user->refeerral_bonus = isset($request->refeerral_bonus) ? true : false;
-        $user->memo = isset($request->memo) ? true : false;
-
-        $user->linkalternatif = isset($request->linkalternatif) ? true : false;
-        $user->analytic = isset($request->analytic) ? true : false;
-        $user->content = isset($request->content) ? true : false;
-        $user->apk_setting = isset($request->apk_setting) ? true : false;
-        $user->memo_other = isset($request->memo_other) ? true : false;
-        $user->save();
-
-        return redirect('/linkalternatifds/access')->with('success', 'Access linkalternatif berhasil ditambahkan.');
-    }
-
-    public function destroy_access($id)
-    {
-        $data = UserAccess::findOrFail($id);
-        $data->delete();
-
-        return redirect()->back()->with('success', 'Access linkalternatif berhasil dihapus.');
-    }
-
-    public function update_access(Request $request)
-    {
-
-        $request->validate([
-            'id' => 'required',
-            'name_access' => 'required'
-        ]);
-
-        $id = $request->id;
-        $user = UserAccess::findOrFail($id);
-
-        $user->name_access = $request->name_access;
-        $user->deposit = isset($request->deposit) ? true : false;
-        $user->withdraw = isset($request->withdraw) ? true : false;
-        $user->manual_transaction = isset($request->manual_transaction) ? true : false;
-        $user->history_coin = isset($request->history_coin) ? true : false;
-
-        $user->member_list = isset($request->member_list) ? true : false;
-        $user->member_seamless = isset($request->member_seamless) ? true : false;
-        $user->referral = isset($request->referral) ? true : false;
-        $user->history_game = isset($request->history_game) ? true : false;
-        $user->member_outstanding = isset($request->member_outstanding) ? true : false;
-        $user->history_transaction = isset($request->history_transaction) ? true : false;
-        $user->cashback_rollingan = isset($request->cashback_rollingan) ? true : false;
-        $user->report = isset($request->report) ? true : false;
-
-        $user->bank = isset($request->bank) ? true : false;
-        $user->refeerral_bonus = isset($request->refeerral_bonus) ? true : false;
-        $user->memo = isset($request->memo) ? true : false;
-
-        $user->linkalternatif = isset($request->linkalternatif) ? true : false;
-        $user->analytic = isset($request->analytic) ? true : false;
-        $user->content = isset($request->content) ? true : false;
-        $user->apk_setting = isset($request->apk_setting) ? true : false;
-        $user->memo_other = isset($request->memo_other) ? true : false;
-        $user->save();
-
-        Cache::flush();
-
-        return redirect()->back()->with('success', 'Access linkalternatif berhasil diupdate.');
-    }
-
-    // public function storesetting(Request $request)
-    // {
-    //     $request->validate([
-    //         'min' => 'required',
-    //         'max' => 'required',
-    //         'sportsbook' => 'required',
-    //         'virtualsports' => 'required',
-    //         'games' => 'required'
-    //     ]);
-
-    //     $dataBetSetting = BetSetting::where('id', 1)->first();
-    //     $reqBetSetting = [
-    //         'min' => $request->min,
-    //         'max' => $request->max
-    //     ];
-    //     if ($dataBetSetting) {
-    //         $dataBetSetting->update($reqBetSetting);
-    //     } else {
-    //         BetSetting::create($reqBetSetting);
-    //     }
-
-    //     $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
-    //     if ($dataPersentaseSB) {
-    //         $dataPersentaseSB->update([
-    //             'persentase' => $request->sportsbook
-    //         ]);
-    //     } else {
-    //         Persentase::create([
-    //             'jenis' => 'SportsBook',
-    //             'persentase' => $request->sportsbook
-    //         ]);
-    //     }
-
-
-    //     $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
-    //     if ($dataPersentaseVS) {
-    //         $dataPersentaseVS->update([
-    //             'persentase' => $request->virtualsports
-    //         ]);
-    //     } else {
-    //         Persentase::create([
-    //             'jenis' => 'SportsBook',
-    //             'persentase' => $request->virtualsports
-    //         ]);
-    //     }
-
-    //     $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
-    //     if ($dataPersentaseG) {
-    //         $dataPersentaseG->update([
-    //             'persentase' => $request->games
-    //         ]);
-    //     } else {
-    //         Persentase::create([
-    //             'jenis' => 'SportsBook',
-    //             'persentase' => $request->games
-    //         ]);
-    //     }
-
-
-
-    //     $user = new User();
-    //     $user->name = $request->username;
-    //     $user->username = $request->username;
-    //     $user->divisi = $request->divisi;
-    //     $user->password = bcrypt($request->password);
-    //     $user->image = "";
-    //     $user->status = 1;
-
-    //     $user->save();
-
-    //     return redirect('/linkalternatifds')->with('success', 'Aget berhasil ditambahkan.');
-    // }
-
-    public function userAndUserAccess()
-    {
-        $user = auth()->user();
-        $userWithAccess = User::with('userAccess')->find($user->id);
-        // $userWithAccess = User::with('userAccess')->find($user->id); 
-        // userAccess di atas adalah penghubung ke method userAccess di model User.php
-        // Cara bacanya User yang memiliki hubungan ke model UserAccess dengan name_access yang serupa dengan divisi milik model User
-        // Maka temukan ID nya si auth user dan 
-        $result = $userWithAccess->toArray();
-        if ($result['user_access']['deposit'] = 1) {
-            dd('masuk');
-        } else {
-            dd('keluar');
-        }
-
-        return $result;
-    }
-
-    public function changeStatus(Request $request)
-    {
-        $user = User::find($request->user_id);
-
-        if (auth()->user()->divisi != 'superadmin' && $user->divisi == 'superadmin') {
-            abort(403);
-        }
-
-        if ($user) {
-            $user->status = $request->status;
-            $user->pin_attempts = 0;
-            $user->save();
-
-            return response()->json(['success' => true, 'message' => 'Status linkalternatif telah diubah.']);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Pengguna tidak ditemukan.']);
-        }
+        return [
+            'X-Auth-Email' => env('EMAILCF'),
+            'X-Auth-Key' => env('TOKENCF'),
+            'Content-Type' => 'application/json',
+        ];
     }
 }

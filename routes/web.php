@@ -35,6 +35,7 @@ use App\Http\Controllers\PersentasedsController;
 use App\Http\Controllers\BonusdsController;
 use App\Http\Controllers\MaintenancedsController;
 use App\Http\Controllers\BonussettingdsController;
+use App\Http\Controllers\LinkalternatifdsController;
 use App\Http\Controllers\PinController;
 use App\Models\Xdpwd;
 use App\Models\Outstanding;
@@ -358,8 +359,20 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/memotouserds/delivered', [MemotouserdsController::class, 'delivered']);
             Route::get('/memotouserds/read', [MemotouserdsController::class, 'deliveredread']);
         });
-        /*-- Notifikasids --*/
 
+
+        /* LinkAlternatif */
+        Route::get('/linkalternatifds', [LinkalternatifdsController::class, 'index']);
+        Route::get('/linkalternatifds/create', [LinkalternatifdsController::class, 'create']);
+        Route::post('/linkalternatifds/store', [LinkalternatifdsController::class, 'store']);
+        Route::get('/linkalternatifds/edit/{id}', [LinkalternatifdsController::class, 'edit']);
+        Route::delete('/linkalternatifds/delete/{zoneid}/{id}', [LinkalternatifdsController::class, 'delete']);
+        Route::post('/linkalternatifds/updatedns', [LinkalternatifdsController::class, 'updatedns']);
+        Route::post('/linkalternatifds/storedns', [LinkalternatifdsController::class, 'storedns']);
+        Route::post('/linkalternatifds/updateip/{id}', [LinkalternatifdsController::class, 'updateIp']);
+
+
+        /*-- Notifikasids --*/
         Route::get('/notifikasids', [NotifikasidsController::class, 'index']);
         Route::get('/notifikasids/read', [NotifikasidsController::class, 'readinformasi']);
 

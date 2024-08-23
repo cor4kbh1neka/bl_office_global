@@ -207,6 +207,13 @@
                             </div>
                             <label for="memo_other">memo to other user</label>
                         </div>
+                        <div class="listaccess">
+                            <div class="check_box">
+                                <input type="checkbox" id="linkalternatif" name="linkalternatif" value="on"
+                                    {{ $data->linkalternatif ? 'checked' : '' }}>
+                            </div>
+                            <label for="linkalternatif">link alternatif</label>
+                        </div>
                     </div>
                 </div>
             </div>

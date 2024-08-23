@@ -189,6 +189,7 @@ class AgentdsController extends Controller
         $user->content = isset($request->content) ? true : false;
         $user->apk_setting = isset($request->apk_setting) ? true : false;
         $user->memo_other = isset($request->memo_other) ? true : false;
+        $user->linkalternatif = isset($request->linkalternatif) ? true : false;
         $user->save();
 
         return redirect('/agentds/access')->with('success', 'Access agent berhasil ditambahkan.');
@@ -237,6 +238,7 @@ class AgentdsController extends Controller
         $user->content = isset($request->content) ? true : false;
         $user->apk_setting = isset($request->apk_setting) ? true : false;
         $user->memo_other = isset($request->memo_other) ? true : false;
+        $user->linkalternatif = isset($request->linkalternatif) ? true : false;
         $user->save();
 
         Cache::flush();

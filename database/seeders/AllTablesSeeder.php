@@ -23,6 +23,7 @@ class AllTablesSeeder extends Seeder
             BetSettingSeeder::class,
             BonusTableSeeder::class,
             BonusPengecualianTableSeeder::class,
+            ConfigIpTableSeeder::class
         ]);
     }
 }

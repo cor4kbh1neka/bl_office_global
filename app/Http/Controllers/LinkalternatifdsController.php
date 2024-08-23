@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ConfigIp;
 use App\Models\Listdomain;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -37,12 +38,14 @@ class LinkalternatifdsController extends Controller
             }, $responseData);
         }
 
+        $dataIP = ConfigIp::get();
         return view('linkalternatifds.index', [
             'title' => 'Link Alternatif',
             'data' => $responseData,
             'totalnote' => 0,
             'search' => $search,
-            'pin' => '464646'
+            'pin' => '464646',
+            'dataIP' => $dataIP
         ]);
     }
 
@@ -71,13 +74,21 @@ class LinkalternatifdsController extends Controller
         $link = $request->input('link');
         $url = 'https://api.cloudflare.com/client/v4/zones';
 
-        $response = Http::withHeaders($this->getCloudflareHeaders())->post($url, ['name' => $link]);
+        $response = Http::withHeaders($this->getCloudflareHeaders())->post($url, ['name' => $link, 'jump_start' => false]);
 
         if ($response->successful()) {
+            $responseData = $response->json()["result"];
+
+            $getip = ConfigIp::first();
+            $ip = $getip ? $getip->ip : '47.128.186.125';
+
+            $this->dnsRecord($responseData['id'], 'A', $link, $ip);
+            $this->dnsRecord($responseData['id'], 'CNAME', 'www', $link);
+
             Listdomain::create([
                 'link' => $link
             ]);
-            $responseData = $response->json()["result"];
+
             return redirect('/linkalternatifds/edit/' . $responseData['id'])->with('success', 'Link alternatif berhasil disimpan.');
         }
 
@@ -104,18 +115,9 @@ class LinkalternatifdsController extends Controller
         $type = $request->input('type');
         $content = $request->input('content');
 
-        $url = 'https://api.cloudflare.com/client/v4/zones/' . $zoneid . '/dns_records';
-
-        $data = [
-            'type' => $type,
-            'name' => $link,
-            'content' => $content,
-            'ttl' => 3600
-        ];
-
         try {
             // Mengirim permintaan ke API Cloudflare
-            $response = Http::withHeaders($this->getCloudflareHeaders())->post($url, $data);
+            $response = $this->dnsRecord($zoneid, $type, $link, $content);
 
             if ($response->successful()) {
                 // Jika sukses, kembalikan data hasil respons
@@ -229,6 +231,23 @@ class LinkalternatifdsController extends Controller
         }
     }
 
+    public function updateIp(Request $request, $id)
+    {
+        $request->validate([
+            'ip' => 'required|ip'
+        ]);
+
+        $configIp = ConfigIp::find($id);
+        if (!$configIp) {
+            return response()->json(['message' => 'IP tidak ditemukan.'], 404);
+        }
+
+        $configIp->ip = $request->input('ip');
+        $configIp->save();
+
+        return response()->json(['message' => 'IP berhasil diperbarui.']);
+    }
+
     private function getDataNs($id)
     {
         $url = "https://api.cloudflare.com/client/v4/zones/{$id}";
@@ -253,7 +272,6 @@ class LinkalternatifdsController extends Controller
         return [];
     }
 
-    // Membuat fungsi reusable untuk mendapatkan headers Cloudflare
     private function getCloudflareHeaders()
     {
         return [
@@ -261,5 +279,19 @@ class LinkalternatifdsController extends Controller
             'X-Auth-Key' => env('TOKENCF'),
             'Content-Type' => 'application/json',
         ];
+    }
+
+    private function dnsRecord($zoneid, $type, $link, $content)
+    {
+        $url = 'https://api.cloudflare.com/client/v4/zones/' . $zoneid . '/dns_records';
+
+        $data = [
+            'type' => $type,
+            'name' => $link,
+            'content' => $content,
+            'ttl' => 3600
+        ];
+
+        return Http::withHeaders($this->getCloudflareHeaders())->post($url, $data);
     }
 }

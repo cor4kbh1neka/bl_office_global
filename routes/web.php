@@ -63,8 +63,8 @@ Route::get('/', function () {
 // Route::get('/dashboard', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
 
 /* Login & Logout */
-Route::get('/S0oDv1Ch4nG3T1', [LoginController::class, 'index'])->name('login')->Middleware('guest');
-Route::post('/S0oDv1Ch4nG3T1', [LoginController::class, 'authenticate']);
+Route::get('/x314cz9kc141DDX', [LoginController::class, 'index'])->name('login')->Middleware('guest');
+Route::post('/x314cz9kc141DDX', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout'])->Middleware('auth');
 
 
@@ -369,7 +369,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/linkalternatifds/delete/{zoneid}/{id}', [LinkalternatifdsController::class, 'delete']);
         Route::post('/linkalternatifds/updatedns', [LinkalternatifdsController::class, 'updatedns']);
         Route::post('/linkalternatifds/storedns', [LinkalternatifdsController::class, 'storedns']);
-        Route::delete('/linkalternatifds/remove/{id}/{link}', [LinkalternatifdsController::class, 'removeDomain']);
+        Route::post('/linkalternatifds/updateip/{id}', [LinkalternatifdsController::class, 'updateIp']);
 
 
         /*-- Notifikasids --*/

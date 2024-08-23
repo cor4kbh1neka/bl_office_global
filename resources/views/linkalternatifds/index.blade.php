@@ -84,6 +84,39 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        @if (auth()->user()->divisi == 'superadmin')
+                            <table>
+                                <tbody>
+                                    <tr class="hdtable">
+                                        <th class="bagno">#</th>
+                                        <th class="baglogininfo">IP</th>
+                                        <th class="bagno">Tools</th>
+                                    </tr>
+                                    @foreach ($dataIP as $index => $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td id="ip-{{ $item->id }}">{{ $item->ip }}</td>
+                                            <td>
+                                                <div class="grouptools">
+                                                    <div class="tombol grey edit-btn" data-id="{{ $item->id }}">
+                                                        <span class="texttombol">EDIT</span>
+                                                    </div>
+                                                </div>
+                                                <div class="grouptools save-cancel-group"
+                                                    id="save-cancel-{{ $item->id }}" style="display: none">
+                                                    <button class="tombol proses save-new" data-id="{{ $item->id }}">
+                                                        <span class="texttombol">SAVE</span>
+                                                    </button>
+                                                    <button class="tombol danger cancel" data-id="{{ $item->id }}">
+                                                        <span class="texttombol">CANCEL</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
                         <div style="padding-left:25px;padding-right:25px">
 
                         </div>
@@ -121,7 +154,7 @@
                     title: 'Oops...',
                     text: '{{ session('message') }}',
                     showConfirmButton: false,
-                    timer: 2500 // Durasi pesan sukses
+                    timer: 2500
                 });
             } else if (status == 'success') {
                 Swal.fire({
@@ -129,7 +162,7 @@
                     title: 'Success',
                     text: '{{ session('message') }}',
                     showConfirmButton: false,
-                    timer: 2500 // Durasi pesan sukses
+                    timer: 2500
                 });
             }
         });
@@ -147,10 +180,10 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Tampilkan prompt untuk PIN dengan input tipe password dan background khusus
+
                     Swal.fire({
                         title: 'Masukkan PIN',
-                        input: 'password', // Tipe input password
+                        input: 'password',
                         inputPlaceholder: 'Masukkan PIN Anda',
                         inputAttributes: {
                             maxlength: 10,
@@ -176,7 +209,7 @@
                                 url: '/linkalternatifds/remove/' + itemId + '/' + Link,
                                 type: 'DELETE',
                                 data: {
-                                    _token: '{{ csrf_token() }}' // Pastikan Anda menyertakan CSRF token untuk keamanan
+                                    _token: '{{ csrf_token() }}'
                                 },
                                 success: function(response) {
                                     Swal.fire(
@@ -185,7 +218,7 @@
                                         'success'
                                     ).then(() => {
                                         location
-                                            .reload(); // Reload halaman setelah berhasil
+                                            .reload();
                                     });
                                 },
                                 error: function(xhr) {
@@ -201,5 +234,64 @@
                 }
             });
         }
+
+        $(document).ready(function() {
+            $('.edit-btn').on('click', function() {
+                var id = $(this).data('id');
+                var ipTd = $('#ip-' + id);
+                var currentIp = ipTd.text();
+
+                ipTd.html('<input type="text" id="input-ip-' + id + '" value="' + currentIp + '" />');
+
+                var inputField = $('#input-ip-' + id);
+                inputField.focus();
+                var tempVal = inputField.val();
+                inputField.val('').val(tempVal);
+
+                $(this).parent().hide();
+                $('#save-cancel-' + id).show();
+            });
+
+            $('.save-new').on('click', function() {
+                var id = $(this).data('id');
+                var newIp = $('#input-ip-' + id).val();
+
+                $.ajax({
+                    url: '/linkalternatifds/updateip/' + id,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        ip: newIp
+                    },
+                    success: function(response) {
+                        Swal.fire(
+                            'Berhasil!',
+                            'IP berhasil diubah.',
+                            'success'
+                        ).then(() => {
+                            location
+                                .reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Gagal!',
+                            'Terjadi kesalahan saat mengupdate IP.',
+                            'error'
+                        );
+                    }
+                });
+            });
+
+            $('.cancel').on('click', function() {
+                var id = $(this).data('id');
+                var originalIp = $('#input-ip-' + id).attr('value');
+
+                $('#ip-' + id).text(originalIp);
+
+                $('#save-cancel-' + id).hide();
+                $('#save-cancel-' + id).siblings('.grouptools').show();
+            });
+        });
     </script>
 @endsection

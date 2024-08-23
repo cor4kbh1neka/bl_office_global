@@ -18,7 +18,7 @@ class UsersTableSeeder extends Seeder
             'name' => 'admin L21',
             'username' => 'gl0b4l#21',
             'divisi' => 'superadmin',
-            'password' => Hash::make('cYb3wGj5'),
+            'password' => Hash::make('k0L0n121##!!'),
             'image' => '',
             // 'isapk' => true,
             // 'isdata' => true,

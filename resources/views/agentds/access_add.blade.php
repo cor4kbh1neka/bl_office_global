@@ -179,6 +179,12 @@
                                 </div>
                                 <label for="memo_other">memo to other user</label>
                             </div>
+                            <div class="listaccess">
+                                <div class="check_box">
+                                    <input type="checkbox" id="linkalternatif" name="linkalternatif" value="on">
+                                </div>
+                                <label for="linkalternatif">Link Alternatif</label>
+                            </div>
                         </div>
                     </div>
                 </div>

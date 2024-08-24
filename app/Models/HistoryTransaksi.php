@@ -16,7 +16,7 @@ class HistoryTransaksi extends Model
 
     protected $primaryKey = 'id';
 
-    // protected $keyType = 'string';
+    protected $keyType = 'string';
 
     protected static function boot()
     {

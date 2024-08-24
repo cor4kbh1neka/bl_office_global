@@ -28,6 +28,7 @@ class HistorytransaksidsController extends Controller
             $data = $this->filterAndPaginate(
                 HistoryTransaksi::orderByDesc('created_at')
                     ->orderByDesc('urutan')
+                    ->limit(100)
                     ->get(),
                 20
             );

@@ -26,7 +26,7 @@ class HistorytransaksidsController extends Controller
         $data = [];
 
         if ($request->getQueryString() && request('username')) {
-            $data = $this->filterAndPaginate(HistoryTransaksi::where('username', $request->query('username'))->orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
+            $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
         }
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
@@ -231,12 +231,12 @@ class HistorytransaksidsController extends Controller
         }
 
         // Filter untuk strict data
-        // if (request('username')) {
-        //     $inputUsername = request('username');
-        //     $query = $query->filter(function ($item) use ($inputUsername) {
-        //         return $item['username'] === $inputUsername;
-        //     });
-        // }
+        if (request('username')) {
+            $inputUsername = request('username');
+            $query = $query->filter(function ($item) use ($inputUsername) {
+                return $item['username'] === $inputUsername;
+            });
+        }
         if (request('invoice')) {
             $inputRefno = request('invoice');
             $query = $query->filter(function ($item) use ($inputRefno) {

@@ -156,7 +156,8 @@
                                         </span>
                                     </td>
                                     <td>{{ $d->referral }}</td>
-                                    <td>{{ $d->bank }}, {{ $d->namarek }}, {{ $d->norek }}</td>
+                                    <td>{{ strtoupper($d->bank) }}, {{ strtoupper($d->namarek) }},
+                                        {{ strtoupper($d->norek) }}</td>
                                     <td class="valuenominal">
                                         <span class="koinasli">{{ $d->amount }}</span>
                                         <span class="cointorp"></span>

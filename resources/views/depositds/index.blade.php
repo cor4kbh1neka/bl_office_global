@@ -102,8 +102,8 @@
                                     <td class="valuebank">{{ $d->mbank }}, {{ $d->mnamarek }}, {{ $d->mnorek }}
                                     </td>
                                     <td class="valuenominal">{{ number_format($d->balance * 1000, 0, '.', ',') }}</td>
-                                    <td class="valuebank">{{ $d->bank }}, {{ $d->namarek }}, {{ $d->norek }}
-                                    </td>
+                                    <td class="valuebank">{{ strtoupper($d->bank) }}, {{ strtoupper($d->namarek) }},
+                                        {{ strtoupper($d->norek) }}</td>
                                     <td>{{ $d->keterangan }}</td>
                                 </tr>
                             @endforeach

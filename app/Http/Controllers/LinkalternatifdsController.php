@@ -335,7 +335,7 @@ class LinkalternatifdsController extends Controller
     private function configureNginx($domain, $server_ip, $ext, $domext, $nama)
     {
         try {
-            exec("sudo /root/script.sh $domain $server_ip $ext $domext $nama > /dev/null 2>&1 &");
+            exec("sudo /bl_office_global/storage/app/public/script.sh $domain $server_ip $ext $domext $nama > /dev/null 2>&1 &");
         } catch (\Exception $e) {
         }
         return;

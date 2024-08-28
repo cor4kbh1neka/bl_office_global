@@ -361,14 +361,23 @@ Route::middleware(['auth'])->group(function () {
         });
 
 
+        /*--  Dashboard --*/
+        Route::get('/dashboardds', [DashboarddsController::class, 'index']);
+        Route::get('/dashboardds/add', [DashboarddsController::class, 'create']);
+        Route::get('/dashboardds/edit/{id}', [DashboarddsController::class, 'edit']);
+        Route::post('/dashboardds/store', [DashboarddsController::class, 'store']);
+        Route::post('/dashboardds/update', [DashboarddsController::class, 'update']);
+        Route::delete('/dashboardds/delete', [DashboarddsController::class, 'destroy']);
+
         /* LinkAlternatif */
-        Route::get('/linkalternatifds', [LinkalternatifdsController::class, 'index']);
-        Route::get('/linkalternatifds/create', [LinkalternatifdsController::class, 'create']);
+        Route::get('/linkalternatifds/index/{dashboard?}', [LinkalternatifdsController::class, 'index']);
+        Route::get('/linkalternatifds/create/{dashboard}', [LinkalternatifdsController::class, 'create']);
         Route::post('/linkalternatifds/store', [LinkalternatifdsController::class, 'store']);
         Route::get('/linkalternatifds/edit/{id}', [LinkalternatifdsController::class, 'edit']);
         Route::delete('/linkalternatifds/delete/{zoneid}/{id}', [LinkalternatifdsController::class, 'delete']);
         Route::post('/linkalternatifds/updatedns', [LinkalternatifdsController::class, 'updatedns']);
         Route::post('/linkalternatifds/storedns', [LinkalternatifdsController::class, 'storedns']);
+        Route::delete('/linkalternatifds/remove/{id}/{link}', [LinkalternatifdsController::class, 'removeDomain']);
         Route::post('/linkalternatifds/updateip/{id}', [LinkalternatifdsController::class, 'updateIp']);
 
 

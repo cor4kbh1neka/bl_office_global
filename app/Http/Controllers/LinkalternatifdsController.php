@@ -3,25 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConfigIp;
+use App\Models\Dashboard;
 use App\Models\Listdomain;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class LinkalternatifdsController extends Controller
 {
-    // Memperbaiki metode index dengan caching untuk mengurangi request API yang tidak perlu
-    public function index(Request $request)
+    public function index(Request $request, $dashboard_id = "1")
     {
         $search = $request->input('search', '');
-        $url = 'https://api.cloudflare.com/client/v4/zones?per_page=300';
+        $url = 'https://api.cloudflare.com/client/v4/zones?per_page=150';
 
         $response = Http::withHeaders($this->getCloudflareHeaders())->get($url);
 
         $responseData = $response->successful() ? $response->json()["result"] : [];
 
         if (!empty($responseData)) {
-            $links = Listdomain::pluck('link')->toArray();
+            $links = Listdomain::where('dashboard_id', $dashboard_id)->pluck('link')->toArray();
             $responseData = array_filter($responseData, function ($item) use ($links) {
                 return in_array($item['name'], $links);
             });
@@ -39,22 +41,28 @@ class LinkalternatifdsController extends Controller
         }
 
         $dataIP = ConfigIp::get();
+        $dataDashboard = Dashboard::get();
+        $dashboard = Dashboard::where('id', $dashboard_id)->first();
         return view('linkalternatifds.index', [
             'title' => 'Link Alternatif',
             'data' => $responseData,
             'totalnote' => 0,
             'search' => $search,
             'pin' => '464646',
-            'dataIP' => $dataIP
+            'dataIP' => $dataIP,
+            'data_dashboard' => $dataDashboard,
+            'dashboard' =>  $dashboard ? $dashboard->nama : '',
+            'dashboard_id' => $dashboard_id
         ]);
     }
 
-    public function create()
+    public function create($dashboard_id)
     {
         return view('linkalternatifds.create', [
             'title' => 'Add New Link Alternatif',
             'totalnote' => 0,
             'step' => 'create',
+            'dashboard_id' => $dashboard_id,
             'datans' => '',
             'datadns' => '',
             'zoneid' => '',
@@ -62,32 +70,57 @@ class LinkalternatifdsController extends Controller
         ]);
     }
 
+    public function createdns($zoneid)
+    {
+        return view('linkalternatifds.createdns', [
+            'title' => 'Add New Link Alternatif',
+            'totalnote' => 0,
+            'zoneid' => $zoneid
+        ]);
+    }
+
     // Menambahkan validasi kustom untuk input link
     public function store(Request $request)
     {
+        $dashboard = Dashboard::where('id', $request->dashboard_id)->first();
         $request->validate([
+            'dashboard_id' => ['required', 'integer'],
             'link' => ['required', 'string', 'regex:/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/'],
         ], [
+            'dashboard_id.required' => 'Dashboard ID harus diisi.',
+            'dashboard_id.integer' => 'Dashboard ID harus berupa angka.',
             'link.regex' => 'Link harus memiliki format yang valid dan tanpa http:// atau https://.',
         ]);
 
         $link = $request->input('link');
         $url = 'https://api.cloudflare.com/client/v4/zones';
 
-        $response = Http::withHeaders($this->getCloudflareHeaders())->post($url, ['name' => $link, 'jump_start' => false]);
+        $response = Http::withHeaders($this->getCloudflareHeaders())->post($url, ['name' => $link]);
 
         if ($response->successful()) {
             $responseData = $response->json()["result"];
 
-            $getip = ConfigIp::first();
-            $ip = $getip ? $getip->ip : '47.128.186.125';
+            $dataip = ConfigIp::first();
 
-            $this->dnsRecord($responseData['id'], 'A', $link, $ip);
-            $this->dnsRecord($responseData['id'], 'CNAME', 'www', $link);
+            // Set Always Use HTTPS
+            $this->enableAlwaysUseHttps($responseData['id']);
 
+            // Add A AND CNAME
+            $this->addDns($responseData['id'], 'A', $responseData['name'], $dataip->ip, true);
+            $this->addDns($responseData['id'], 'CNAME', 'www', $responseData['name'], true);
+
+            // SSL to flexible
+            $this->changeSSL($responseData['id']);
+
+            //create to Database
             Listdomain::create([
-                'link' => $link
+                'dashboard_id' => $request->dashboard_id,
+                'link' => $link,
             ]);
+
+            $dashboard = Dashboard::where('id', $request->dashboard_id)->first();
+            $domain = $this->getDomainName($responseData['name']);
+            $this->configureNginx($domain["domain"], $dataip->ip, $domain["ext"], $domain["domain"] . $domain["ext"], $dashboard->nama);
 
             return redirect('/linkalternatifds/edit/' . $responseData['id'])->with('success', 'Link alternatif berhasil disimpan.');
         }
@@ -99,25 +132,25 @@ class LinkalternatifdsController extends Controller
     {
         // Validasi input
         $request->validate([
-            'link' => ['required', 'string', 'regex:/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/'],
+            'name' => ['required', 'string'],
             'zoneid' => ['required', 'string'],
             'type' => ['required', 'string'],
             'content' => ['required', 'string'],
         ], [
-            'link.regex' => 'Link harus memiliki format yang valid dan tanpa http:// atau https://.',
+            'name.regex' => 'Link harus disediakan',
             'zoneid.required' => 'Zone ID harus disediakan.',
             'type.required' => 'Tipe harus disediakan.',
             'content.required' => 'Konten harus disediakan.',
         ]);
 
-        $link = $request->input('link');
+        $name = $request->input('name');
         $zoneid = $request->input('zoneid');
         $type = $request->input('type');
         $content = $request->input('content');
 
         try {
             // Mengirim permintaan ke API Cloudflare
-            $response = $this->dnsRecord($zoneid, $type, $link, $content);
+            $response = $this->addDns($zoneid, $type, $name, $content, true);
 
             if ($response->successful()) {
                 // Jika sukses, kembalikan data hasil respons
@@ -157,7 +190,8 @@ class LinkalternatifdsController extends Controller
             'totalnote' => 0,
             'zoneid' => $id,
             'step' => 'edit',
-            'link' => $getDataNs['name']
+            'link' => $getDataNs['name'],
+            'dashboard_id' => "",
         ]);
     }
 
@@ -192,13 +226,15 @@ class LinkalternatifdsController extends Controller
         $request->validate([
             'content' => 'required|string',
             'zoneid' => 'required|string',
+            'type' => 'required|string',
             'name' => 'required|string',
             'id' => 'required|string',
         ]);
 
         $url = "https://api.cloudflare.com/client/v4/zones/{$request->zoneid}/dns_records/{$request->id}";
+
         $data = [
-            'type' => 'TXT',
+            'type' => $request->type,
             'name' => $request->name,
             'content' => $request->content,
             'ttl' => 120
@@ -216,7 +252,6 @@ class LinkalternatifdsController extends Controller
         $url = "https://api.cloudflare.com/client/v4/zones/" . $id;
         try {
             $response = Http::withHeaders($this->getCloudflareHeaders())->delete($url);
-
             if ($response->successful()) {
                 $listdomain = Listdomain::where('link', $link)->first();
                 if ($listdomain) {
@@ -264,14 +299,16 @@ class LinkalternatifdsController extends Controller
         $response = Http::withHeaders($this->getCloudflareHeaders())->get($url);
 
         if ($response->successful()) {
-            return array_filter($response->json()["result"], function ($item) use ($name) {
-                return $item['name'] === $name && $item['type'] === 'TXT';
-            });
+            // return array_filter($response->json()["result"], function ($item) use ($name) {
+            //     return $item['name'] === $name && $item['type'] === 'TXT';
+            // });
+            return $response->json()["result"];
         }
 
         return [];
     }
 
+    // Membuat fungsi reusable untuk mendapatkan headers Cloudflare
     private function getCloudflareHeaders()
     {
         return [
@@ -281,17 +318,63 @@ class LinkalternatifdsController extends Controller
         ];
     }
 
-    private function dnsRecord($zoneid, $type, $link, $content)
+    private function addDns($zoneid, $type, $name, $content, $proxied)
     {
         $url = 'https://api.cloudflare.com/client/v4/zones/' . $zoneid . '/dns_records';
 
         $data = [
             'type' => $type,
-            'name' => $link,
+            'name' => $name,
             'content' => $content,
-            'ttl' => 3600
+            'proxied' => $proxied
         ];
 
         return Http::withHeaders($this->getCloudflareHeaders())->post($url, $data);
+    }
+
+    private function configureNginx($domain, $server_ip, $ext, $domext, $nama)
+    {
+        try {
+            exec("sudo /root/script.sh $domain $server_ip $ext $domext $nama > /dev/null 2>&1 &");
+        } catch (\Exception $e) {
+        }
+        return;
+    }
+
+    private function enableAlwaysUseHttps($zoneId)
+    {
+        $url = "https://api.cloudflare.com/client/v4/zones/{$zoneId}/settings/always_use_https";
+        Http::withHeaders($this->getCloudflareHeaders())->patch($url, [
+            'value' => 'on'
+        ]);
+    }
+
+    function getDomainName($domain)
+    {
+        $domain = preg_replace('/^www\./', '', $domain);
+
+        $parts = explode('.', $domain);
+        $count = count($parts);
+
+        $extension = end($parts);
+
+        if ($count > 2) {
+            $domainName = implode('.', array_slice($parts, 0, $count - 1));
+        } else {
+            $domainName = $parts[0];
+        }
+
+        return ["domain" => $domainName, "ext" => $extension];
+    }
+
+    private function changeSSL($zoneid)
+    {
+        // Mengatur SSL menjadi Flexible
+        $sslUrl = "https://api.cloudflare.com/client/v4/zones/$zoneid/settings/ssl";
+        $sslData = [
+            'value' => 'flexible'
+        ];
+
+        return Http::withHeaders($this->getCloudflareHeaders())->patch($sslUrl, $sslData);
     }
 }

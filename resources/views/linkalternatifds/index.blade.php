@@ -1,131 +1,186 @@
 @extends('layouts.index')
 
 @section('container')
+    <style>
+        .swal2-input.custom-input {
+            color: black;
+            border-color: #d33;
+        }
+
+        .bagno {
+            width: 5%;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
     <div class="sec_table">
-        <div class="secgrouptitle">
-            <h2>{{ $title }}</h2>
-            <div class="fullscreen">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
-                    <path fill="currentColor"
-                        d="m5.3 6.7l1.4-1.4l-3-3L5 1H1v4l1.3-1.3zm1.4 4L5.3 9.3l-3 3L1 11v4h4l-1.3-1.3zm4-1.4l-1.4 1.4l3 3L11 15h4v-4l-1.3 1.3zM11 1l1.3 1.3l-3 3l1.4 1.4l3-3L15 5V1z">
-                    </path>
-                </svg>
+        <h2>{{ $title }}</h2>
+        <div class="group_act_butt">
+            <a href="/linkalternatifds/create/{{ $dashboard_id }}" id="add-user">
+                <div class="sec_addnew">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-plus"
+                        viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
+                        <path d="M9 12l6 0"></path>
+                        <path d="M12 9l0 6"></path>
+                    </svg>
+                    <span>Add New</span>
+                </div>
+            </a>
+            <div class="all_act_butt" style="display: flex">
+                <select id="jenis_event" name="jenis_event">
+                    @foreach ($data_dashboard as $item)
+                        <option value="{{ $item->id }}" {{ $item->id == $dashboard_id ? 'selected' : '' }}>
+                            {{ $item->nama }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
-        <div class="secagentds">
-            <div class="groupsecagentds">
-                <div class="headgroupsecagentds">
-
-
-                    <div class="listheadsecagentds bottom">
-                        <a href="/linkalternatifds/create" class="tombol proses">
-                            <span class="texttombol">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
-                                    <defs>
-                                        <mask id="ipSAdd0">
-                                            <g fill="none" stroke-linejoin="round" stroke-width="4">
-                                                <rect width="36" height="36" x="6" y="6" fill="#fff"
-                                                    stroke="#fff" rx="3"></rect>
-                                                <path stroke="#000" stroke-linecap="round" d="M24 16v16m-8-8h16"></path>
-                                            </g>
-                                        </mask>
-                                    </defs>
-                                    <path fill="currentColor" d="M0 0h48v48H0z" mask="url(#ipSAdd0)"></path>
-                                </svg>
-                                ADD LINK
-                            </span>
-                        </a>
-                        <form action="/linkalternatifds" method="GET" class="groupsearchagentds">
-                            <div class="grubsearchnav">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                    <path fill="currentColor"
-                                        d="m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14">
-                                    </path>
-                                </svg>
-                                <input type="text" placeholder="Cari Link ..." id="searchTabel" name="search"
-                                    value="{{ $search }}">
-                            </div>
-                            <button class="tombol primary">
-                                <span class="texttombol">search</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                <div class="groupdatasecagentds">
-                    <div class="tabelproses">
-                        <table>
-                            <tbody>
-                                <tr class="hdtable">
-                                    <th class="bagno">#</th>
-                                    <th class="baglogininfo">Link</th>
-                                    <th class="bagiplogin">Tanggal Buat</th>
-                                    <th class="bagno">Tools</th>
-                                </tr>
-                                @foreach ($data as $index => $item)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item['name'] }}</td>
-                                        <td>{{ $item['created_on'] }}</td>
-                                        <td>
-                                            <div class="grouptools">
-                                                <a href="/linkalternatifds/edit/{{ $item['id'] }}"
-                                                    class="tombol grey openviewport">
-                                                    <span class="texttombol">EDIT</span>
-                                                </a>
-                                                <button class="tombol cancel border"
-                                                    onclick="removeFunction('{{ $item['id'] }}', '{{ $item['name'] }}')">
-                                                    <span class="texttombol">REMOVE</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        @if (auth()->user()->divisi == 'superadmin')
-                            <table>
-                                <tbody>
-                                    <tr class="hdtable">
-                                        <th class="bagno">#</th>
-                                        <th class="baglogininfo">IP</th>
-                                        <th class="bagno">Tools</th>
-                                    </tr>
-                                    @foreach ($dataIP as $index => $item)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td id="ip-{{ $item->id }}">{{ $item->ip }}</td>
-                                            <td>
-                                                <div class="grouptools">
-                                                    <div class="tombol grey edit-btn" data-id="{{ $item->id }}">
-                                                        <span class="texttombol">EDIT</span>
-                                                    </div>
-                                                </div>
-                                                <div class="grouptools save-cancel-group"
-                                                    id="save-cancel-{{ $item->id }}" style="display: none">
-                                                    <button class="tombol proses save-new" data-id="{{ $item->id }}">
-                                                        <span class="texttombol">SAVE</span>
-                                                    </button>
-                                                    <button class="tombol danger cancel" data-id="{{ $item->id }}">
-                                                        <span class="texttombol">CANCEL</span>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @endif
-                        <div style="padding-left:25px;padding-right:25px">
-
+        <table>
+            <tbody>
+                <tr class="head_table">
+                    <th>Dashboard</th>
+                    <th>Link</th>
+                    <th>Tanggal Buat</th>
+                    <th class="bagno">Tools</th>
+                </tr>
+                <tr class="filter_row">
+                    <td>
+                        <div class="grubsearchtable">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
+                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                <path d="M21 21l-6 -6"></path>
+                            </svg>
+                            <input type="text" placeholder="Cari data..." id="searchData-name">
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </td>
+                    <td>
+                        <div class="grubsearchtable">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
+                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                <path d="M21 21l-6 -6"></path>
+                            </svg>
+                            <input type="text" placeholder="Cari data..." id="searchData-name">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="grubsearchtable">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
+                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                <path d="M21 21l-6 -6"></path>
+                            </svg>
+                            <input type="text" placeholder="Cari data..." id="searchData-name">
+                        </div>
+                    </td>
+
+                    <td></td>
+                </tr>
+                @foreach ($data as $index => $d)
+                    <tr>
+                        <td><span class="name">{{ $dashboard }}</span></td>
+                        <td><span class="name">{{ $d['name'] }}</span></td>
+                        <td><span class="name">{{ $d['created_on'] }}</span></td>
+                        {{-- <td><span class="name">{{ date('d-m-Y H:i:s', strtotime($d->tgl_berita)) }}</span></td> --}}
+
+                        <td class="kolom_action">
+                            <div class="dot_action">
+                                <span>•</span>
+                                <span>•</span>
+                                <span>•</span>
+                            </div>
+                            <div class="action_crud" id="1" style="display: none;">
+                                <a href="/linkalternatifds/edit/{{ $d['id'] }}" id="edit">
+                                    <div class="list_action">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="icon icon-tabler icon-tabler-edit-circle" viewBox="0 0 24 24"
+                                            stroke-width="1.5" fill="none" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M12 15l8.385 -8.415a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3z">
+                                            </path>
+                                            <path d="M16 5l3 3"></path>
+                                            <path d="M9 7.07a7 7 0 0 0 1 13.93a7 7 0 0 0 6.929 -6"></path>
+                                        </svg>
+                                        <span>Edit</span>
+                                    </div>
+                                </a>
+                                <a href="#" id="delete" data-id="{{ $d['id'] }}"
+                                    data-link="{{ $d['name'] }}">
+                                    <div class="list_action">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash"
+                                            viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M4 7l16 0"></path>
+                                            <path d="M10 11l0 6"></path>
+                                            <path d="M14 11l0 6"></path>
+                                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                                        </svg>
+                                        <span>Delete</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @if (auth()->user()->divisi == 'superadmin')
+            <table>
+                <tbody>
+                    <tr class="hdtable">
+                        <th class="bagno">#</th>
+                        <th class="baglogininfo">IP</th>
+                        <th class="bagno">Tools</th>
+                    </tr>
+                    @foreach ($dataIP as $index => $item)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td id="ip-{{ $item->id }}">{{ $item->ip }}</td>
+                            <td>
+                                <div class="grouptools">
+                                    <button class="sec_botton btn_warning edit-btn" data-id="{{ $item->id }}">
+                                        EDIT
+                                    </button>
+                                </div>
+                                <div class="grouptools
+                                        save-cancel-group"
+                                    id="save-cancel-{{ $item->id }}" style="display: none">
+                                    <button class="sec_botton btn_success save-new" data-id="{{ $item->id }}">
+                                        SAVE
+                                    </button>
+                                    <button class="sec_botton btn_danger cancel" data-id="{{ $item->id }}">
+                                        CANCEL
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
     </div>
 
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+            });
+        </script>
+    @endif
 
     <script>
         $(document).ready(function() {
@@ -137,103 +192,214 @@
         });
 
         $(document).ready(function() {
-            $('#myCheckbox, [id^="myCheckbox-"]').change(function() {
-                var isChecked = $('#myCheckbox:checked, [id^="myCheckbox-"]:checked').length > 0;
-                if (isChecked) {
-                    $('.all_act_butt').css('display', 'flex');
-                } else {
-                    $('.all_act_butt').hide();
-                }
-            });
+            $('#update-user').off('click').click(function(event) {
+                event.preventDefault();
 
-            var status = "<?php echo session('status'); ?>";
-
-            if (status == 'fail') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: '{{ session('message') }}',
-                    showConfirmButton: false,
-                    timer: 2500
+                var checkedValues = [];
+                $('input[id^="myCheckbox-"]:checked').each(function() {
+                    var value = $(this).data('id');
+                    checkedValues.push(value);
                 });
-            } else if (status == 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: '{{ session('message') }}',
-                    showConfirmButton: false,
-                    timer: 2500
-                });
-            }
-        });
-
-        function removeFunction(itemId, Link) {
-            const pinServer = "{{ $pin }}";
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Anda tidak dapat mengembalikan aksi ini!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-
+                if (checkedValues == 0) {
                     Swal.fire({
-                        title: 'Masukkan PIN',
-                        input: 'password',
-                        inputPlaceholder: 'Masukkan PIN Anda',
-                        inputAttributes: {
-                            maxlength: 10,
-                            autocapitalize: 'off',
-                            autocorrect: 'off',
-                            style: 'color: black; font-size: 1.25em; text-align: center;'
-                        },
-                        showCancelButton: true,
-                        confirmButtonText: 'Kirim',
-                        cancelButtonText: 'Batal',
-                        preConfirm: (pin) => {
-                            if (!pin) {
-                                Swal.showValidationMessage('PIN tidak boleh kosong');
-                            }
-                            if (pin !== pinServer) {
-                                Swal.showValidationMessage('PIN salah, coba lagi');
-                            }
-                            return pin;
-                        }
-                    }).then((pinResult) => {
-                        if (pinResult.isConfirmed) {
-                            $.ajax({
-                                url: '/linkalternatifds/remove/' + itemId + '/' + Link,
-                                type: 'DELETE',
-                                data: {
-                                    _token: '{{ csrf_token() }}'
-                                },
-                                success: function(response) {
-                                    Swal.fire(
-                                        'Berhasil!',
-                                        'Data berhasil dihapus.',
-                                        'success'
-                                    ).then(() => {
-                                        location
-                                            .reload();
-                                    });
-                                },
-                                error: function(xhr) {
-                                    Swal.fire(
-                                        'Gagal!',
-                                        'Terjadi kesalahan saat menghapus data.',
-                                        'error'
-                                    );
-                                }
-                            });
-                        }
+                        icon: 'warning',
+                        title: 'Silahkan pilih Data!',
+                        showConfirmButton: false,
+                        timer: 1500
                     });
                 }
+
+
+                var parameterString = $.param({
+                    'values[]': checkedValues
+                }, true);
+
+                window.location.href = '/linkalternatifds/edit/' + parameterString;
             });
-        }
+
+
+            $(document).on('click', '#delete-linkalternatif', function(event) {
+                event.preventDefault();
+
+                var checkedValues = [];
+                $('input[id^="myCheckbox-"]:checked').each(function() {
+                    var value = $(this).data('id');
+                    checkedValues.push(value);
+                });
+
+                if (checkedValues.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Silahkan pilih Data!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    return; // Menghentikan eksekusi jika tidak ada item yang dipilih
+                }
+
+                var parameterString = $.param({
+                    'values[]': checkedValues
+                }, true);
+                var url =
+                    "/linkalternatifds/delete/";
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin ingin menghapus user ini ?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            method: 'DELETE',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                values: checkedValues
+                            },
+                            success: function(result) {
+                                // Tampilkan SweetAlert untuk sukses
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Data berhasil dihapus!',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(function() {
+                                    // Lakukan perubahan halaman atau tindakan lainnya setelah data berhasil dihapus
+                                    window.location.href =
+                                        '/linkalternatifds/index';
+                                });
+                            },
+                            error: function(xhr) {
+                                // Tampilkan SweetAlert untuk kesalahan
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Terjadi kesalahan saat menghapus data.'
+                                });
+
+                                console.log(xhr.responseText);
+                            }
+                        });
+                    }
+                });
+            });
+            $(document).off('click', '#view').on('click', '#view', function(event) {
+                event.preventDefault();
+                var id = $(this).data('id');
+                $('.aplay_code').empty();
+                $('.aplay_code').load('/linkalternatifds/view/' + id, function() {
+                    adjustElementSize();
+                    localStorage.setItem('lastPage', '/linkalternatifds/view/' + id);
+                });
+            });
+
+
+            // $(document).off('click', '#edit').on('click', '#edit', function(event) {
+            //     event.preventDefault();
+            //     var id = $(this).data('id');
+            //     $('.aplay_code').empty();
+            //     $('.aplay_code').load('/linkalternatifds/edit/' + id, function() {
+            //         adjustElementSize();
+            //         localStorage.setItem('lastPage', '/linkalternatifds/edit/' + id);
+            //     });
+            // });
+
+            $(document).on('click', '#delete', function(event) {
+                event.preventDefault();
+
+                var id = $(this).data('id');
+                var link = $(this).data('link');
+                var url =
+                    `/linkalternatifds/remove/${id}/${link}`; // Ubah URL sesuai dengan endpoint delete yang sesuai
+                const correctPin = '464646'; // PIN yang benar
+
+                // Tampilkan konfirmasi penghapusan
+                Swal.fire({
+                    title: 'Apakah Anda yakin ingin menghapus User ini?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Tampilkan dialog untuk memasukkan PIN
+                        Swal.fire({
+                            title: 'Masukkan PIN untuk konfirmasi',
+                            input: 'password',
+                            inputLabel: 'PIN Anda',
+                            inputPlaceholder: 'Masukkan PIN',
+                            inputAttributes: {
+                                maxlength: 6,
+                                autocapitalize: 'off',
+                                autocorrect: 'off'
+                            },
+                            customClass: {
+                                input: 'custom-input' // Terapkan kelas CSS kustom pada input
+                            },
+                            confirmButtonText: 'Konfirmasi',
+                            showCancelButton: true,
+                            cancelButtonText: 'Batal'
+                        }).then((pinResult) => {
+                            if (pinResult.isConfirmed) {
+                                const pin = pinResult.value;
+
+                                // Periksa apakah PIN yang dimasukkan benar
+                                if (pin === correctPin) {
+                                    // Lakukan permintaan penghapusan setelah PIN dikonfirmasi
+                                    $.ajax({
+                                        url: url,
+                                        method: 'DELETE',
+                                        data: {
+                                            _token: '{{ csrf_token() }}',
+                                            values: id
+                                        },
+                                        success: function(result) {
+                                            // Tampilkan SweetAlert untuk sukses
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Data berhasil dihapus!',
+                                                showConfirmButton: false,
+                                                timer: 1500
+                                            }).then(function() {
+                                                // Lakukan perubahan halaman atau tindakan lainnya setelah data berhasil dihapus
+                                                window.location.href =
+                                                    '/linkalternatifds/index';
+                                            });
+                                        },
+                                        error: function(xhr) {
+                                            // Tampilkan SweetAlert untuk kesalahan
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops...',
+                                                text: 'Terjadi kesalahan saat menghapus data.'
+                                            });
+
+                                            console.log(xhr.responseText);
+                                        }
+                                    });
+                                } else {
+                                    // Tampilkan pesan kesalahan jika PIN salah
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'PIN Salah',
+                                        text: 'PIN yang Anda masukkan tidak benar.'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
 
         $(document).ready(function() {
             $('.edit-btn').on('click', function() {
@@ -241,7 +407,8 @@
                 var ipTd = $('#ip-' + id);
                 var currentIp = ipTd.text();
 
-                ipTd.html('<input type="text" id="input-ip-' + id + '" value="' + currentIp + '" />');
+                ipTd.html('<div class="list_form"><input type="text" id="input-ip-' + id + '" value="' +
+                    currentIp + '" /></div>');
 
                 var inputField = $('#input-ip-' + id);
                 inputField.focus();
@@ -291,6 +458,14 @@
 
                 $('#save-cancel-' + id).hide();
                 $('#save-cancel-' + id).siblings('.grouptools').show();
+            });
+        });
+
+        $(document).ready(function() {
+            $('#jenis_event').change(function() {
+                var selectedOption = $(this).find('option:selected');
+                var selectedValue = selectedOption.val();
+                window.location.href = '/linkalternatifds/index/' + selectedValue;
             });
         });
     </script>

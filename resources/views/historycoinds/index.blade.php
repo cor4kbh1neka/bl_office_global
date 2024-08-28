@@ -140,8 +140,8 @@
                                             class="koinasli {{ $d->jenis == 'withdraw' || $d->jenis == 'withdraw manual' || ($d->jenis_temp == 'withdraw' || $d->jenis_temp == 'withdraw manual') ? 'debit' : '' }}">{{ $d->amount }}</span>
                                         <span class="cointorp"></span>
                                     </td>
-                                    <td>{{ strtoupper($d->bank) }}, {{ strtoupper($d->namarek) }},
-                                        {{ strtoupper($d->norek) }}</td>
+                                    <td>{{ strtoupper($d->mbank) }}, {{ strtoupper($d->mnamarek) }},
+                                        {{ strtoupper($d->mnorek) }}</td>
                                     <td>{{ $d->approved_by }}</td>
                                     <td class="texttype">{{ $is_old == false ? $d->jenis : $d->jenis_temp }}</td>
                                     <td class="hsjenistrans" data-proses="{{ $d->status == 1 ? 'accept' : 'cancel' }}">

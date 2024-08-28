@@ -14,7 +14,7 @@ class LinkalternatifdsController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search', '');
-        $url = 'https://api.cloudflare.com/client/v4/zones';
+        $url = 'https://api.cloudflare.com/client/v4/zones?per_page=300';
 
         $response = Http::withHeaders($this->getCloudflareHeaders())->get($url);
 

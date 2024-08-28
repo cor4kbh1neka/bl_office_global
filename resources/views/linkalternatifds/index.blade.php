@@ -39,51 +39,11 @@
         </div>
         <table>
             <tbody>
-                <tr class="head_table">
+                <tr class="hdtable">
                     <th>Dashboard</th>
                     <th>Link</th>
                     <th>Tanggal Buat</th>
                     <th class="bagno">Tools</th>
-                </tr>
-                <tr class="filter_row">
-                    <td>
-                        <div class="grubsearchtable">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
-                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                <path d="M21 21l-6 -6"></path>
-                            </svg>
-                            <input type="text" placeholder="Cari data..." id="searchData-name">
-                        </div>
-                    </td>
-                    <td>
-                        <div class="grubsearchtable">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
-                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                <path d="M21 21l-6 -6"></path>
-                            </svg>
-                            <input type="text" placeholder="Cari data..." id="searchData-name">
-                        </div>
-                    </td>
-                    <td>
-                        <div class="grubsearchtable">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search"
-                                viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                <path d="M21 21l-6 -6"></path>
-                            </svg>
-                            <input type="text" placeholder="Cari data..." id="searchData-name">
-                        </div>
-                    </td>
-
-                    <td></td>
                 </tr>
                 @foreach ($data as $index => $d)
                     <tr>

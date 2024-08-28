@@ -6,11 +6,11 @@ use App\Models\Companys;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Listdomain extends Model
+class Dashboard extends Model
 {
     use HasFactory;
 
 
-    protected $fillable = ['dashboard_id', 'link'];
-    protected $table = 'listdomain';
+    protected $fillable = ['nama'];
+    protected $table = 'dashboard';
 }

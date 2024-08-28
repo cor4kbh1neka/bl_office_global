@@ -35,6 +35,7 @@ use App\Http\Controllers\PersentasedsController;
 use App\Http\Controllers\BonusdsController;
 use App\Http\Controllers\MaintenancedsController;
 use App\Http\Controllers\BonussettingdsController;
+use App\Http\Controllers\DashboarddsController;
 use App\Http\Controllers\LinkalternatifdsController;
 use App\Http\Controllers\PinController;
 use App\Models\Xdpwd;

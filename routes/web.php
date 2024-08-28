@@ -36,6 +36,7 @@ use App\Http\Controllers\BonusdsController;
 use App\Http\Controllers\MaintenancedsController;
 use App\Http\Controllers\BonussettingdsController;
 use App\Http\Controllers\LinkalternatifdsController;
+use App\Http\Controllers\DashboarddsController;
 use App\Http\Controllers\PinController;
 use App\Models\Xdpwd;
 use App\Models\Outstanding;
@@ -63,8 +64,8 @@ Route::get('/', function () {
 // Route::get('/dashboard', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
 
 /* Login & Logout */
-Route::get('/R3xTe2kss9D1', [LoginController::class, 'index'])->name('login')->Middleware('guest');
-Route::post('/R3xTe2kss9D1', [LoginController::class, 'authenticate']);
+Route::get('/S0oDv1Ch4nG3T1', [LoginController::class, 'index'])->name('login')->Middleware('guest');
+Route::post('/S0oDv1Ch4nG3T1', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout'])->Middleware('auth');
 
 

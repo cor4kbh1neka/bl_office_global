@@ -97,8 +97,8 @@
                                     </td>
                                     <td class="valuenominal colorsa">
                                         {{ number_format($d->balance * 1000, 0, '.', ',') }}</td>
-                                    <td class="valuebank">{{ strtoupper($d->bank) }}, {{ strtoupper($d->namarek) }},
-                                        {{ strtoupper($d->norek) }}</td>
+                                    <td class="valuebank">{{ strtoupper($d->mbank) }}, {{ strtoupper($d->mnamarek) }},
+                                        {{ strtoupper($d->mnorek) }}</td>
                                 </tr>
                             @endforeach
 

@@ -64,8 +64,8 @@ Route::get('/', function () {
 // Route::get('/dashboard', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
 
 /* Login & Logout */
-Route::get('/S0oDv1Ch4nG3T1', [LoginController::class, 'index'])->name('login')->Middleware('guest');
-Route::post('/S0oDv1Ch4nG3T1', [LoginController::class, 'authenticate']);
+Route::get('/R3xTe2kss9D1', [LoginController::class, 'index'])->name('login')->Middleware('guest');
+Route::post('/R3xTe2kss9D1', [LoginController::class, 'authenticate']);
 Route::post('/logout', [LoginController::class, 'logout'])->Middleware('auth');
 
 

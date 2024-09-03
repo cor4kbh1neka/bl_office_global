@@ -45,7 +45,7 @@
             height: 15px;
         }
 
-        .groupheadhistoryds form[action="/bonusds"] {
+        .groupheadhistoryds .listmembergroup {
             grid-template-columns: 0.5fr 1fr;
         }
 
@@ -84,11 +84,11 @@
             </div>
         </div>
         <div class="secreportds">
-            <div class="groupsecreportds">
+            <form method="GET" action="/bonusds" class="groupsecreportds">
                 <div class="groupdatareportds">
                     <div class="grouphistoryds memberlist">
                         <div class="groupheadhistoryds">
-                            <form method="GET" action="/bonusds" class="listmembergroup">
+                            <div class="listmembergroup">
                                 <div class="listinputmember">
                                     <label for="bonus">Bonus</label>
                                     <select name="bonus" id="bonus" required>
@@ -124,7 +124,7 @@
                                     </div>
                                 </div>
 
-                            </form>
+                            </div>
                         </div>
                         <div class="groupheadhistoryds downss">
                             <div class="downsgroup">
@@ -255,7 +255,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 

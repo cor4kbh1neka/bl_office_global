@@ -263,9 +263,9 @@ class BonusdsController extends Controller
         }
 
         if (!empty($failedUsernames)) {
-            return response()->json(['message' => 'Data berhasil disimpan', 'failedUsernames' => $failedUsernames]);
+            return response()->json(['message' => 'Data berhasil disimpan', 'id' => $createListbonus->id, 'failedUsernames' => $failedUsernames]);
         }
-        return response()->json(['message' => 'Data berhasil disimpan']);
+        return response()->json(['message' => 'Data berhasil disimpan', 'id' => $createListbonus->id, 'failedUsernames' => []]);
     }
 
     private function createDepoWD($username, $amount, $keterangan, $jenis, $txnid, $balance, $approved_by, $status)

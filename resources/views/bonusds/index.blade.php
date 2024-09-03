@@ -403,19 +403,7 @@
                                 'X-CSRF-TOKEN': csrfToken
                             },
                             success: function(response) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Sukses',
-                                    text: 'Proses data bonus berhasil!',
-                                    timer: 2000,
-                                    showConfirmButton: true,
-                                    confirmButtonText: 'Oke',
-                                    didClose: () => {
-                                        window.location.href =
-                                            '/bonuslistds';
-                                    }
-                                });
-
+                                var id = response.id;
                                 // Display failed usernames if any
                                 if (response.failedUsernames.length > 0) {
                                     Swal.fire({
@@ -426,7 +414,24 @@
                                                 username =>
                                                 `<li>${username}</li>`).join(
                                                 '') +
-                                            '</ul>'
+                                            '</ul>',
+                                        didClose: () => {
+                                            window.open('/bonusdetailds/' +
+                                                id, '_blank');
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Sukses',
+                                        text: 'Proses data bonus berhasil!',
+                                        timer: 2000,
+                                        showConfirmButton: true,
+                                        confirmButtonText: 'Oke',
+                                        didClose: () => {
+                                            window.open('/bonusdetailds/' +
+                                                id, '_blank');
+                                        }
                                     });
                                 }
                             },

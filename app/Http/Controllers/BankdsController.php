@@ -442,7 +442,7 @@ class BankdsController extends Controller
         ])->post($apiUrl, $validatedData);
 
         if ($response->successful()) {
-            $this->createLogBank('Detail Master', 'Create', 'bank :' . $validatedData["masterbnkxyxt"] . ',bank name :' . $validatedData["bnkmstrxyxyx"]);
+            $this->createLogBank('Detail Master', 'Create', 'bank :' . $validatedData["masterbnkxyxt"] . ',bank name :' . isset($validatedData['bnkmstrxyxyx']) ? $validatedData['bnkmstrxyxyx'] : $validatedData["namebankxxyy"]);
             return redirect('/bankds/listbank/0/0')->with('success', 'Set Bank berhasil ditambahkan');
         } else {
             return back()->withInput()->with('error', $response->json()["message"]);

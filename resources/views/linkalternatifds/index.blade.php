@@ -14,122 +14,87 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
     <div class="sec_table">
-        <h2>{{ $title }}</h2>
-        <div class="group_act_butt">
-            <a href="/linkalternatifds/create/{{ $dashboard_id }}" id="add-user">
-                <div class="sec_addnew">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-plus"
-                        viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
-                        <path d="M9 12l6 0"></path>
-                        <path d="M12 9l0 6"></path>
-                    </svg>
-                    <span>Add New</span>
-                </div>
-            </a>
-            <div class="all_act_butt" style="display: flex">
-                <select id="jenis_event" name="jenis_event">
-                    @foreach ($data_dashboard as $item)
-                        <option value="{{ $item->id }}" {{ $item->id == $dashboard_id ? 'selected' : '' }}>
-                            {{ $item->nama }}</option>
-                    @endforeach
-                </select>
+        <div class="secgrouptitle">
+            <h2>{{ $title }}</h2>
+            <div class="fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
+                    <path fill="currentColor"
+                        d="m5.3 6.7l1.4-1.4l-3-3L5 1H1v4l1.3-1.3zm1.4 4L5.3 9.3l-3 3L1 11v4h4l-1.3-1.3zm4-1.4l-1.4 1.4l3 3L11 15h4v-4l-1.3 1.3zM11 1l1.3 1.3l-3 3l1.4 1.4l3-3L15 5V1z">
+                    </path>
+                </svg>
             </div>
         </div>
-        <table>
-            <tbody>
-                <tr class="hdtable">
-                    <th>Dashboard</th>
-                    <th>Link</th>
-                    <th>Tanggal Buat</th>
-                    <th class="bagno">Tools</th>
-                </tr>
-                @foreach ($data as $index => $d)
-                    <tr>
-                        <td><span class="name">{{ $dashboard }}</span></td>
-                        <td><span class="name">{{ $d['name'] }}</span></td>
-                        <td><span class="name">{{ $d['created_on'] }}</span></td>
-                        {{-- <td><span class="name">{{ date('d-m-Y H:i:s', strtotime($d->tgl_berita)) }}</span></td> --}}
+        <div class="secagentds">
+            <div class="groupsecagentds">
+                <div class="headgroupsecagentds">
+                    <div class="listheadsecagentds bottom">
+                        <a href="/linkalternatifds/create/{{ $dashboard_id }}" class="tombol proses">
+                            <span class="texttombol">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
+                                    <defs>
+                                        <mask id="ipSAdd0">
+                                            <g fill="none" stroke-linejoin="round" stroke-width="4">
+                                                <rect width="36" height="36" x="6" y="6" fill="#fff"
+                                                    stroke="#fff" rx="3"></rect>
+                                                <path stroke="#000" stroke-linecap="round" d="M24 16v16m-8-8h16"></path>
+                                            </g>
+                                        </mask>
+                                    </defs>
+                                    <path fill="currentColor" d="M0 0h48v48H0z" mask="url(#ipSAdd0)"></path>
+                                </svg>
+                                ADD AGENT
+                            </span>
+                        </a>
+                        <form action="/agentds" method="GET" class="groupsearchagentds">
+                            <select id="jenis_event" name="jenis_event">
+                                @foreach ($data_dashboard as $item)
+                                    <option value="{{ $item->id }}" {{ $item->id == $dashboard_id ? 'selected' : '' }}>
+                                        {{ $item->nama }}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
+                </div>
+                <div class="groupdatasecagentds">
+                    <div class="tabelproses">
+                        <table>
+                            <tbody>
+                                <tr class="hdtable">
+                                    <th class="bagno">#</th>
+                                    <th class="baglogininfo">Dashboard</th>
+                                    <th class="bagiplogin">Link</th>
+                                    <th class="baguser">Tanggal Buat</th>
+                                    <th class="action">tools</th>
+                                </tr>
+                                @foreach ($data as $index => $d)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $dashboard }}</td>
+                                        <td>{{ $d['name'] }}</td>
+                                        <td>{{ $d['created_on'] }}</td>
+                                        <td>
+                                            <div class="grouptools">
+                                                <a href="/linkalternatifds/edit/{{ $d['id'] }}" target="_blank"
+                                                    class="tombol grey openviewport">
+                                                    <span class="texttombol">EDIT</span>
+                                                </a>
+                                                <button id="delete" class="tombol cancel border"
+                                                    data-id="{{ $d['id'] }}" data-link="{{ $d['name'] }}">
+                                                    <span class="texttombol">REMOVE</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div style="padding-left:25px;padding-right:25px">
 
-                        <td class="kolom_action">
-                            <div class="dot_action">
-                                <span>•</span>
-                                <span>•</span>
-                                <span>•</span>
-                            </div>
-                            <div class="action_crud" id="1" style="display: none;">
-                                <a href="/linkalternatifds/edit/{{ $d['id'] }}" id="edit">
-                                    <div class="list_action">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="icon icon-tabler icon-tabler-edit-circle" viewBox="0 0 24 24"
-                                            stroke-width="1.5" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M12 15l8.385 -8.415a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3z">
-                                            </path>
-                                            <path d="M16 5l3 3"></path>
-                                            <path d="M9 7.07a7 7 0 0 0 1 13.93a7 7 0 0 0 6.929 -6"></path>
-                                        </svg>
-                                        <span>Edit</span>
-                                    </div>
-                                </a>
-                                <a href="#" id="delete" data-id="{{ $d['id'] }}"
-                                    data-link="{{ $d['name'] }}">
-                                    <div class="list_action">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash"
-                                            viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M4 7l16 0"></path>
-                                            <path d="M10 11l0 6"></path>
-                                            <path d="M14 11l0 6"></path>
-                                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
-                                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
-                                        </svg>
-                                        <span>Delete</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @if (auth()->user()->divisi == 'superadmin')
-            <table>
-                <tbody>
-                    <tr class="hdtable">
-                        <th class="bagno">#</th>
-                        <th class="baglogininfo">IP</th>
-                        <th class="bagno">Tools</th>
-                    </tr>
-                    @foreach ($dataIP as $index => $item)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td id="ip-{{ $item->id }}">{{ $item->ip }}</td>
-                            <td>
-                                <div class="grouptools">
-                                    <button class="sec_botton btn_warning edit-btn" data-id="{{ $item->id }}">
-                                        EDIT
-                                    </button>
-                                </div>
-                                <div class="grouptools
-                                        save-cancel-group"
-                                    id="save-cancel-{{ $item->id }}" style="display: none">
-                                    <button class="sec_botton btn_success save-new" data-id="{{ $item->id }}">
-                                        SAVE
-                                    </button>
-                                    <button class="sec_botton btn_danger cancel" data-id="{{ $item->id }}">
-                                        CANCEL
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     @if (session('success'))

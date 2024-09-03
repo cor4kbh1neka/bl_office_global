@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('user_access', function (Blueprint $table) {
-            //
+        Schema::table('listbonus', function (Blueprint $table) {
+            $table->text('detail_bonus')->nullable()->after('jenis_bonus');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('user_access', function (Blueprint $table) {
-            //
+        Schema::table('listbonus', function (Blueprint $table) {
+            $table->dropColumn('detail_bonus');
         });
     }
 };

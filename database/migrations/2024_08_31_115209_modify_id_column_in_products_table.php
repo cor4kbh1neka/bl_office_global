@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('user_access', function (Blueprint $table) {
-            //
+        Schema::table('products', function (Blueprint $table) {
+            $table->bigIncrements('id')->change();
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('user_access', function (Blueprint $table) {
+        Schema::table('products', function (Blueprint $table) {
             //
         });
     }

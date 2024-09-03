@@ -132,6 +132,12 @@
                             </div>
                             <div class="listaccess">
                                 <div class="check_box">
+                                    <input type="checkbox" id="portfolio" name="portfolio" value="on">
+                                </div>
+                                <label for="portfolio">view portfolio</label>
+                            </div>
+                            <div class="listaccess">
+                                <div class="check_box">
                                     <input type="checkbox" id="refeerral_bonus" name="refeerral_bonus" value="on">
                                 </div>
                                 <label for="refeerral_bonus">view bonus setting</label>

@@ -9,8 +9,6 @@ use App\Models\TransactionSaldo;
 use App\Models\ProductType;
 use App\Models\Member;
 use App\Models\MemberAktif;
-use App\Models\Xreferral;
-use App\Models\Persentase;
 use App\Models\Balance;
 use Illuminate\Support\Facades\DB;
 use App\Models\HistoryTransaksi;
@@ -19,12 +17,12 @@ use App\Models\ReferralAktif2;
 use App\Models\ReferralAktif3;
 use App\Models\ReferralAktif4;
 use App\Models\ReferralAktif5;
-use Illuminate\Support\Facades\Log;
 use App\Jobs\AddHistoryJob;
 use App\Jobs\AddOutstandingJob;
 use App\Jobs\AddWinlossStakeJob;
 use App\Jobs\DeleteOutstandingJob;
 use App\Models\ListError;
+use App\Models\Product;
 use Illuminate\Support\Facades\Http;
 
 class ApiBolaController extends Controller
@@ -945,8 +943,8 @@ class ApiBolaController extends Controller
             $portfolio = ProductType::where('id', $request->ProductType)->first();
             $portfolio = $portfolio ? $portfolio->portfolio : 'SportsBook';
 
-            $persentase = Persentase::where('jenis', $portfolio)->first();
-            $persentase = $persentase ? $persentase->persentase : 0;
+            $persentase = Product::where('portfolio', $portfolio)->first();
+            $persentase = $persentase ? $persentase->persen_referral : 0;
 
             $referralAmount = $amount * $persentase / 100;
 

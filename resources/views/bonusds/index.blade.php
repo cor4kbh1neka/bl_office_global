@@ -1,6 +1,66 @@
 @extends('layouts.index')
 
 @section('container')
+    <style>
+        .select-box {
+            position: relative;
+        }
+
+        .select-box input {
+            width: 57%;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .options-container {
+            width: 20%;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(var(--rgba-primary-bg-color));
+            border: 1px solid rgba(var(--rgba-primary), 0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .option-item {
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-item:hover {
+            /* background-color: #f0f0f0; */
+        }
+
+        .option-item input {
+            margin-right: 8px;
+            width: 15px;
+            height: 15px;
+        }
+
+        .groupheadhistoryds form[action="/bonusds"] {
+            grid-template-columns: 0.5fr 1fr;
+        }
+
+        .groupheadhistoryds.downss {
+            display: grid;
+            grid-template-columns: 70% 30%;
+        }
+
+        .downsgroup {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
     <div class="sec_table">
@@ -36,10 +96,38 @@
                                             style="color: #838383; font-style: italic;" disabled="">Pilih Bonus</option>
                                         <option value="cashback" {{ $bonus == 'cashback' ? 'selected' : '' }}>Cashback
                                         </option>
-                                        <option value="rolingan" {{ $bonus == 'rolingan' ? 'selected' : '' }}>Rollingan
+                                        <option value="rollingan" {{ $bonus == 'rollingan' ? 'selected' : '' }}>Rollingan
                                         </option>
                                     </select>
+                                    <input type="hidden" id="detail_bonus" name="detail_bonus" placeholder="pilih game"
+                                        value="{{ $detail_bonus }}" readonly>
                                 </div>
+                                <div class="listinputmember">
+                                    <label for="select-input">Select Bonus</label>
+                                    <div class="select-box">
+                                        <input type="text" id="select-input" placeholder="pilih game"
+                                            value="{{ $detail_bonus }}" readonly>
+                                        <div class="options-container">
+                                            @if (!empty($detail_bonus_array))
+                                                @foreach ($detail_bonus_array as $index => $item)
+                                                    <div class="option-item">
+                                                        <input type="checkbox" id="option{{ $index }}"
+                                                            value="{{ $item['productsname'] }}"
+                                                            {{ $item['ischeck'] == true ? 'checked' : '' }}>
+                                                        <label
+                                                            for="option{{ $index }}">{{ $item['productsname'] }}</label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                            <!-- Tambahkan lebih banyak opsi jika diperlukan -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="groupheadhistoryds downss">
+                            <div class="downsgroup">
                                 <div class="listinputmember">
                                     <label for="gabungdari">tanggal dari</label>
                                     <input type="date" id="gabungdari" name="gabungdari"
@@ -84,7 +172,7 @@
                                         </svg>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                         <div class="totalbonus">
                             <div class="listtotalbonus">
@@ -121,6 +209,7 @@
                                             <input type="checkbox" id="myCheckbox" name="myCheckbox">
                                         </th>
                                         <th class="bagusercc">username</th>
+                                        <th class="bagusercc" rowspan="2">jenis bonus</th>
                                         <th class="bagturnover" rowspan="2">turnover</th>
                                         <th class="bagwinlose" rowspan="2">win/lose</th>
                                         <th class="bagnominalbonus" rowspan="2">nominal bonus (IDR)</th>
@@ -150,9 +239,12 @@
                                                     data-username="{{ $d->username }}"
                                                     data-bonus = "{{ $d->totalbonus }}"
                                                     data-stake= "{{ $d->totalstake }}"
-                                                    data-winloss= "{{ $d->totalwinloss }}">
+                                                    data-winloss= "{{ $d->totalwinloss }}"
+                                                    data-portfolio= "{{ $d->portfolio }}"
+                                                    data-productsname= "{{ $d->productsname }}">
                                             </td>
                                             <td class="username">{{ $d->username }}</td>
+                                            <td class="username">{{ $d->productsname }}</td>
                                             <td class="datacc" data-get="{{ $d->totalstake }}"></td>
                                             <td class="datacc" data-get="{{ $d->totalwinloss }}"></td>
                                             <td class="datacc" data-get="{{ $d->totalbonus }}"></td>
@@ -254,19 +346,24 @@
                         var gabungdariVal = $('#gabungdari').val();
                         var gabunghinggaVal = $('#gabunghingga').val();
                         var kecualiVal = $('#kecuali').val();
+                        var detailBonus = $('#select-input').val();
 
                         $('input[type="checkbox"]:checked').not('#myCheckbox').each(function() {
                             var username = $(this).data('username');
                             var bonus = $(this).data('bonus');
                             var stake = $(this).data('stake');
                             var winloss = $(this).data('winloss');
+                            var portfolio = $(this).data('portfolio');
+                            var productsname = $(this).data('productsname');
 
                             if (username !== '') {
                                 data.push({
-                                    username: username,
-                                    bonus: bonus,
-                                    stake: stake,
-                                    winloss: winloss
+                                    username,
+                                    bonus,
+                                    stake,
+                                    winloss,
+                                    portfolio,
+                                    productsname
                                 });
                             }
                         });
@@ -292,7 +389,8 @@
 
                         var url = '/storebonusds/' + encodeURIComponent(bonusVal) + '/' +
                             encodeURIComponent(gabungdariVal) + '/' + encodeURIComponent(
-                                gabunghinggaVal) + '/' + encodeURIComponent(kecualiVal);
+                                gabunghinggaVal) + '/' + encodeURIComponent(kecualiVal) + '/' +
+                            encodeURIComponent(detailBonus);
 
                         $.ajax({
                             url: url,
@@ -362,15 +460,93 @@
                     var gabungdari = $('#gabungdari').val();
                     var gabunghingga = $('#gabunghingga').val();
                     var kecuali = $('#kecuali').val();
+                    var detail_bonus = $('#detail_bonus').val();
 
                     var url = '/bonusds/export?bonus=' + encodeURIComponent(bonus) +
                         '&gabungdari=' + encodeURIComponent(gabungdari) +
                         '&gabunghingga=' + encodeURIComponent(gabunghingga) +
-                        '&kecuali=' + encodeURIComponent(kecuali);
+                        '&kecuali=' + encodeURIComponent(kecuali) +
+                        '&detail_bonus=' + encodeURIComponent(kecuali);
+
 
                     // Redirect ke URL
                     window.location.href = url;
                 }
+            });
+        });
+
+        $(document).ready(function() {
+            $('#select-input').on('click', function() {
+                $('.options-container').toggle();
+            });
+
+            $(document).on('change', '.option-item input', function() {
+                const selectedOptions = $('.option-item input:checked').map(function() {
+                    return this.value;
+                }).get();
+
+                const selectedValueString = selectedOptions.join(', ') || 'Pilih game';
+                $('#select-input').val(selectedValueString);
+                $('#detail_bonus').val(selectedValueString);
+            });
+
+            $(document).on('click', function(event) {
+                if (!$(event.target).closest('.select-box').length) {
+                    $('.options-container').hide();
+                }
+            });
+
+            $('#bonus').on('change', function() {
+                const selectedValue = $(this).val();
+
+                Swal.fire({
+                    title: 'Loading...',
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                });
+
+                $.ajax({
+                    url: '/bonusds/getdataproduct/' + selectedValue,
+                    type: 'GET',
+                    success: function(response) {
+                        let optionsHTML = '';
+                        const checkedValues = [];
+
+                        response.forEach(function(item, index) {
+                            const isChecked = 'checked';
+                            optionsHTML += `
+                        <div class="option-item">
+                            <input type="checkbox" id="option${index}" value="${item.productsname}" ${isChecked}>
+                            <label for="option${index}">${item.productsname}</label>
+                        </div>
+                    `;
+                            checkedValues.push(item.productsname);
+                        });
+
+                        $('.options-container').html(optionsHTML);
+
+                        const checkedValuesString = checkedValues.join(', ') || 'Pilih game';
+                        $('#select-input').val(checkedValuesString);
+                        $('#detail_bonus').val(
+                            checkedValuesString);
+
+                        Swal.close();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Terjadi kesalahan: ' + error);
+
+                        Swal.close();
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Terjadi kesalahan saat mengambil data.'
+                        });
+                    }
+                });
             });
         });
     </script>

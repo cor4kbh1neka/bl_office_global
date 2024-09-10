@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Balance;
-use App\Models\Bonus;
 use App\Models\BonusPengecualian;
 use App\Models\Listbonus;
 use App\Models\Listbonusdetail;
@@ -23,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CashbackRollinganExport;
 use App\Models\ListError;
+use App\Models\Product;
 
 class BonusdsController extends Controller
 {
@@ -81,13 +81,15 @@ class BonusdsController extends Controller
     {
         $dataBonusPengecualian = BonusPengecualian::get();
         $data = MemberAktif::get();
-
         $bonus = $request->input('bonus');
         $gabungdari = $request->input('gabungdari') != null ? date('Y-m-d', strtotime($request->input('gabungdari'))) : '';
         $gabunghingga =  $request->input('gabunghingga') != null ? date('Y-m-d', strtotime($request->input('gabunghingga'))) : '';
         $pengecualian = $request->input('kecuali');
+        $detail_bonus = $request->input('detail_bonus');
 
-        $results = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian);
+        $detail_bonus_array = explode(', ', $detail_bonus);
+
+        $results = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian, $detail_bonus_array);
 
         if ($results instanceof Collection && !$results->isEmpty()) {
             $isproses = true;
@@ -95,37 +97,14 @@ class BonusdsController extends Controller
             $isproses = false;
         }
 
-        // if ($bonus != null && $gabungdari !== null && $gabunghingga !== null && $pengecualian !== null) {
-        //     $userStats = [];
-
-        //     foreach ($data as $index => $d) {
-        //         // if ($d->username == 'l21wantos') {
-        //         foreach ($dataPortfolio as $portfolio) {
-        //             $apiResult = $this->getApi($d->username, $portfolio, $gabungdari, $gabunghingga);
-
-        //             if (isset($apiResult['result']) && is_array($apiResult['result']) && !empty($apiResult['result'])) {
-        //                 foreach ($apiResult['result'] as $result) {
-        //                     if ($result['status'] == 'lose' || $result['status'] == 'won') {
-        //                         if (!isset($userStats[$index])) {
-        //                             $userStats[$index] = [
-        //                                 'username' => $d->username,
-        //                                 'totalStake' => 0,
-        //                                 'totalWinLose' => 0
-        //                             ];
-        //                         }
-        //                         $userStats[$index]['totalStake'] += $result['stake'];
-        //                         $userStats[$index]['totalWinLose'] += $result['winLost'];
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //         // }
-        //     }
-        //     dd($userStats);
-        // }
-
-
         $this->$data = [];
+        $detail_bonus_data = Product::where('jenis_bonus', $bonus)->get()->map(function ($item) use ($detail_bonus_array) {
+            return [
+                'productsname' => $item->productsname,
+                'ischeck' => in_array($item->productsname, $detail_bonus_array)
+            ];
+        })->toArray();
+
         return view('bonusds.index', [
             'title' => 'Cashback dan Rollingan',
             'data' => $results,
@@ -137,20 +116,20 @@ class BonusdsController extends Controller
             'pengecualian' => $pengecualian,
             'isproses' => $isproses,
             'totaluser' => $results->count(),
-            'nominalbonus' => $results->sum('totalbonus') * 1000
+            'nominalbonus' => $results->sum('totalbonus') * 1000,
+            'detail_bonus' => $detail_bonus,
+            'detail_bonus_array' => $detail_bonus_data
         ]);
     }
 
-    private function getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian)
+    private function getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian, $detail_bonus)
     {
-        if ($bonus == 'cashback') {
-            /*bonus cahsback*/
-            $dataPortfolio = ['Casino', 'Games', 'ThirdPartySportsBook'];
-        } else {
-            /*bonus rolingan*/
-            // $dataPortfolio = ['SportsBook', 'VirtualSports', 'SeamlessGame'];
-            $dataPortfolio = ['SportsBook', 'VirtualSports'];
-        }
+        $data_product = Product::whereIn('productsname', $detail_bonus)
+            ->select('portfolio', 'persen_bonus', 'min_lose_bet')
+            ->get()
+            ->toArray();
+        $dataPortfolio = array_column($data_product, 'portfolio');
+
 
         if ($bonus != null && $gabungdari !== null && $gabunghingga !== null && $pengecualian !== null) {
             $hunter = Member::where('status', 4)
@@ -159,31 +138,45 @@ class BonusdsController extends Controller
                 ->values()
                 ->toArray();
 
-            $query = WinlossbetDay::whereIn('portfolio', $dataPortfolio)
-                ->whereBetween('created_at', [$gabungdari . ' 00:00:00', $gabunghingga . ' 23:59:59'])
-                // ->where('username', 'ibing13')
-                ->select('username', DB::raw('SUM(stake) as totalstake'), DB::raw('SUM(winloss) as totalwinloss'))
-                ->groupBy('username');
+            $query = WinlossbetDay::leftJoin('products', 'winlossbet_day.portfolio', '=', 'products.portfolio')
+                ->whereIn('winlossbet_day.portfolio', $dataPortfolio)
+                ->whereBetween('winlossbet_day.created_at', [$gabungdari . ' 00:00:00', $gabunghingga . ' 23:59:59'])
+                ->select(
+                    'winlossbet_day.username',
+                    'winlossbet_day.portfolio',
+                    'products.productsname',
+                    DB::raw('SUM(winlossbet_day.stake) as totalstake'),
+                    DB::raw('SUM(winlossbet_day.winloss) as totalwinloss')
+                )
+                ->groupBy('winlossbet_day.username', 'winlossbet_day.portfolio', 'products.productsname')
+                ->orderBy('totalwinloss', 'ASC')
+                ->orderBy('totalstake', 'DESC');
 
-            // dd(WinlossbetDay::get());
             if (!empty($hunter)) {
-                $query->whereNotIn('username', $hunter);
+                $query->whereNotIn('winlossbet_day.username', $hunter);
             }
 
             $results = $query->get();
-
             foreach ($results as $key => $result) {
-                $mBonus = Bonus::where('jenis_bonus', $bonus)->first();
+
+                $mBonus = array_filter($data_product, function ($item) use ($result) {
+                    return $item['portfolio'] === $result->portfolio;
+                });
+
+                foreach ($mBonus as $item) {
+                    $mBonus = $item;
+                }
+
                 $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
                 if ($bonus == 'cashback') {
-                    if ($total <= ($mBonus->min * -1)) {
-                        $result->totalbonus = (abs($total) * $mBonus->persentase) / 100;
+                    if ($total <= ($mBonus['min_lose_bet'] * -1)) {
+                        $result->totalbonus = (abs($total) * $mBonus['persen_bonus']) / 100;
                     } else {
                         unset($results[$key]);
                     }
                 } else {
-                    if ($total >= $mBonus->min) {
-                        $result->totalbonus = ($total * $mBonus->persentase) / 100;
+                    if ($total >= $mBonus['min_lose_bet']) {
+                        $result->totalbonus = ($total * $mBonus['persen_bonus']) / 100;
                     } else {
                         unset($results[$key]);
                     }
@@ -196,31 +189,13 @@ class BonusdsController extends Controller
         return $results;
     }
 
-    private function getApi($username, $portfolio, $gabungdari, $gabunghingga)
-    {
-        $data = [
-            "username" => env('UNIX_CODE') . $username,
-            "portfolio" => $portfolio,
-            "startDate" => $gabungdari . "T00:00:00.540Z",
-            "endDate" => $gabunghingga . "T23:59:59.540Z",
-            "companyKey" => env('COMPANY_KEY'),
-            "language" => "en",
-            "serverId" => env('SERVERID')
-        ];
-        $apiUrl = env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx';
-        $response = Http::post($apiUrl, $data);
-
-        return $response->json();
-    }
-
-    public function store(Request $request, $bonus, $gabungdari, $gabunghingga, $kecuali)
+    public function store(Request $request, $bonus, $gabungdari, $gabunghingga, $kecuali, $bonusdetail)
     {
         $data = $request->request->all()["data"];
         $bonuses = array_column($data, 'bonus');
 
         $totalBonus = 0;
 
-        // Melakukan pembulatan setiap elemen array ke dua angka desimal dan menjumlahkannya
         foreach ($bonuses as $value) {
             $totalBonus += round($value, 2);
         }
@@ -233,56 +208,64 @@ class BonusdsController extends Controller
             'kecuali' => $kecuali,
             'total' => $totalBonus,
             'status' => 'Processed',
-            'processed_by' => Auth::user()->username
+            'processed_by' => Auth::user()->username,
+            'bonus_detail' => $bonusdetail
         ]);
         if ($createListbonus) {
+            foreach ($data as $index => $d) {
+                if (!empty($d)) {
+                    $nominalBonus = round($d['bonus'], 2);
+                    $createDetail = Listbonusdetail::create([
+                        'listbonus_id' => $createListbonus['id'],
+                        'username' => $d['username'],
+                        'turnover' => $d['stake'],
+                        'winlose' => $d['winloss'],
+                        'portfolio' => $d['portfolio'],
+                        'bonus' => $nominalBonus
+                    ]);
 
-            foreach ($data as $d) {
-                $nominalBonus = round($d['bonus'], 2);
-                $createDetail = Listbonusdetail::create([
-                    'listbonus_id' => $createListbonus['id'],
-                    'username' => $d['username'],
-                    'turnover' => $d['stake'],
-                    'winlose' => $d['winloss'],
-                    'bonus' => $nominalBonus
-                ]);
+                    if ($createDetail) {
+                        // 1. requestApiSeamless
+                        $txnid = $this->generateTxnid('D');
+                        $prosesApiDepo = $this->apiDepo($d['username'], $nominalBonus, $txnid);
 
-                if ($createDetail) {
-                    // 1. requestApiSeamless
-                    $txnid = $this->generateTxnid('D');
-                    $prosesApiDepo = $this->apiDepo($d['username'], $nominalBonus, $txnid);
+                        if ($prosesApiDepo["error"]["id"] === 0) {
+                            // 2.create DepoWd DPM
+                            $balance = Balance::where('username', $d['username'])->first();
+                            if ($balance) {
+                                $balance = $balance->amount;
+                            }
+                            $keterangan = 'Bonus ' .  '(' . $d['productsname'] . ')';
+                            $this->createDepoWD($d['username'], $nominalBonus, $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 1);
 
-                    if ($prosesApiDepo["error"]["id"] === 0) {
-                        // 2.create DepoWd DPM
-                        $balance = Balance::where('username', $d['username'])->first();
-                        if ($balance) {
-                            $balance = $balance->amount;
+                            // 3. Process balance
+                            $prosesBalance = $this->processBalance($d['username'], 'DP', $nominalBonus);
+
+                            //4. Process win Lose
+                            $this->addDataWinLoss($d['username'], $nominalBonus, "deposit");
+
+                            // 5.Create History
+                            $this->addDataHistory($d['username'], $txnid, '', 'bonus ' .  '(' . $d['productsname'] . ')', 'bonus', 0, $nominalBonus, $prosesBalance["balance"]);
+                        } else {
+                            $createDetail->delete();
+                            $failedUsernames[] = $d['username'];
+                            ListError::create([
+                                'fungsi' => 'storebonusds',
+                                'pesan_error' => $prosesApiDepo["error"]["id"],
+                                'keterangan' => $d['username'] . ' / '  . $prosesApiDepo["error"]["msg"]
+                            ]);
                         }
-                        $keterangan = 'Bonus ' . $bonus;
-                        $this->createDepoWD($d['username'], $nominalBonus, $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 1);
-
-                        // 3. Process balance
-                        $prosesBalance = $this->processBalance($d['username'], 'DP', $nominalBonus);
-
-                        //4. Process win Lose
-                        $this->addDataWinLoss($d['username'], $nominalBonus, "deposit");
-
-                        // 5.Create History
-                        $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $nominalBonus, $prosesBalance["balance"]);
-                    } else {
-                        $createDetail->delete();
-                        $failedUsernames[] = $d['username'];
-                        ListError::create([
-                            'fungsi' => 'storebonusds',
-                            'pesan_error' => $prosesApiDepo["error"]["id"],
-                            'keterangan' => $d['username'] . ' / '  . $prosesApiDepo["error"]["msg"]
-                        ]);
                     }
                 }
             }
+        } else {
+            return response()->json(['message' => 'Gagal menyimpan data'], 500);
         }
 
-        return response()->json(['message' => 'Data berhasil disimpan']);
+        if (!empty($failedUsernames)) {
+            return response()->json(['message' => 'Data berhasil disimpan', 'id' => $createListbonus->id, 'failedUsernames' => $failedUsernames]);
+        }
+        return response()->json(['message' => 'Data berhasil disimpan', 'id' => $createListbonus->id, 'failedUsernames' => []]);
     }
 
     private function createDepoWD($username, $amount, $keterangan, $jenis, $txnid, $balance, $approved_by, $status)
@@ -460,63 +443,26 @@ class BonusdsController extends Controller
         return $result;
     }
 
-    public function cancel(Request $request)
-    {
-        // $listbonus_id = $request->listbonus_id;
-        // $updateListbonus = Listbonus::where('id', $listbonus_id)->update([
-        //     'status' => 'Cancel'
-        // ]);
-
-        // if ($updateListbonus) {
-        //     $dataListbonus = Listbonusdetail::where('listbonus_id', $listbonus_id)->get();
-
-        //     foreach ($dataListbonus as $i => $d) {
-
-        //         // 3. Process balance
-        //         $prosesBalance = $this->processBalance($d->username, 'WD', $d->bonus);
-        //         if ($prosesBalance) {
-        //         }
-
-        //         // 1. requestApiSeamless
-        //         $txnid = $this->generateTxnid('D');
-        //         $prosesApiDepo = $this->apiDepo($d['username'], $d['bonus'], $txnid);
-
-        //         if ($prosesApiDepo["error"]["id"] === 0) {
-        //             // 2.create DepoWd DPM
-        //             $balance = Balance::where('username', $d['username'])->first();
-        //             if ($balance) {
-        //                 $balance = $balance->amount;
-        //             }
-        //             $keterangan = 'Bonus ' . $bonus;
-        //             $this->createDepoWD($d['username'], $d['bonus'], $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 1);
-
-
-
-        //             //4. Process win Lose
-        //             $this->addDataWinLoss($d['username'], $d['bonus'], "deposit");
-
-        //             // 5.Create History
-        //             $test33 = $this->addDataHistory($d['username'], $txnid, '', strtolower($bonus), 'bonus', 0, $d['bonus'], $prosesBalance["balance"]);
-        //         }
-        //     }
-        // }
-
-        return;
-    }
-
     public function export(Request $request)
-    {;
+    {
         $bonus = $request->input('bonus');
         $gabungdari = $request->input('gabungdari') != null ? date('Y-m-d', strtotime($request->input('gabungdari'))) : '';
         $gabunghingga =  $request->input('gabunghingga') != null ? date('Y-m-d', strtotime($request->input('gabunghingga'))) : '';
         $pengecualian = $request->input('kecuali');
+        $detail_bonus = $request->input('detail_bonus');
+        $detail_bonus = explode(', ', $detail_bonus);
 
-        $data = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian);
+        $data = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian, $detail_bonus);
         foreach ($data as &$d) {
             $d->totalstake *= 1000;
             $d->totalwinloss *= 1000;
             $d->totalbonus *= 1000;
         }
         return Excel::download(new CashbackRollinganExport($data), 'MemberOutstanding-' . $bonus . '-' . $gabungdari . '-' . $gabunghingga . '.xlsx');
+    }
+
+    public function getDataProduct($jenis_bonus)
+    {
+        return Product::where('jenis_bonus', $jenis_bonus)->get();
     }
 }

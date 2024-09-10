@@ -43,6 +43,8 @@ class UserAccess
                 'content' => 1,
                 'apk_setting' => 1,
                 'memo_other' => 1,
+                'linkalternatif' => 1,
+                'portfolio' => 1,
             ];
         }
         if ($role === 'superadmin' && $this->isSuperAdmin($user)) {
@@ -102,6 +104,12 @@ class UserAccess
         if ($role === 'memo_other' && $this->canMemoOther($user)) {
             abort(403, 'Action unauthorized');
         }
+        if ($role === 'linkalternatif' && $this->canLinkalternatifds($user)) {
+            abort(403, 'Action unauthorized');
+        }
+        if ($role === 'portfolio' && $this->canPortfolio($user)) {
+            abort(403, 'Action unauthorized');
+        }
         return $next($request);
     }
 
@@ -138,7 +146,9 @@ class UserAccess
             $user['user_access']['analytic'] !== 1 &&
             $user['user_access']['content'] !== 1 &&
             $user['user_access']['apk_setting'] !== 1 &&
-            $user['user_access']['mempo_other'] !== 1;
+            $user['user_access']['mempo_other'] !== 1 &&
+            $user['user_access']['linkalternatif'] !== 1 &&
+            $user['user_access']['portfolio'] !== 1;
     }
     private function canDeposit($user)
     {
@@ -211,5 +221,13 @@ class UserAccess
     private function canMemoOther($user)
     {
         return $user['user_access']['memo_other'] !== 1;
+    }
+    private function canLinkalternatifds($user)
+    {
+        return $user['user_access']['linkalternatif'] !== 1;
+    }
+    private function canPortfolio($user)
+    {
+        return $user['user_access']['portfolio'] !== 1;
     }
 }

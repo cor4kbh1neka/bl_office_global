@@ -14,24 +14,24 @@ class BonusTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('bonus')->insert(
-            [
-                'jenis_bonus' => 'cashback',
-                'min' => 500,
-                'persentase' => 0.02,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        );
+        // DB::table('bonus')->insert(
+        //     [
+        //         'jenis_bonus' => 'cashback',
+        //         'min' => 500,
+        //         'persentase' => 0.02,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
 
-        DB::table('bonus')->insert(
-            [
-                'jenis_bonus' => 'rolingan',
-                'min' => 500,
-                'persentase' => 0.02,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        );
+        // DB::table('bonus')->insert(
+        //     [
+        //         'jenis_bonus' => 'rolingan',
+        //         'min' => 500,
+        //         'persentase' => 0.02,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
     }
 }

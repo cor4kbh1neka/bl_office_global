@@ -41,14 +41,14 @@ class PersentaseTableSeeder extends Seeder
         //     ]
         // );
 
-        DB::table('persentase')->insert(
-            [
-                'jenis' => 'Casino',
-                'persentase' => 0.10,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        );
+        // DB::table('persentase')->insert(
+        //     [
+        //         'jenis' => 'Casino',
+        //         'persentase' => 0.10,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
 
         // DB::table('persentase')->insert(
         //     [
@@ -59,22 +59,22 @@ class PersentaseTableSeeder extends Seeder
         //     ]
         // );
 
-        DB::table('persentase')->insert(
-            [
-                'jenis' => 'ThirdPartySportsBook',
-                'persentase' => 0.10,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        );
+        // DB::table('persentase')->insert(
+        //     [
+        //         'jenis' => 'ThirdPartySportsBook',
+        //         'persentase' => 0.10,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
 
-        DB::table('persentase')->insert(
-            [
-                'jenis' => '568WinSportsbook',
-                'persentase' => 0.10,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        );
+        // DB::table('persentase')->insert(
+        //     [
+        //         'jenis' => '568WinSportsbook',
+        //         'persentase' => 0.10,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]
+        // );
     }
 }

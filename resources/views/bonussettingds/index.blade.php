@@ -77,7 +77,6 @@
                             <div class="listplayerinfo ssreff">
                                 <span class="labelbonusreff">Bonus Referral</span>
                                 <div class="groupbnsreff">
-                                    @dd($dataProduct);
                                     @foreach ($dataProduct as $index => $item)
                                         <div class="listreff">
                                             <label for="persen_referral-{{ $index }}">{{ $item->portfolio }}</label>

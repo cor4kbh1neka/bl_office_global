@@ -157,7 +157,6 @@ class BonusdsController extends Controller
             }
 
             $results = $query->get();
-            dd($results);
             foreach ($results as $key => $result) {
 
                 $mBonus = array_filter($data_product, function ($item) use ($result) {
@@ -169,7 +168,6 @@ class BonusdsController extends Controller
                 }
 
                 $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
-                dd($result);
                 if ($bonus == 'cashback') {
                     if ($total <= ($mBonus['min_lose_bet'] * -1)) {
                         $result->totalbonus = (abs($total) * $mBonus['persen_bonus']) / 100;

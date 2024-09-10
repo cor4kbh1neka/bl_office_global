@@ -18,27 +18,33 @@
         <div class="secagentds">
             <div class="groupsecagentds">
                 <span class="titlebankmaster">Edit Dashboard</span>
-                <form method="POST" action="/dashboardds/update" id="form-agentds" class="groupplayerinfo">
+                <form method="POST" action="/productds/update" id="form-agentds" class="groupplayerinfo">
                     @csrf
                     @foreach ($data as $item)
                         <div class="listgroupplayerinfo left">
                             <div class="listplayerinfo">
-                                <label for="nama">Nama</label>
+                                <label for="portfolio">Portfolio</label>
                                 <div class="groupeditinput">
                                     <input type="hidden" name="id[]" value="{{ $item->id }}" {{ $disabled }}>
-                                    <input type="text" id="nama" name="nama[]" value="{{ $item->nama }}"
-                                        placeholder="masukkan nama dashboard">
+                                    <input type="text" id="portfolio" name="portfolio[]" value="{{ $item->portfolio }}"
+                                        placeholder="masukkan nama portfolio">
+                                </div>
+                            </div>
+                            <div class="listplayerinfo">
+                                <label for="productsname">Nama Game</label>
+                                <div class="groupeditinput">
+                                    <input type="text" id="productsname" name="productsname[]"
+                                        value="{{ $item->productsname }}" placeholder="masukkan nama game">
                                 </div>
                             </div>
                         </div>
-                        <div class="listgroupplayerinfo right solo">
-                            <button class="tombol primary">
-                                <span class="texttombol">SAVE DATA</span>
-                            </button>
-                        </div>
                     @endforeach
+                    <div class="listgroupplayerinfo right solo">
+                        <button class="tombol primary">
+                            <span class="texttombol">SAVE DATA</span>
+                        </button>
+                    </div>
                 </form>
-
             </div>
         </div>
     </div>

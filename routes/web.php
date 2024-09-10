@@ -30,17 +30,12 @@ use App\Http\Controllers\ContentdsController;
 use App\Http\Controllers\ApksettingdsController;
 use App\Http\Controllers\MemotouserdsController;
 use App\Http\Controllers\NotifikasidsController;
-use App\Http\Controllers\Menu2Controller;
-use App\Http\Controllers\PersentasedsController;
 use App\Http\Controllers\BonusdsController;
 use App\Http\Controllers\MaintenancedsController;
 use App\Http\Controllers\BonussettingdsController;
-use App\Http\Controllers\DashboarddsController;
 use App\Http\Controllers\LinkalternatifdsController;
-use App\Http\Controllers\PinController;
-use App\Models\Xdpwd;
-use App\Models\Outstanding;
-use App\Models\DepoWd;
+use App\Http\Controllers\DashboarddsController;
+use App\Http\Controllers\ProductdsController;
 use App\Models\Notes;
 
 
@@ -361,35 +356,40 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/memotouserds/read', [MemotouserdsController::class, 'deliveredread']);
         });
 
+        Route::middleware('linkalternatifds')->group(function () {
+            /*--  Dashboard --*/
+            Route::get('/dashboardds', [DashboarddsController::class, 'index']);
+            Route::get('/dashboardds/add', [DashboarddsController::class, 'create']);
+            Route::get('/dashboardds/edit/{id}', [DashboarddsController::class, 'edit']);
+            Route::post('/dashboardds/store', [DashboarddsController::class, 'store']);
+            Route::post('/dashboardds/update', [DashboarddsController::class, 'update']);
+            Route::delete('/dashboardds/delete', [DashboarddsController::class, 'destroy']);
 
-        /*--  Dashboard --*/
-        Route::get('/dashboardds', [DashboarddsController::class, 'index']);
-        Route::get('/dashboardds/add', [DashboarddsController::class, 'create']);
-        Route::get('/dashboardds/edit/{id}', [DashboarddsController::class, 'edit']);
-        Route::post('/dashboardds/store', [DashboarddsController::class, 'store']);
-        Route::post('/dashboardds/update', [DashboarddsController::class, 'update']);
-        Route::delete('/dashboardds/delete', [DashboarddsController::class, 'destroy']);
+            /* LinkAlternatif */
+            Route::get('/linkalternatifds/index/{dashboard?}', [LinkalternatifdsController::class, 'index']);
+            Route::get('/linkalternatifds/create/{dashboard}', [LinkalternatifdsController::class, 'create']);
+            Route::post('/linkalternatifds/store', [LinkalternatifdsController::class, 'store']);
+            Route::get('/linkalternatifds/edit/{id}', [LinkalternatifdsController::class, 'edit']);
+            Route::delete('/linkalternatifds/delete/{zoneid}/{id}', [LinkalternatifdsController::class, 'delete']);
+            Route::post('/linkalternatifds/updatedns', [LinkalternatifdsController::class, 'updatedns']);
+            Route::post('/linkalternatifds/storedns', [LinkalternatifdsController::class, 'storedns']);
+            Route::delete('/linkalternatifds/remove/{id}/{link}', [LinkalternatifdsController::class, 'removeDomain']);
+            Route::post('/linkalternatifds/updateip/{id}', [LinkalternatifdsController::class, 'updateIp']);
+        });
 
-        /* LinkAlternatif */
-        Route::get('/linkalternatifds/index/{dashboard?}', [LinkalternatifdsController::class, 'index']);
-        Route::get('/linkalternatifds/create/{dashboard}', [LinkalternatifdsController::class, 'create']);
-        Route::post('/linkalternatifds/store', [LinkalternatifdsController::class, 'store']);
-        Route::get('/linkalternatifds/edit/{id}', [LinkalternatifdsController::class, 'edit']);
-        Route::delete('/linkalternatifds/delete/{zoneid}/{id}', [LinkalternatifdsController::class, 'delete']);
-        Route::post('/linkalternatifds/updatedns', [LinkalternatifdsController::class, 'updatedns']);
-        Route::post('/linkalternatifds/storedns', [LinkalternatifdsController::class, 'storedns']);
-        Route::delete('/linkalternatifds/remove/{id}/{link}', [LinkalternatifdsController::class, 'removeDomain']);
-        Route::post('/linkalternatifds/updateip/{id}', [LinkalternatifdsController::class, 'updateIp']);
-
+        Route::middleware('portfolio')->group(function () {
+            /*-- portfolio --*/
+            Route::get('/productds', [ProductdsController::class, 'index']);
+            Route::get('/productds/add', [ProductdsController::class, 'create']);
+            Route::get('/productds/edit/{id}', [ProductdsController::class, 'edit']);
+            Route::post('/productds/store', [ProductdsController::class, 'store']);
+            Route::post('/productds/update', [ProductdsController::class, 'update']);
+            Route::delete('/productds/delete', [ProductdsController::class, 'destroy']);
+        });
 
         /*-- Notifikasids --*/
         Route::get('/notifikasids', [NotifikasidsController::class, 'index']);
         Route::get('/notifikasids/read', [NotifikasidsController::class, 'readinformasi']);
-
-        /*-- Persentase Referral --*/
-        Route::get('/persentaseds', [PersentasedsController::class, 'index']);
-
-
 
 
         /*-- MENU 2 --*/
@@ -406,9 +406,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/bonuslistds', [BonusdsController::class, 'indexlist']);
             Route::get('/bonusds', [BonusdsController::class, 'index']);
             Route::get('/bonusdetailds/{listbonus_id}', [BonusdsController::class, 'indexdetail']);
-            Route::post('/storebonusds/{bonus}/{gabungdari}/{gabunghingga}/{kecuali}', [BonusdsController::class, 'store']);
+            Route::post('/storebonusds/{bonus}/{gabungdari}/{gabunghingga}/{kecuali}/{bonusdetail}', [BonusdsController::class, 'store']);
             Route::post('/cancelbonusds', [BonusdsController::class, 'cancel']);
             Route::get('/bonusds/export', [BonusdsController::class, 'export']);
+            Route::get('/bonusds/getdataproduct/{portfolio}', [BonusdsController::class, 'getDataProduct']);
         });
 
         /*-- Memotouserds --*/

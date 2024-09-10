@@ -5,7 +5,7 @@
         <div class="secgrouptitle">
             <h2>{{ $title }}</h2>
             <div class="kembali">
-                <a href="/dashboardds">
+                <a href="/productds">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
                         <path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"
                             d="M44 40.836c-4.893-5.973-9.238-9.362-13.036-10.168c-3.797-.805-7.412-.927-10.846-.365V41L4 23.545L20.118 7v10.167c6.349.05 11.746 2.328 16.192 6.833c4.445 4.505 7.009 10.117 7.69 16.836Z"
@@ -18,17 +18,25 @@
         <div class="secagentds">
             <div class="groupsecagentds">
                 <span class="titlebankmaster">Tambah Dashboard</span>
-                <form method="POST" action="/dashboardds/store" id="form-agentds" class="groupplayerinfo">
+                <form method="POST" action="/productds/store" id="form-agentds" class="groupplayerinfo">
                     @csrf
                     <div class="listgroupplayerinfo left">
                         <div class="listplayerinfo">
-                            <label for="nama">Nama</label>
+                            <label for="nama">Portfolio</label>
                             <div class="groupeditinput">
-                                <input type="text" id="nama" name="nama" value=""
-                                    placeholder="masukkan nama dashboard">
+                                <input type="text" id="portfolio" name="portfolio" value=""
+                                    placeholder="masukkan nama portfolio">
+                            </div>
+                        </div>
+                        <div class="listplayerinfo">
+                            <label for="nama">Nama Game</label>
+                            <div class="groupeditinput">
+                                <input type="text" id="productsname" name="productsname" value=""
+                                    placeholder="masukkan nama game">
                             </div>
                         </div>
                     </div>
+
                     <div class="listgroupplayerinfo right solo">
                         <button class="tombol primary">
                             <span class="texttombol">SAVE DATA</span>

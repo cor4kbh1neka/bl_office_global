@@ -938,14 +938,13 @@ class ApiBolaController extends Controller
         if (!$dataAktif) {
             $dataAktif = Member::where('username', $request->Username)->first();
         }
-        dd($dataAktif);
+
         if ($dataAktif && !empty($dataAktif->referral)) {
             $portfolio = ProductType::where('id', $request->ProductType)->first();
             $portfolio = $portfolio ? $portfolio->portfolio : 'SportsBook';
 
             $persentase = Product::where('portfolio', $portfolio)->first();
             $persentase = $persentase ? $persentase->persen_referral : 0;
-            dd($persentase);
 
             $referralAmount = $amount * $persentase / 100;
 

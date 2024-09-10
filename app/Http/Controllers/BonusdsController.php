@@ -205,10 +205,6 @@ class BonusdsController extends Controller
 
         $totalBonus = 0;
 
-        foreach ($bonuses as $value) {
-            $totalBonus += round($value, 2);
-        }
-
         $createListbonus = Listbonus::create([
             'no_invoice' => $this->generateInvoiceNumber(),
             'periodedari' => $gabungdari,
@@ -255,6 +251,8 @@ class BonusdsController extends Controller
 
                             // 5.Create History
                             $this->addDataHistory($d['username'], $txnid, '', 'bonus ' .  '(' . $d['productsname'] . ')', 'bonus', 0, $nominalBonus, $prosesBalance["balance"]);
+
+                            $totalBonus += $nominalBonus;
                         } else {
                             $createDetail->delete();
                             $failedUsernames[] = $d['username'];
@@ -267,6 +265,10 @@ class BonusdsController extends Controller
                     }
                 }
             }
+
+            $createListbonus->update([
+                'total' => $totalBonus
+            ]);
         } else {
             return response()->json(['message' => 'Gagal menyimpan data'], 500);
         }

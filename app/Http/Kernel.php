@@ -91,5 +91,7 @@ class Kernel extends HttpKernel
         'seamless' => \App\Http\Middleware\UserAccess::class . ':seamless',
         'refeerral_bonus' => \App\Http\Middleware\UserAccess::class . ':refeerral_bonus',
         'verify.pin' => \App\Http\Middleware\VerifyPin::class,
+        'linkalternatifds' => \App\Http\Middleware\UserAccess::class . ':linkalternatifds',
+        'portfolio' => \App\Http\Middleware\UserAccess::class . ':portfolio',
     ];
 }

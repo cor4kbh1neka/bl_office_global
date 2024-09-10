@@ -32,7 +32,7 @@ class BonussettingdsController extends Controller
         try {
             // Update max min betting
             $apiResponse = $this->apiUpdateAgent($validatedData['max'], $validatedData['min']);
-
+            dd($apiResponse);
             if ($apiResponse['error']['id'] === 0) {
                 // Update bonus dan referral
                 $this->updateBonusReferral($request->all());

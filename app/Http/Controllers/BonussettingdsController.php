@@ -32,7 +32,7 @@ class BonussettingdsController extends Controller
         try {
             // Update max min betting
             $apiResponse = $this->apiUpdateAgent($validatedData['max'], $validatedData['min']);
-            dd($apiResponse);
+
             if ($apiResponse['error']['id'] === 0) {
                 // Update bonus dan referral
                 $this->updateBonusReferral($request->all());
@@ -50,6 +50,7 @@ class BonussettingdsController extends Controller
         $id_products = $allrequest['id-product'];
 
         foreach ($id_products as $index => $id_referral) {
+            dd($id_referral);
             $dataReferral = Product::find($id_referral);
             if ($dataReferral) {
                 $dataReferral->update([

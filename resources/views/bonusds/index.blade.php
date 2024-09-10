@@ -471,7 +471,7 @@
                         '&gabungdari=' + encodeURIComponent(gabungdari) +
                         '&gabunghingga=' + encodeURIComponent(gabunghingga) +
                         '&kecuali=' + encodeURIComponent(kecuali) +
-                        '&detail_bonus=' + encodeURIComponent(kecuali);
+                        '&detail_bonus=' + encodeURIComponent(detail_bonus);
 
 
                     // Redirect ke URL

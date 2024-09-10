@@ -62,7 +62,10 @@ class BonusdsController extends Controller
     public function indexdetail($listbonus_id)
     {
         $data = Listbonus::where('id', $listbonus_id)->first();
-        $datadetail = Listbonusdetail::where('listbonus_id', $listbonus_id)->get();
+        $datadetail = Listbonusdetail::select('listbonus_detail.*', 'products.productsname')
+            ->join('products', 'listbonus_detail.portfolio', '=', 'products.portfolio')
+            ->where('listbonus_detail.listbonus_id', $listbonus_id)
+            ->get();
         $dataBonusPengecualian = BonusPengecualian::get();
 
         return view('bonusds.indexdetail', [
@@ -180,6 +183,12 @@ class BonusdsController extends Controller
                     } else {
                         unset($results[$key]);
                     }
+                }
+
+                // Tambahkan filter totalbonus >= 0.01
+                if ($result->totalbonus < 0.01) {
+                    $result->totalbonus = round($result->totalbonus, 2);
+                    unset($results[$key]);
                 }
             }
         } else {
@@ -453,11 +462,12 @@ class BonusdsController extends Controller
         $detail_bonus = explode(', ', $detail_bonus);
 
         $data = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian, $detail_bonus);
-        foreach ($data as &$d) {
-            $d->totalstake *= 1000;
-            $d->totalwinloss *= 1000;
-            $d->totalbonus *= 1000;
-        }
+        // foreach ($data as &$d) {
+        //     $d->totalstake *= 1000;
+        //     $d->totalwinloss *= 1000;
+        //     $d->totalbonus *= 1000;
+        // }
+
         return Excel::download(new CashbackRollinganExport($data), 'MemberOutstanding-' . $bonus . '-' . $gabungdari . '-' . $gabunghingga . '.xlsx');
     }
 

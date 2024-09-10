@@ -12,6 +12,6 @@ class Listbonus extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['no_invoice', 'periodedari', 'periodesampai', 'jenis_bonus', 'kecuali', 'total', 'status', 'processed_by'];
+    protected $fillable = ['no_invoice', 'periodedari', 'periodesampai', 'jenis_bonus', 'detail_bonus', 'kecuali', 'total', 'status', 'processed_by'];
     protected $table = 'listbonus';
 }

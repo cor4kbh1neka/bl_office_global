@@ -861,6 +861,7 @@ class ApiBolaController extends Controller
                     $portfolio = $portfolio ? $portfolio->portfolio : '';
 
                     dd($WinLoss);
+                    'test';
 
                     if ($WinLoss > 0) {
                         // if ($checkXtrans) {

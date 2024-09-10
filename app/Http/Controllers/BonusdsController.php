@@ -250,7 +250,7 @@ class BonusdsController extends Controller
                             $this->addDataWinLoss($d['username'], $nominalBonus, "deposit");
 
                             // 5.Create History
-                            $this->addDataHistory($d['username'], $txnid, '', 'bonus ' .  '(' . $d['productsname'] . ')', 'bonus', 0, $nominalBonus, $prosesBalance["balance"]);
+                            $this->addDataHistory($d['username'], $txnid, '', 'bonus ' . $d['productsname'], 'bonus', 0, $nominalBonus, $prosesBalance["balance"]);
 
                             $totalBonus += $nominalBonus;
                         } else {

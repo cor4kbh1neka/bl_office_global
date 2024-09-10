@@ -168,7 +168,7 @@ class BonusdsController extends Controller
                 }
 
                 $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
-                dd($total);
+                dd($result);
                 if ($bonus == 'cashback') {
                     if ($total <= ($mBonus['min_lose_bet'] * -1)) {
                         $result->totalbonus = (abs($total) * $mBonus['persen_bonus']) / 100;

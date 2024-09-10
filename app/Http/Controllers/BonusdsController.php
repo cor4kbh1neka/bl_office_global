@@ -166,7 +166,7 @@ class BonusdsController extends Controller
                 foreach ($mBonus as $item) {
                     $mBonus = $item;
                 }
-                dd($mBonus);
+                dd($mBonus['min_lose_bet'] * -1);
 
                 $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
                 if ($bonus == 'cashback') {

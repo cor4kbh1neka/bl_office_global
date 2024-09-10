@@ -79,7 +79,7 @@
                                 <div class="groupbnsreff">
                                     @foreach ($dataProduct as $index => $item)
                                         <div class="listreff">
-                                            <label for="per">persen_referral-{{ $index }}</label>
+                                            <label for="persen_referral-{{ $index }}">{{ $item->portfolio }}</label>
                                             <input type="hidden" name="id-product[]" value="{{ $item->id }}">
                                             <input type="number" id="persen_referral-{{ $index }}"
                                                 name="persen_referral[]" value="{{ $item->persen_referral }}" step="0.01"

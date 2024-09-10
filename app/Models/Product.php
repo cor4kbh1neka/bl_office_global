@@ -11,6 +11,6 @@ class Product extends Model
     use HasFactory;
 
 
-    protected $fillable = ['id', 'productsname', 'portfolio', 'ismaintenance'];
+    protected $fillable = ['productsname', 'portfolio', 'ismaintenance', 'persen_referral', 'jenis_bonus', 'min_lose_bet', 'persen_bonus'];
     protected $table = 'products';
 }

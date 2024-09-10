@@ -12,6 +12,6 @@ class Listbonusdetail extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['listbonus_id', 'username', 'turnover', 'winlose', 'bonus'];
+    protected $fillable = ['listbonus_id', 'username', 'portfolio', 'turnover', 'winlose', 'bonus'];
     protected $table = 'listbonus_detail';
 }

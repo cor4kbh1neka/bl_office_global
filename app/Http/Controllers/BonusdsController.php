@@ -90,7 +90,7 @@ class BonusdsController extends Controller
         $detail_bonus_array = explode(', ', $detail_bonus);
 
         $results = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian, $detail_bonus_array);
-
+        dd($results);
         if ($results instanceof Collection && !$results->isEmpty()) {
             $isproses = true;
         } else {

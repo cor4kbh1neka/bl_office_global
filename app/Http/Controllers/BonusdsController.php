@@ -104,6 +104,7 @@ class BonusdsController extends Controller
                 'ischeck' => in_array($item->productsname, $detail_bonus_array)
             ];
         })->toArray();
+        dd($detail_bonus_data);
 
         return view('bonusds.index', [
             'title' => 'Cashback dan Rollingan',

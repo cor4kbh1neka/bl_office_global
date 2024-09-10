@@ -90,7 +90,7 @@ class BonusdsController extends Controller
         $detail_bonus_array = explode(', ', $detail_bonus);
 
         $results = $this->getDataBonus($bonus, $gabungdari, $gabunghingga, $pengecualian, $detail_bonus_array);
-        dd($results);
+
         if ($results instanceof Collection && !$results->isEmpty()) {
             $isproses = true;
         } else {
@@ -104,7 +104,6 @@ class BonusdsController extends Controller
                 'ischeck' => in_array($item->productsname, $detail_bonus_array)
             ];
         })->toArray();
-        dd($detail_bonus_data);
 
         return view('bonusds.index', [
             'title' => 'Cashback dan Rollingan',
@@ -167,8 +166,6 @@ class BonusdsController extends Controller
                 foreach ($mBonus as $item) {
                     $mBonus = $item;
                 }
-
-                dd($mBonus);
 
                 $total = $bonus == 'cashback' ? $result->totalwinloss : $result->totalstake;
                 if ($bonus == 'cashback') {

@@ -157,6 +157,7 @@ class BonusdsController extends Controller
             }
 
             $results = $query->get();
+            dd($results);
             foreach ($results as $key => $result) {
 
                 $mBonus = array_filter($data_product, function ($item) use ($result) {

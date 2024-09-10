@@ -945,6 +945,7 @@ class ApiBolaController extends Controller
 
             $persentase = Product::where('portfolio', $portfolio)->first();
             $persentase = $persentase ? $persentase->persen_referral : 0;
+            dd($persentase);
 
             $referralAmount = $amount * $persentase / 100;
 

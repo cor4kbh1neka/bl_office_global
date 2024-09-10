@@ -860,6 +860,8 @@ class ApiBolaController extends Controller
                     $portfolio = ProductType::where('id', $request->ProductType)->first();
                     $portfolio = $portfolio ? $portfolio->portfolio : '';
 
+                    dd($WinLoss);
+
                     if ($WinLoss > 0) {
                         // if ($checkXtrans) {
                         //     $checkXtrans->update([

@@ -860,9 +860,6 @@ class ApiBolaController extends Controller
                     $portfolio = ProductType::where('id', $request->ProductType)->first();
                     $portfolio = $portfolio ? $portfolio->portfolio : '';
 
-                    dd($WinLoss);
-                    'test';
-
                     if ($WinLoss > 0) {
                         // if ($checkXtrans) {
                         //     $checkXtrans->update([
@@ -941,7 +938,7 @@ class ApiBolaController extends Controller
         if (!$dataAktif) {
             $dataAktif = Member::where('username', $request->Username)->first();
         }
-
+        dd($dataAktif && !empty($dataAktif->referral));
         if ($dataAktif && !empty($dataAktif->referral)) {
             $portfolio = ProductType::where('id', $request->ProductType)->first();
             $portfolio = $portfolio ? $portfolio->portfolio : 'SportsBook';

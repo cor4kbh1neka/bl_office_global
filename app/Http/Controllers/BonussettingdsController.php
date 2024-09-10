@@ -51,7 +51,6 @@ class BonussettingdsController extends Controller
 
         foreach ($id_products as $index => $id_referral) {
             $dataReferral = Product::find($id_referral);
-            dd($dataReferral);
             if ($dataReferral) {
                 $success = $dataReferral->update([
                     'persen_referral' => $allrequest['persen_referral'][$index],

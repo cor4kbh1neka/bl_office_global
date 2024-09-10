@@ -240,7 +240,7 @@ class BonusdsController extends Controller
                             if ($balance) {
                                 $balance = $balance->amount;
                             }
-                            $keterangan = 'Bonus ' . $d['productsname'];
+                            $keterangan = $d['productsname'];
                             $this->createDepoWD($d['username'], $nominalBonus, $keterangan, 'DPM', $txnid, $balance, Auth::user()->username, 1);
 
                             // 3. Process balance

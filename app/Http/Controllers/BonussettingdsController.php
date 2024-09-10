@@ -53,12 +53,22 @@ class BonussettingdsController extends Controller
             $dataReferral = Product::find($id_referral);
             dd($dataReferral);
             if ($dataReferral) {
-                $dataReferral->update([
+                $success = $dataReferral->update([
                     'persen_referral' => $allrequest['persen_referral'][$index],
                     'persen_bonus' => $allrequest['persen_bonus'][$index],
                     'jenis_bonus' => $allrequest['jenis_bonus'][$index],
                     'min_lose_bet' => $allrequest['min_lose_bet'][$index]
                 ]);
+
+                if ($success) {
+                    // Update berhasil
+                    dd($success);
+                    return response()->json(['message' => 'Update berhasil'], 200);
+                } else {
+                    dd('gagal');
+                    // Update gagal
+                    return response()->json(['message' => 'Update gagal'], 500);
+                }
             }
         }
 

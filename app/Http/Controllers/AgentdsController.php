@@ -2,18 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BetSetting;
-use App\Models\Settings;
-use App\Models\Companys;
-use App\Models\Currencys;
-use App\Models\Persentase;
+
 use App\Models\UserAccess;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class AgentdsController extends Controller
 {
@@ -181,6 +174,7 @@ class AgentdsController extends Controller
         $user->report = isset($request->report) ? true : false;
 
         $user->bank = isset($request->bank) ? true : false;
+        $user->portfolio = isset($request->portfolio) ? true : false;
         $user->refeerral_bonus = isset($request->refeerral_bonus) ? true : false;
         $user->memo = isset($request->memo) ? true : false;
 
@@ -230,6 +224,7 @@ class AgentdsController extends Controller
         $user->report = isset($request->report) ? true : false;
 
         $user->bank = isset($request->bank) ? true : false;
+        $user->portfolio = isset($request->portfolio) ? true : false;
         $user->refeerral_bonus = isset($request->refeerral_bonus) ? true : false;
         $user->memo = isset($request->memo) ? true : false;
 
@@ -246,87 +241,11 @@ class AgentdsController extends Controller
         return redirect()->back()->with('success', 'Access agent berhasil diupdate.');
     }
 
-    // public function storesetting(Request $request)
-    // {
-    //     $request->validate([
-    //         'min' => 'required',
-    //         'max' => 'required',
-    //         'sportsbook' => 'required',
-    //         'virtualsports' => 'required',
-    //         'games' => 'required'
-    //     ]);
-
-    //     $dataBetSetting = BetSetting::where('id', 1)->first();
-    //     $reqBetSetting = [
-    //         'min' => $request->min,
-    //         'max' => $request->max
-    //     ];
-    //     if ($dataBetSetting) {
-    //         $dataBetSetting->update($reqBetSetting);
-    //     } else {
-    //         BetSetting::create($reqBetSetting);
-    //     }
-
-    //     $dataPersentaseSB = Persentase::where('jenis', 'SportsBook')->first();
-    //     if ($dataPersentaseSB) {
-    //         $dataPersentaseSB->update([
-    //             'persentase' => $request->sportsbook
-    //         ]);
-    //     } else {
-    //         Persentase::create([
-    //             'jenis' => 'SportsBook',
-    //             'persentase' => $request->sportsbook
-    //         ]);
-    //     }
-
-
-    //     $dataPersentaseVS = Persentase::where('jenis', 'VirtualSports')->first();
-    //     if ($dataPersentaseVS) {
-    //         $dataPersentaseVS->update([
-    //             'persentase' => $request->virtualsports
-    //         ]);
-    //     } else {
-    //         Persentase::create([
-    //             'jenis' => 'SportsBook',
-    //             'persentase' => $request->virtualsports
-    //         ]);
-    //     }
-
-    //     $dataPersentaseG = Persentase::where('jenis', 'Games')->first();
-    //     if ($dataPersentaseG) {
-    //         $dataPersentaseG->update([
-    //             'persentase' => $request->games
-    //         ]);
-    //     } else {
-    //         Persentase::create([
-    //             'jenis' => 'SportsBook',
-    //             'persentase' => $request->games
-    //         ]);
-    //     }
-
-
-
-    //     $user = new User();
-    //     $user->name = $request->username;
-    //     $user->username = $request->username;
-    //     $user->divisi = $request->divisi;
-    //     $user->password = bcrypt($request->password);
-    //     $user->image = "";
-    //     $user->status = 1;
-
-    //     $user->save();
-
-    //     return redirect('/agentds')->with('success', 'Aget berhasil ditambahkan.');
-    // }
-
     public function userAndUserAccess()
     {
         $user = auth()->user();
         $userWithAccess = User::with('userAccess')->find($user->id);
-        // $userWithAccess = User::with('userAccess')->find($user->id); 
-        // userAccess di atas adalah penghubung ke method userAccess di model User.php
-        // Cara bacanya User yang memiliki hubungan ke model UserAccess dengan name_access yang serupa dengan divisi milik model User
-        // Maka temukan ID nya si auth user dan 
+
         $result = $userWithAccess->toArray();
         if ($result['user_access']['deposit'] = 1) {
             dd('masuk');

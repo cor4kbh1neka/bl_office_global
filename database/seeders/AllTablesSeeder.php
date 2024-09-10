@@ -19,7 +19,6 @@ class AllTablesSeeder extends Seeder
             GameTypeTableSeeder::class,
             UsersTableSeeder::class,
             TableCurrencySeeder::class,
-            PersentaseTableSeeder::class,
             BetSettingSeeder::class,
             BonusTableSeeder::class,
             BonusPengecualianTableSeeder::class,

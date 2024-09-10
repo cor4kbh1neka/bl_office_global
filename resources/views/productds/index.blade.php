@@ -23,7 +23,7 @@
             <div class="groupsecagentds">
                 <div class="headgroupsecagentds">
                     <div class="listheadsecagentds bottom">
-                        <a href="/dashboardds/add" class="tombol proses">
+                        <a href="/productds/add" class="tombol proses">
                             <span class="texttombol">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
                                     <defs>
@@ -37,7 +37,7 @@
                                     </defs>
                                     <path fill="currentColor" d="M0 0h48v48H0z" mask="url(#ipSAdd0)"></path>
                                 </svg>
-                                ADD AGENT
+                                ADD PRODUCT
                             </span>
                         </a>
                     </div>
@@ -48,16 +48,18 @@
                             <tbody>
                                 <tr class="hdtable">
                                     <th class="bagno">#</th>
-                                    <th class="baglogininfo">nama</th>
+                                    <th class="baglogininfo">portfolio</th>
+                                    <th class="baglogininfo">nama game</th>
                                     <th class="action">tools</th>
                                 </tr>
                                 @foreach ($data as $index => $d)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        <td>{{ $d->nama }}</td>
+                                        <td>{{ $d->portfolio }}</td>
+                                        <td>{{ $d->productsname }}</td>
                                         <td>
                                             <div class="grouptools">
-                                                <a href="/dashboardds/edit/{{ $d['id'] }}" target="_blank"
+                                                <a href="/productds/edit/{{ $d['id'] }}" target="_blank"
                                                     class="tombol grey openviewport">
                                                     <span class="texttombol">EDIT</span>
                                                 </a>
@@ -133,7 +135,7 @@
                     'values[]': checkedValues
                 }, true);
 
-                window.location.href = '/dashboardds/edit/' + parameterString;
+                window.location.href = '/productds/edit/' + parameterString;
             });
 
 
@@ -160,7 +162,7 @@
                     'values[]': checkedValues
                 }, true);
                 var url =
-                    "/dashboardds/delete/";
+                    "/productds/delete/";
 
                 Swal.fire({
                     title: 'Apakah Anda yakin ingin menghapus user ini ?',
@@ -189,7 +191,7 @@
                                     timer: 1500
                                 }).then(function() {
                                     // Lakukan perubahan halaman atau tindakan lainnya setelah data berhasil dihapus
-                                    window.location.href = '/dashboardds';
+                                    window.location.href = '/productds';
                                 });
                             },
                             error: function(xhr) {
@@ -210,9 +212,9 @@
                 event.preventDefault();
                 var id = $(this).data('id');
                 $('.aplay_code').empty();
-                $('.aplay_code').load('/dashboardds/view/' + id, function() {
+                $('.aplay_code').load('/productds/view/' + id, function() {
                     adjustElementSize();
-                    localStorage.setItem('lastPage', '/dashboardds/view/' + id);
+                    localStorage.setItem('lastPage', '/productds/view/' + id);
                 });
             });
 
@@ -221,9 +223,9 @@
             //     event.preventDefault();
             //     var id = $(this).data('id');
             //     $('.aplay_code').empty();
-            //     $('.aplay_code').load('/dashboardds/edit/' + id, function() {
+            //     $('.aplay_code').load('/productds/edit/' + id, function() {
             //         adjustElementSize();
-            //         localStorage.setItem('lastPage', '/dashboardds/edit/' + id);
+            //         localStorage.setItem('lastPage', '/productds/edit/' + id);
             //     });
             // });
 
@@ -232,10 +234,10 @@
 
                 var id = $(this).data('id');
                 var url =
-                    "/dashboardds/delete/"; // Ubah URL sesuai dengan endpoint delete yang sesuai
+                    "/productds/delete/"; // Ubah URL sesuai dengan endpoint delete yang sesuai
 
                 Swal.fire({
-                    title: 'Apakah Anda yakin ingin menghapus Dashboard ini?',
+                    title: 'Apakah Anda yakin ingin menghapus Product ini?',
                     text: "Data yang dihapus tidak dapat dikembalikan!",
                     icon: 'warning',
                     showCancelButton: true,
@@ -261,7 +263,7 @@
                                     timer: 1500
                                 }).then(function() {
                                     // Lakukan perubahan halaman atau tindakan lainnya setelah data berhasil dihapus
-                                    window.location.href = '/dashboardds';
+                                    window.location.href = '/productds';
                                 });
                             },
                             error: function(xhr) {

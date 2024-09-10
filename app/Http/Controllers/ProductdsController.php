@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Dashboard;
+use App\Models\Product;
 use App\Models\Website;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -11,42 +11,50 @@ use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Validator;
 
-class DashboarddsController extends Controller
+class ProductdsController extends Controller
 {
     public function index()
     {
-        $dashboard = Dashboard::latest()->get();
-        return view('dashboardds.index', [
-            'title' => 'Dashboard Management',
+        $dashboard = Product::latest()->get();
+        return view('productds.index', [
+            'title' => 'Product Management',
             'data' => $dashboard
         ]);
     }
 
     public function create()
     {
-        return view('dashboardds.create', [
-            'title' => 'Dashboard Management'
+        return view('productds.create', [
+            'title' => 'Product Management'
         ]);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required',
+            'portfolio' => 'required',
         ], [
-            'nama.required' => 'Nama tidak boleh kosong.',
+            'portfolio.required' => 'Nama tidak boleh kosong.',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         } else {
             try {
-                $data = $request->all();
-                Dashboard::create($data);
-                return redirect('/dashboardds')->with('success', 'Data berhasil disimpan.');
+                $data = [
+                    'productsname' => $request->productsname,
+                    'portfolio' => $request->portfolio,
+                    'ismaintenance' => 0,
+                    'pesan_referral' => 0,
+                    'jenis_bonus' => 'cashback',
+                    'min_lose_bet' => 0,
+                    'pesan_bonus' => 0,
+                ];
+                Product::create($data);
+                return redirect('/productds')->with('success', 'Data berhasil disimpan.');
             } catch (\Exception $e) {
                 dd($e->getMessage());
-                return redirect('/dashboardds')->with('error', 'Terjadi kesalahan saat menyimpan data.');
+                return redirect('/productds')->with('error', 'Terjadi kesalahan saat menyimpan data.');
             }
         }
     }
@@ -62,14 +70,14 @@ class DashboarddsController extends Controller
         if (!empty($var4)) {
             $id = $var4;
             foreach ($id as $index => $ids) {
-                $dashboard[$index] = Dashboard::where('id', $ids)->first();
+                $dashboard[$index] = Product::where('id', $ids)->first();
             }
         } else {
-            $dashboard = [Dashboard::where('id', $id)->first()];
+            $dashboard = [Product::where('id', $id)->first()];
         }
 
-        return view('dashboardds.update', [
-            'title' => 'Dashboard Management',
+        return view('productds.update', [
+            'title' => 'Product Management',
             'data' => $dashboard,
             'disabled' => ''
         ]);
@@ -85,13 +93,13 @@ class DashboarddsController extends Controller
         if (!empty($var4)) {
             $id = $var4;
             foreach ($id as $index => $ids) {
-                $dashboard[$index] = Dashboard::where('id', $ids)->first();
+                $dashboard[$index] = Product::where('id', $ids)->first();
             }
         } else {
-            $dashboard = [Dashboard::where('id', $id)->first()];
+            $dashboard = [Product::where('id', $id)->first()];
         }
-        return view('dashboardds.update', [
-            'title' => 'Dashboard Management',
+        return view('productds.update', [
+            'title' => 'Product Management',
             'data' => $dashboard,
             'disabled' => 'disabled'
         ]);
@@ -100,7 +108,7 @@ class DashboarddsController extends Controller
 
     public function data($id)
     {
-        $data = Dashboard::find($id);
+        $data = Product::find($id);
         return response()->json($data);
     }
 
@@ -109,24 +117,26 @@ class DashboarddsController extends Controller
         $ids = $request->id;
         $data = $request->all();
         $errors = [];
-
         foreach ($ids as $index => $id) {
             $alldata = [
                 'id' => $data["id"][$index],
-                'nama' => $data["nama"][$index]
+                'portfolio' => $data["portfolio"][$index],
+                'productsname' => $data["productsname"][$index]
             ];
+
             $validator = Validator::make($alldata, [
-                'nama' => 'required',
-            ], [
-                'nama.required' => 'Nama tidak boleh kosong.'
+                'portfolio' => 'required',
+                'productsname' => 'required',
             ]);
 
             if ($validator->fails()) {
                 $errors[] = $validator->errors()->all();
             } else {
                 try {
-                    $dashboard = Dashboard::find($id);
-                    $dashboard->nama = $alldata['nama'];
+
+                    $dashboard = Product::find($id);
+                    $dashboard->portfolio = $alldata['portfolio'];
+                    $dashboard->productsname = $alldata['productsname'];
 
                     $dashboard->save();
                 } catch (\Exception $e) {
@@ -142,7 +152,7 @@ class DashboarddsController extends Controller
                 ->with('error', 'Terdapat kesalahan dalam pembaruan data.');
         }
 
-        return redirect('/dashboardds')->with('success', 'Dashboard berhasil diupdate!');
+        return redirect('/productds')->with('success', 'Product berhasil diupdate!');
     }
 
 
@@ -155,7 +165,7 @@ class DashboarddsController extends Controller
         }
 
         foreach ($ids as $id) {
-            $dashboard = Dashboard::findOrFail($id);
+            $dashboard = Product::findOrFail($id);
 
             // Menghapus gambar terkait jika ada
             if ($dashboard->image) {
@@ -189,7 +199,7 @@ class DashboarddsController extends Controller
         } else {
             try {
                 $alldata = $request->all();
-                $dashboard = Dashboard::find($id);
+                $dashboard = Product::find($id);
                 $dashboard->name = $alldata['name'];
 
                 if ($alldata['password'] != '') {

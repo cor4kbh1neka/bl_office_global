@@ -132,6 +132,7 @@
                                         <input type="checkbox" id="myCheckbox" name="myCheckbox" checked disabled>
                                     </th>
                                     <th class="bagusercc">username</th>
+                                    <th class="bagusercc" rowspan="2">jenis bonus</th>
                                     <th class="bagturnover" rowspan="2">turnover</th>
                                     <th class="bagwinlose" rowspan="2">win/lose</th>
                                     <th class="bagnominalbonus" rowspan="2">nominal bonus (IDR)</th>
@@ -160,6 +161,7 @@
                                                 name="myCheckbox-{{ $i }}" checked disabled>
                                         </td>
                                         <td class="username">{{ $d->username }}</td>
+                                        <td class="username">{{ $d->productsname }}</td>
                                         <td class="datacc" data-get="{{ $d->turnover }}"></td>
                                         <td class="datacc" data-get="{{ $d->winlose }}"></td>
                                         <td class="datacc" data-get="{{ $d->bonus }}"></td>

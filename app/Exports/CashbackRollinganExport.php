@@ -29,6 +29,7 @@ class CashbackRollinganExport implements FromCollection, WithHeadings, WithStyle
 
             $itemArray = $item->toArray();
             unset($itemArray['id']); // Menghilangkan kolom "id"
+            unset($itemArray['portfolio']);
 
             return $itemArray;
         });
@@ -38,9 +39,10 @@ class CashbackRollinganExport implements FromCollection, WithHeadings, WithStyle
     {
         return [
             "Username",
+            "Jenis Bonus",
             "Turnover",
             "Win/Lose",
-            "Nominal Bet (IDR)"
+            "Nominal Bonus (IDR)"
         ];
     }
 
@@ -56,8 +58,9 @@ class CashbackRollinganExport implements FromCollection, WithHeadings, WithStyle
         return [
             'A' => 20,
             'B' => 20,
-            'C' => 15,
-            'D' => 30,
+            'C' => 20,
+            'D' => 15,
+            'E' => 30,
         ];
     }
 
@@ -65,7 +68,7 @@ class CashbackRollinganExport implements FromCollection, WithHeadings, WithStyle
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $cellRange = 'A1:D' . (count($this->data) + 1);
+                $cellRange = 'A1:E' . (count($this->data) + 1);
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray([
                     'borders' => [
                         'allBorders' => [

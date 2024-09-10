@@ -52,23 +52,12 @@ class BonussettingdsController extends Controller
         foreach ($id_products as $index => $id_referral) {
             $dataReferral = Product::find($id_referral);
             if ($dataReferral) {
-                dd($allrequest);
-                $success = $dataReferral->update([
+                $dataReferral->update([
                     'persen_referral' => $allrequest['persen_referral'][$index],
                     'persen_bonus' => $allrequest['persen_bonus'][$index],
                     'jenis_bonus' => $allrequest['jenis_bonus'][$index],
                     'min_lose_bet' => $allrequest['min_lose_bet'][$index]
                 ]);
-
-                if ($success) {
-                    // Update berhasil
-                    dd($success);
-                    return response()->json(['message' => 'Update berhasil'], 200);
-                } else {
-                    dd('gagal');
-                    // Update gagal
-                    return response()->json(['message' => 'Update gagal'], 500);
-                }
             }
         }
 

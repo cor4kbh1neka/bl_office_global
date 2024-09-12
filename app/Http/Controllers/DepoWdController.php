@@ -336,14 +336,15 @@ class DepoWdController extends Controller
             }
             return true;
         } else {
-            if ($resultsApi["error"]["id"] === 4404) {
-                $error4404 = $this->deposit4404($dataAPI, $dataDepo, $txnid);
-                if ($error4404 !== true) {
-                    return $error4404;
-                }
-            } else {
-                return $resultsApi;
-            }
+            // if ($resultsApi["error"]["id"] === 4404) {
+            //     $error4404 = $this->deposit4404($dataAPI, $dataDepo, $txnid);
+            //     if ($error4404 !== true) {
+            //         return $error4404;
+            //     }
+            // } else {
+            //     return $resultsApi;
+            // }
+            return false;
         }
     }
 
@@ -512,9 +513,13 @@ class DepoWdController extends Controller
 
             foreach ($ids as $id) {
                 //UPDATE STATUS CANCEL
-                $updateStatusTransaction = DepoWd::where('id', $id)->first();
+                $updateStatusTransaction = DepoWd::where('id', $id)->lockForUpdate()->first();
                 if ($updateStatusTransaction) {
-                    $updateStatusTransaction->update(['status' => 2, 'approved_by' => Auth::user()->username]);
+                    if ($updateStatusTransaction->status !== 0) {
+                        continue;
+                    } else {
+                        $updateStatusTransaction->update(['status' => 2, 'approved_by' => Auth::user()->username]);
+                    }
                 } else {
                     return back()->withInput()->with('error', 'Data tidak ditemukan');
                 }
@@ -538,21 +543,21 @@ class DepoWdController extends Controller
                         $this->processBalance($updateStatusTransaction->username, 'DP', $updateStatusTransaction->amount);
                     }
 
-                    $maxAttempts4404 = 10;
-                    $attempt4404 = 0;
-                    while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
-                        $txnid = $this->generateTxnid('W');
-                        $dataAPI["TxnId"] = $txnid;
-                        $resultsApi = $this->requestApi('deposit', $dataAPI);
-                        if ($resultsApi["error"]["id"] === 0) {
-                            $updateStatusTransaction->update([
-                                "txnid" => $txnid
-                            ]);
-                        }
-                        $attempt4404++;
-                    }
+                    // $maxAttempts4404 = 10;
+                    // $attempt4404 = 0;
+                    // while ($resultsApi["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
+                    //     $txnid = $this->generateTxnid('W');
+                    //     $dataAPI["TxnId"] = $txnid;
+                    //     $resultsApi = $this->requestApi('deposit', $dataAPI);
+                    //     if ($resultsApi["error"]["id"] === 0) {
+                    //         $updateStatusTransaction->update([
+                    //             "txnid" => $txnid
+                    //         ]);
+                    //     }
+                    //     $attempt4404++;
+                    // }
 
-                    if ($resultsApi["error"]["id"] !== 0 && $resultsApi["error"]["id"] !== 4404) {
+                    if ($resultsApi["error"]["id"] !== 0) {
                         $updateStatusTransaction->update([
                             'status' => 0,
                             'approved_by' => ''

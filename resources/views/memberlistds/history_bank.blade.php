@@ -56,7 +56,8 @@
                                     </td>
                                     <td>{{ $d->approved_by }}</td>
                                     <td>{{ $d->amount }}</td>
-                                    <td>{{ $d->status == 1 ? $d->balance + $d->amount : $d->balance }}</td>
+                                    <td>{{ $d->status == 1 && ($d->jenis == 'DP' || $d->jenis == 'DPM') ? $d->balance + $d->amount : $d->balance }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

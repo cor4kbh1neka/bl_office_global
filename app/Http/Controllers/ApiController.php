@@ -1316,11 +1316,37 @@ class ApiController extends Controller
 
     /* OLD DATA */
     /* OLD DATA */
-    public function old_datahistorycoin(Request $request)
+
+    private function checkValidation($request)
     {
-        // $getdate = $request->query('getdate');
-        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
-        $todate = $request->query('todate') ?? date('Y-m-d');
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $bulanfromdate = Carbon::parse($request->fromdate)->format('m');
+        $bulantodate = Carbon::parse($request->todate)->format('m');
+        $tahunfromdate = Carbon::parse($request->fromdate)->format('Y');
+        $tahuntodate = Carbon::parse($request->todate)->format('Y');
+
+        $fromdate = $request->fromdate;
+        $todate = $request->todate;
+
+        if (!$bulan || !$fromdate || !$todate || !$tahun) {
+            return false;
+        } else if (($bulan !== $bulanfromdate || $tahun !== $tahunfromdate) || ($bulan !== $bulantodate || $tahun !== $tahuntodate)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function old_datahistorycoin($request)
+    {
+        $checkValidation = $this->checkValidation($request);
+        if (!$checkValidation) {
+            return [];
+        }
+
+        $fromdate = $request->fromdate;
+        $todate = $request->todate;
 
         $jenisraw = DB::raw("CASE jenis
                 WHEN 'DP' THEN 'deposit'
@@ -1342,49 +1368,72 @@ class ApiController extends Controller
         return $query;
     }
 
-    public function old_historycoin()
+    public function old_historycoin(Request $request)
     {
-        if (Redis::exists('olddatacoins')) {
-            $data = json_decode(Redis::get('olddatacoins'), true);
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $redis_name = 'olddatacoins-' . $bulan . '/' . $tahun;
+
+        if (Redis::exists($redis_name)) {
+            $data = json_decode(Redis::get($redis_name), true);
+            $source = 'cache';
         } else {
-            return response()->json('gagal ambil cache');
+            $data = $this->old_datahistorycoin($request);
+            Redis::set($redis_name, json_encode($data));
+            $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', 'cache');
+        return response()->json($data)->header('x-data-source', $source);
     }
 
 
     //history transaksi
     public function old_datahistorytrans(Request $request)
     {
-        // $getdate = $request->query('getdate');
-        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
-        $todate = $request->query('todate') ?? date('Y-m-d');
+        $checkValidation = $this->checkValidation($request);
+        if (!$checkValidation) {
+            return [];
+        }
+
+        $fromdate = $request->fromdate;
+        $todate = $request->todate;
 
         $data = HistoryTransaksi::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
             ->orderByDesc('created_at')
             ->orderByDesc('urutan')
+            // ->limit(100)
             ->get();
-
 
         return $data;
     }
 
-    public function old_history_transaksi()
+    public function old_history_transaksi(Request $request)
     {
-        if (Redis::exists('olddatahistorytrans')) {
-            $data = json_decode(Redis::get('olddatahistorytrans'), true);
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $redis_name = 'olddatahistorytrans-' . $bulan . '/' . $tahun;
+
+        if (Redis::exists($redis_name)) {
+            $data = json_decode(Redis::get($redis_name), true);
+            $source = 'cache';
         } else {
-            return response()->json('gagal ambil cache');
+            $data = $this->old_datahistorytrans($request);
+            Redis::set($redis_name, json_encode($data));
+            $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', 'cache');
+        return response()->json($data)->header('x-data-source', $source);
     }
 
     //history reff aktif
     public function old_datahistoryreffAktif(Request $request)
     {
+        $checkValidation = $this->checkValidation($request);
+        if (!$checkValidation) {
+            return [];
+        }
+
         // $getdate = $request->query('getdate');
-        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
-        $todate = $request->query('todate') ?? date('Y-m-d');
+        $fromdate = $request->fromdate ?? date('Y-m-d');
+        $todate = $request->todate ?? date('Y-m-d');
 
         $ReferralAktif1 = ReferralAktif1::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
             ->orderByDesc('created_at')->get();
@@ -1405,19 +1454,24 @@ class ApiController extends Controller
             'ReferralAktif5' => $ReferralAktif5
         ];
 
-
-
         return $data;
     }
 
-    public function old_ref_aktif()
+    public function old_ref_aktif(Request $request)
     {
-        if (Redis::exists('olddatahistoryreffaktif')) {
-            $data = json_decode(Redis::get('olddatahistoryreffaktif'), true);
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $redis_name = 'olddatahistoryreffaktif-' . $bulan . '/' . $tahun;
+
+        if (Redis::exists($redis_name)) {
+            $data = json_decode(Redis::get($redis_name), true);
+            $source = 'cache';
         } else {
-            return response()->json('gagal ambil cache');
+            $data = $this->old_datahistoryreffAktif($request);
+            Redis::set($redis_name, json_encode($data));
+            $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', 'cache');
+        return response()->json($data)->header('x-data-source', $source);
     }
 
 
@@ -1426,9 +1480,14 @@ class ApiController extends Controller
     //history reff depo
     public function old_datahistoryreffdepo(Request $request)
     {
+        $checkValidation = $this->checkValidation($request);
+        if (!$checkValidation) {
+            return [];
+        }
+
         // $getdate = $request->query('getdate');
-        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
-        $todate = $request->query('todate') ?? date('Y-m-d');
+        $fromdate = $request->fromdate ?? date('Y-m-d');
+        $todate = $request->todate ?? date('Y-m-d');
 
         $ReferralDepo1 = ReferralDepo1::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
             ->orderByDesc('created_at')->get();
@@ -1453,23 +1512,35 @@ class ApiController extends Controller
         return $data;
     }
 
-    public function old_history_reffdepo()
+    public function old_history_reffdepo(Request $request)
     {
-        if (Redis::exists('olddatahistorytrans')) {
-            $data = json_decode(Redis::get('olddatahistorytrans'), true);
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $redis_name = 'olddatahistoryreffdepo-' . $bulan . '/' . $tahun;
+
+        if (Redis::exists($redis_name)) {
+            $data = json_decode(Redis::get($redis_name), true);
+            $source = 'cache';
         } else {
-            return response()->json('gagal ambil cache');
+            $data = $this->old_datahistoryreffdepo($request);
+            Redis::set($redis_name, json_encode($data));
+            $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', 'cache');
+        return response()->json($data)->header('x-data-source', $source);
     }
 
 
     //history winlosbet
     public function old_datahistorywinlosbet(Request $request)
     {
+        $checkValidation = $this->checkValidation($request);
+        if (!$checkValidation) {
+            return [];
+        }
+
         // $getdate = $request->query('getdate');
-        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
-        $todate = $request->query('todate') ?? date('Y-m-d');
+        $fromdate = $request->fromdate ?? date('Y-m-d');
+        $todate = $request->todate ?? date('Y-m-d');
 
         $WinlossbetDay = WinlossbetDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
             ->orderBy('created_at', 'DESC')->get();
@@ -1488,14 +1559,22 @@ class ApiController extends Controller
         return $data;
     }
 
-    public function old_winlossbet()
+    public function old_winlossbet(Request $request)
     {
-        if (Redis::exists('olddatahistorywinlosbet')) {
-            $data = json_decode(Redis::get('olddatahistorywinlosbet'), true);
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $redis_name = 'olddatahistorywinlosbet-' . $bulan . '/' . $tahun;
+
+
+        if (Redis::exists($redis_name)) {
+            $data = json_decode(Redis::get($redis_name), true);
+            $source = 'cache';
         } else {
-            return response()->json('gagal ambil cache');
+            $data = $this->old_datahistorywinlosbet($request);
+            Redis::set($redis_name, json_encode($data));
+            $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', 'cache');
+        return response()->json($data)->header('x-data-source', $source);
     }
 
 
@@ -1503,8 +1582,8 @@ class ApiController extends Controller
     public function old_datahistorywinlossbalance(Request $request)
     {
         // $getdate = $request->query('getdate');
-        $fromdate = $request->query('fromdate') ?? date('Y-m-d');
-        $todate = $request->query('todate') ?? date('Y-m-d');
+        $fromdate = $request->fromdate ?? date('Y-m-d');
+        $todate = $request->todate ?? date('Y-m-d');
 
         $winlossDay = winlossDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
             ->orderBy('created_at', 'DESC')->get();
@@ -1522,14 +1601,38 @@ class ApiController extends Controller
         return $data;
     }
 
-    public function old_winloss()
+    public function old_winloss(Request $request)
     {
-        if (Redis::exists('olddatahistorywinlosbal')) {
-            $data = json_decode(Redis::get('olddatahistorywinlosbal'), true);
-        } else {
-            return response()->json('gagal ambil cache');
+        $checkValidation = $this->checkValidation($request);
+        if (!$checkValidation) {
+            return [];
         }
-        return response()->json($data)->header('x-data-source', 'cache');
+
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $redis_name = 'olddatahistorywinlosbal-' . $bulan . '/' . $tahun;
+
+        if (Redis::exists($redis_name)) {
+            $data = json_decode(Redis::get($redis_name), true);
+            $source = 'cache';
+        } else {
+            $data = $this->old_datahistorywinlossbalance($request);
+            Redis::set($redis_name, json_encode($data));
+            $source = 'database';
+        }
+        return response()->json($data)->header('x-data-source', $source);
+    }
+
+    public function getAllData(Request $request)
+    {
+        $this->old_historycoin($request);
+        $this->old_history_transaksi($request);
+        $this->old_ref_aktif($request);
+        $this->old_history_reffdepo($request);
+        $this->old_winlossbet($request);
+        $this->old_winloss($request);
+
+        return;
     }
 
 
@@ -1558,10 +1661,14 @@ class ApiController extends Controller
         $keys = Redis::keys('*');
         return response()->json($keys);
     }
-    public function flushdb()
+    public function flushdb(Request $request)
     {
         Redis::flushdb();
-        return redirect()->back()->with('success', 'Berhasil refresh cache');
+        return [
+            'status' => 'success',
+            'message' => 'Berhasil refresh cache'
+        ];
+        // return redirect()->back()->with('success', 'Berhasil refresh cache');
     }
     public function deleteKey($key)
     {

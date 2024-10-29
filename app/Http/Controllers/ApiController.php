@@ -1413,6 +1413,7 @@ class ApiController extends Controller
 
     public function old_history_transaksi(Request $request)
     {
+        ini_set('memory_limit', '256M');
         $validasiBearer = $this->validasiBearer($request);
         if ($validasiBearer !== true) {
             return $validasiBearer;

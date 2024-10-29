@@ -1321,17 +1321,23 @@ class ApiController extends Controller
     {
         $bulan = $request->bulan;
         $tahun = $request->tahun;
-        $bulanfromdate = Carbon::parse($request->fromdate)->format('m');
-        $bulantodate = Carbon::parse($request->todate)->format('m');
-        $tahunfromdate = Carbon::parse($request->fromdate)->format('Y');
-        $tahuntodate = Carbon::parse($request->todate)->format('Y');
+
+        // Menggunakan strtotime dan date untuk parsing bulan dan tahun dari tanggal
+        $bulanfromdate = date('m', strtotime($request->fromdate));
+        $bulantodate = date('m', strtotime($request->todate));
+        $tahunfromdate = date('Y', strtotime($request->fromdate));
+        $tahuntodate = date('Y', strtotime($request->todate));
 
         $fromdate = $request->fromdate;
         $todate = $request->todate;
 
+        // Validasi untuk memeriksa apakah variabel ada atau tidak kosong
         if (!$bulan || !$fromdate || !$todate || !$tahun) {
             return false;
-        } else if (($bulan !== $bulanfromdate || $tahun !== $tahunfromdate) || ($bulan !== $bulantodate || $tahun !== $tahuntodate)) {
+        }
+
+        // Validasi untuk memeriksa kesesuaian bulan dan tahun
+        if (($bulan !== $bulanfromdate || $tahun !== $tahunfromdate) || ($bulan !== $bulantodate || $tahun !== $tahuntodate)) {
             return false;
         }
 
@@ -1379,6 +1385,7 @@ class ApiController extends Controller
         $tahun = $request->tahun;
         $redis_name = 'olddatacoins-' . $bulan . '/' . $tahun;
 
+
         if (Redis::exists($redis_name)) {
             $data = json_decode(Redis::get($redis_name), true);
             $source = 'cache';
@@ -1387,7 +1394,13 @@ class ApiController extends Controller
             Redis::set($redis_name, json_encode($data));
             $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', $source);
+
+        // Menambahkan header count
+        $count = count($data);
+
+        return response()->json($data)
+            ->header('x-data-source', $source)
+            ->header('count', $count);
     }
 
 
@@ -1431,7 +1444,13 @@ class ApiController extends Controller
             Redis::set($redis_name, json_encode($data));
             $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', $source);
+
+        // Menambahkan header count
+        $count = count($data);
+
+        return response()->json($data)
+            ->header('x-data-source', $source)
+            ->header('count', $count);
     }
 
     //history reff aktif
@@ -1487,7 +1506,13 @@ class ApiController extends Controller
             Redis::set($redis_name, json_encode($data));
             $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', $source);
+
+        // Menambahkan header count
+        $count = count($data);
+
+        return response()->json($data)
+            ->header('x-data-source', $source)
+            ->header('count', $count);
     }
 
 
@@ -1547,7 +1572,13 @@ class ApiController extends Controller
             Redis::set($redis_name, json_encode($data));
             $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', $source);
+
+        // Menambahkan header count
+        $count = count($data);
+
+        return response()->json($data)
+            ->header('x-data-source', $source)
+            ->header('count', $count);
     }
 
 
@@ -1600,7 +1631,13 @@ class ApiController extends Controller
             Redis::set($redis_name, json_encode($data));
             $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', $source);
+
+        // Menambahkan header count
+        $count = count($data);
+
+        return response()->json($data)
+            ->header('x-data-source', $source)
+            ->header('count', $count);
     }
 
 
@@ -1651,20 +1688,26 @@ class ApiController extends Controller
             Redis::set($redis_name, json_encode($data));
             $source = 'database';
         }
-        return response()->json($data)->header('x-data-source', $source);
+
+        // Menambahkan header count
+        $count = count($data);
+
+        return response()->json($data)
+            ->header('x-data-source', $source)
+            ->header('count', $count);
     }
 
-    public function getAllData(Request $request)
-    {
-        $this->old_historycoin($request);
-        $this->old_history_transaksi($request);
-        $this->old_ref_aktif($request);
-        $this->old_history_reffdepo($request);
-        $this->old_winlossbet($request);
-        $this->old_winloss($request);
+    // public function getAllData(Request $request)
+    // {
+    //     $this->old_historycoin($request);
+    //     $this->old_history_transaksi($request);
+    //     $this->old_ref_aktif($request);
+    //     $this->old_history_reffdepo($request);
+    //     $this->old_winlossbet($request);
+    //     $this->old_winloss($request);
 
-        return;
-    }
+    //     return;
+    // }
 
 
 

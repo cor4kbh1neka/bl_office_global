@@ -1370,6 +1370,11 @@ class ApiController extends Controller
 
     public function old_historycoin(Request $request)
     {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $redis_name = 'olddatacoins-' . $bulan . '/' . $tahun;
@@ -1408,6 +1413,11 @@ class ApiController extends Controller
 
     public function old_history_transaksi(Request $request)
     {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $redis_name = 'olddatahistorytrans-' . $bulan . '/' . $tahun;
@@ -1459,6 +1469,11 @@ class ApiController extends Controller
 
     public function old_ref_aktif(Request $request)
     {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $redis_name = 'olddatahistoryreffaktif-' . $bulan . '/' . $tahun;
@@ -1514,6 +1529,11 @@ class ApiController extends Controller
 
     public function old_history_reffdepo(Request $request)
     {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $redis_name = 'olddatahistoryreffdepo-' . $bulan . '/' . $tahun;
@@ -1561,6 +1581,11 @@ class ApiController extends Controller
 
     public function old_winlossbet(Request $request)
     {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $redis_name = 'olddatahistorywinlosbet-' . $bulan . '/' . $tahun;
@@ -1581,6 +1606,11 @@ class ApiController extends Controller
     //history winloss balance
     public function old_datahistorywinlossbalance(Request $request)
     {
+        $checkValidation = $this->checkValidation($request);
+        if (!$checkValidation) {
+            return [];
+        }
+
         // $getdate = $request->query('getdate');
         $fromdate = $request->fromdate ?? date('Y-m-d');
         $todate = $request->todate ?? date('Y-m-d');
@@ -1603,9 +1633,9 @@ class ApiController extends Controller
 
     public function old_winloss(Request $request)
     {
-        $checkValidation = $this->checkValidation($request);
-        if (!$checkValidation) {
-            return [];
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
         }
 
         $bulan = $request->bulan;

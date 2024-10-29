@@ -34,12 +34,23 @@ class CommandFetchingOldData extends Command
             "tahun" => date('Y', strtotime('first day of last month'))
         ];
 
-        $this->apiGetOldData($pathurl . '/historycoins', $request);
-        $this->apiGetOldData($pathurl . '/historytransaksi', $request);
-        $this->apiGetOldData($pathurl . '/refaktif', $request);
-        $this->apiGetOldData($pathurl . '/refdepo', $request);
-        $this->apiGetOldData($pathurl . '/winlossbet', $request);
-        $this->apiGetOldData($pathurl . '/winloss', $request);
+        $endpoints = [
+            '/historycoins',
+            '/historytransaksi',
+            '/refaktif',
+            '/refdepo',
+            '/winlossbet',
+            '/winloss'
+        ];
+
+        foreach ($endpoints as $endpoint) {
+            $this->apiGetOldData($pathurl . $endpoint, $request);
+
+            // Adding a 1-minute delay between each request
+            // sleep(60);
+        }
+
+        $this->info('Success Fully.');
     }
 
     public function apiGetOldData($url, $request)

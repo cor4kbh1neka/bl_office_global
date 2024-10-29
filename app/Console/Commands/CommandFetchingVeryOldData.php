@@ -27,36 +27,37 @@ class CommandFetchingVeryOldData extends Command
      */
     public function handle()
     {
-        $tgldari = Carbon::parse("2024-06-01");
-        $tglsampai = Carbon::parse("2024-09-30");
+        $fromdate = "2024-06-01";
+        $todate = "2024-09-30";
 
-        $this->getOldData($tgldari, $tglsampai);
+        $this->getOldData($fromdate, $todate);
+        $this->info('Success Fully.');
     }
 
-    private function getOldData($tgldari, $tglsampai)
+    private function getOldData($fromdate, $todate)
     {
         $dates = [];
 
-        while ($tgldari->lessThanOrEqualTo($tglsampai)) {
-            $bulan = $tgldari->format('m');
-            $tahun = $tgldari->format('Y');
+        while (strtotime($fromdate) <= strtotime($todate)) {
+            $bulan = date('m', strtotime($fromdate));
+            $tahun = date('Y', strtotime($fromdate));
 
-            $bulanTgldari = $tgldari->copy();
-            $bulanTglsampai = $tgldari->copy()->endOfMonth();
+            $bulanTgldari = $fromdate;
+            $bulanTglsampai = date('Y-m-t', strtotime($fromdate)); // Hari terakhir bulan ini
 
-            if ($bulanTglsampai->greaterThan($tglsampai)) {
-                $bulanTglsampai = $tglsampai;
+            if (strtotime($bulanTglsampai) > strtotime($todate)) {
+                $bulanTglsampai = $todate;
             }
 
             $dates[] = [
                 'bulan' => $bulan,
                 'tahun' => $tahun,
-                'tgldari' => $bulanTgldari->toDateString(),
-                'tglsampai' => $bulanTglsampai->toDateString(),
+                'fromdate' => $bulanTgldari,
+                'todate' => $bulanTglsampai,
             ];
 
             // Pindah ke bulan berikutnya
-            $tgldari->addMonth()->startOfMonth();
+            $fromdate = date('Y-m-01', strtotime("+1 month", strtotime($fromdate)));
         }
 
         $pathurl = 'https://0ld-ge4ser-www.glbwgag.com/api/olddata';

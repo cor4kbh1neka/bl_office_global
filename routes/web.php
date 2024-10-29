@@ -269,6 +269,7 @@ Route::middleware(['auth'])->group(function () {
         /*-- Referralds --*/
         Route::middleware('referral')->group(function () {
             Route::get('/referralds', [ReferraldsController::class, 'index']);
+            Route::get('/referraldsold', [ReferraldsController::class, 'index_old']);
             Route::get('/referralds/downline/{upline}/{jenis}/{total}/{total_referral}/{total_downline}', [ReferraldsController::class, 'downlinedetail']);
             Route::get('/referralds/bonusreferral', [ReferraldsController::class, 'bonusreferral']);
             Route::get('/referralds/export', [ReferraldsController::class, 'export']);

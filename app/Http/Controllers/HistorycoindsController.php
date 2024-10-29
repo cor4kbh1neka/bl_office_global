@@ -15,33 +15,102 @@ use Illuminate\Support\Facades\Http;
 
 class HistorycoindsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $data = $this->filterAndPaginate(20);
         $dataagent = User::pluck('username');
+
+        $currentDate = now();
+        $tgldari = $request->input('tgldari', $currentDate->copy()->subDays(30)->format('Y-m-d'));
+        $tglsampai = $request->input('tglsampai', $currentDate->format('Y-m-d'));
+
         return view('historycoinds.index', [
             'title' => 'List History',
             'data' => $data,
             'dataagent' => $dataagent,
+            'tgldari' => $tgldari,
+            'tglsampai' => $tglsampai,
             'is_old' => false
         ]);
     }
 
-    public function index_old()
+    public function index_old(Request $request)
     {
-        $paginatedData = $this->filterAndPaginateOld(20);
+        $paginatedData = $this->filterAndPaginateOld(20, $request);
+        $dataagent = User::pluck('username');
+
+        $currentDate = now();
+        $tgldari = $request->input('tgldari', $currentDate->copy()->subMonth()->startOfMonth()->format('Y-m-d'));
+        $tglsampai = $request->input('tglsampai', $currentDate->copy()->subMonth()->endOfMonth()->format('Y-m-d'));
+
         return view('historycoinds.index', [
             'title' => 'List History',
             'data' => $paginatedData,
+            'dataagent' => $dataagent,
+            'tgldari' => $tgldari,
+            'tglsampai' => $tglsampai,
             'is_old' => true
         ]);
     }
 
-    public function filterAndPaginateOld($page)
+    private function getOldData($tgldari, $tglsampai)
     {
-        $response = Http::get(env('OLDDOMAIN') . 'api/olddata/historycoins');
-        $data = json_decode($response->body(), false);
-        $data = collect($data);
+        $dates = [];
+
+        // Loop untuk setiap bulan dalam rentang waktu
+        while ($tgldari->lessThanOrEqualTo($tglsampai)) {
+            // Tentukan bulan dan tahun
+            $bulan = $tgldari->format('m');
+            $tahun = $tgldari->format('Y');
+
+            // Tentukan tgldari dan tglsampai untuk bulan ini
+            $bulanTgldari = $tgldari->copy();
+            $bulanTglsampai = $tgldari->copy()->endOfMonth();
+
+            // Jika tglsampai melebihi tglsampai, batasi ke tglsampai
+            if ($bulanTglsampai->greaterThan($tglsampai)) {
+                $bulanTglsampai = $tglsampai;
+            }
+
+            // Tambahkan hasil ke array
+            $dates[] = [
+                'bulan' => $bulan,
+                'tahun' => $tahun,
+                'tgldari' => $bulanTgldari->toDateString(),
+                'tglsampai' => $bulanTglsampai->toDateString(),
+            ];
+
+            // Pindah ke bulan berikutnya
+            $tgldari->addMonth()->startOfMonth();
+        }
+
+        $allData = collect();
+
+        foreach ($dates as $date) {
+            $response = Http::withHeaders([
+                'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
+                'Accept' => 'application/json'
+            ])->get(env('OLDDOMAIN') . 'api/olddata/historycoins', [
+                'tgldari' => $date['tgldari'],
+                'tglsampai' => $date['tglsampai'],
+                'bulan' => $date['bulan'],
+                'tahun' => $date['tahun']
+            ]);
+
+            // Decode and collect each response
+            $data = json_decode($response->body(), false);
+            $allData = $allData->concat(collect($data));
+        }
+
+        return $allData;
+    }
+
+    public function filterAndPaginateOld($page, $request)
+    {
+        $tgldari = Carbon::parse($request->tgldari);
+        $tglsampai = Carbon::parse($request->tglsampai);
+
+        $data = $this->getOldData($tgldari, $tglsampai);
 
         if (is_null($data)) {
             return response()->json(['error' => 'Failed to fetch data from API'], 500);
@@ -87,16 +156,17 @@ class HistorycoindsController extends Controller
             });
         }
 
-
         if ($approved_by) {
             $data = $data->filter(function ($item) use ($approved_by) {
                 return $item->approved_by == $approved_by;
             });
         }
 
+        // dd($data->toArray());
         if ($tgldari && $tglsampai) {
             $data = $data->filter(function ($item) use ($tgldari, $tglsampai) {
-                return Carbon::parse($item->created_at)->between($tgldari, $tglsampai);
+                $createdAt = Carbon::parse($item->created_at)->format('Y-m-d H:i:s');
+                return Carbon::createFromFormat('Y-m-d H:i:s', $createdAt)->between($tgldari, $tglsampai);
             });
         }
 
@@ -106,6 +176,7 @@ class HistorycoindsController extends Controller
             $item->updated_at = Carbon::parse($item->updated_at)->format('Y-m-d H:i:s');
             return $item;
         });
+
 
         $currentPage = Paginator::resolveCurrentPage() ?: 1;
         $currentPageData = $data->slice(($currentPage - 1) * $page, $page)->values();
@@ -205,7 +276,7 @@ class HistorycoindsController extends Controller
     {
         $is_old = $request->input('is_old');
         if ($is_old == "true") {
-            $crot = $this->filterAndPaginateOld(9999999999999999);
+            $crot = $this->filterAndPaginateOld(9999999999999999, $request);
         } else {
             $crot = $this->filterAndPaginate(9999999999999999);
         }

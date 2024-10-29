@@ -28,9 +28,16 @@ class HistorytransaksidsController extends Controller
         if ($request->getQueryString() && request('username')) {
             $data = $this->filterAndPaginate(HistoryTransaksi::where('username', $request->query('username'))->orderByDesc('created_at')->orderByDesc('urutan')->get(), 20);
         }
+
+        $currentDate = now();
+        $transdari = $request->input('transdari', $currentDate->copy()->subDays(30)->format('Y-m-d'));
+        $transhingga = $request->input('transhingga', $currentDate->format('Y-m-d'));
+
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
             'data' => $data,
+            'transdari' => $transdari,
+            'transhingga' => $transhingga,
             'is_old' => false
         ]);
     }
@@ -41,11 +48,18 @@ class HistorytransaksidsController extends Controller
         $username = request('username');
 
         if ($request->getQueryString() && $username) {
-            $data = $this->filterAndPaginateOld(20);
+            $data = $this->filterAndPaginateOld(20, $request);
         }
+
+        $currentDate = now();
+        $transdari = $request->input('transdari', $currentDate->copy()->subMonth()->startOfMonth()->format('Y-m-d'));
+        $transhingga = $request->input('transhingga', $currentDate->copy()->subMonth()->endOfMonth()->format('Y-m-d'));
+
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
             'data' => $data,
+            'transdari' => $transdari,
+            'transhingga' => $transhingga,
             'is_old' => true
         ]);
     }
@@ -66,13 +80,64 @@ class HistorytransaksidsController extends Controller
     //     return $response->json();
     // }
 
-
-    public function filterAndPaginateOld($page)
+    private function getOldData($tgldari, $tglsampai)
     {
-        $response = Http::get(env('OLDDOMAIN') . 'api/olddata/historytransaksi');
-        $data = json_decode($response->body(), false);
-        $data = collect($data);
+        $dates = [];
 
+        // Loop untuk setiap bulan dalam rentang waktu
+        while ($tgldari->lessThanOrEqualTo($tglsampai)) {
+            // Tentukan bulan dan tahun
+            $bulan = $tgldari->format('m');
+            $tahun = $tgldari->format('Y');
+
+            // Tentukan tgldari dan tglsampai untuk bulan ini
+            $bulanTgldari = $tgldari->copy();
+            $bulanTglsampai = $tgldari->copy()->endOfMonth();
+
+            // Jika tglsampai melebihi tglsampai, batasi ke tglsampai
+            if ($bulanTglsampai->greaterThan($tglsampai)) {
+                $bulanTglsampai = $tglsampai;
+            }
+
+            // Tambahkan hasil ke array
+            $dates[] = [
+                'bulan' => $bulan,
+                'tahun' => $tahun,
+                'tgldari' => $bulanTgldari->toDateString(),
+                'tglsampai' => $bulanTglsampai->toDateString(),
+            ];
+
+            // Pindah ke bulan berikutnya
+            $tgldari->addMonth()->startOfMonth();
+        }
+
+        $allData = collect();
+
+        foreach ($dates as $date) {
+            $response = Http::withHeaders([
+                'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
+                'Accept' => 'application/json'
+            ])->get(env('OLDDOMAIN') . 'api/olddata/historytransaksi', [
+                'tgldari' => $date['tgldari'],
+                'tglsampai' => $date['tglsampai'],
+                'bulan' => $date['bulan'],
+                'tahun' => $date['tahun']
+            ]);
+
+            // Decode and collect each response
+            $data = json_decode($response->body(), false);
+            $allData = $allData->concat(collect($data));
+        }
+
+        return $allData;
+    }
+
+    public function filterAndPaginateOld($page, $request)
+    {
+        $tgldari = Carbon::parse($request->tgldari);
+        $tglsampai = Carbon::parse($request->tglsampai);
+
+        $data = $this->getOldData($tgldari, $tglsampai);
 
         $reqs = request()->all();
         $username = $reqs['username'] ?? '';
@@ -290,7 +355,7 @@ class HistorytransaksidsController extends Controller
     {
         $is_old = $request->is_old;
         if ($is_old) {
-            $data = $this->filterAndPaginateOld(999999999999999);
+            $data = $this->filterAndPaginateOld(999999999999999, $request);
             $data = $data->getCollection();
         } else {
             $data = $this->filterAndPaginate(HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->get(), 0);

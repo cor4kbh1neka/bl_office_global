@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
-class CommandFetchingOldData extends Command
+class CommandFetchingVeryOldData extends Command
 {
     /**
      * The name and signature of the console command.

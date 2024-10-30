@@ -30,8 +30,8 @@ class HistorytransaksidsController extends Controller
         }
 
         $currentDate = now();
-        $transdari = $request->input('transdari', $currentDate->copy()->subDays(30)->format('Y-m-d'));
-        $transhingga = $request->input('transhingga', $currentDate->format('Y-m-d'));
+        $transdari = $request->input('transdari', $currentDate->copy()->subDays(30)->format('Y-m-d') . ' 00:00');
+        $transhingga = $request->input('transhingga', $currentDate->format('Y-m-d') . ' 23:59');
 
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
@@ -52,8 +52,9 @@ class HistorytransaksidsController extends Controller
         }
 
         $currentDate = now();
-        $transdari = $request->input('transdari', $currentDate->copy()->subMonth()->startOfMonth()->format('Y-m-d'));
-        $transhingga = $request->input('transhingga', $currentDate->copy()->subMonth()->endOfMonth()->format('Y-m-d'));
+        $transdari = $request->input('transdari', $currentDate->copy()->subMonth()->startOfMonth()->format('Y-m-d') . ' 00:00');
+        $transhingga = $request->input('transhingga', $currentDate->copy()->subMonth()->endOfMonth()->format('Y-m-d') . ' 23:59');
+
 
         return view('historytransaksids.index', [
             'title' => 'History Transaksi Baru',
@@ -114,18 +115,25 @@ class HistorytransaksidsController extends Controller
         $allData = collect();
 
         foreach ($dates as $date) {
-            $response = Http::withHeaders([
-                'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
-                'Accept' => 'application/json'
-            ])->get(env('OLDDOMAIN') . 'api/olddata/historytransaksi', [
-                'tgldari' => $date['tgldari'],
-                'tglsampai' => $date['tglsampai'],
-                'bulan' => $date['bulan'],
-                'tahun' => $date['tahun']
-            ]);
+            try {
+                $response = Http::withHeaders([
+                    'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
+                    'Accept' => 'application/json'
+                ])->get(env('OLDDOMAIN') . 'api/olddata/historytransaksi', [
+                    'tgldari' => $date['tgldari'],
+                    'tglsampai' => $date['tglsampai'],
+                    'bulan' => $date['bulan'],
+                    'tahun' => $date['tahun']
+                ]);
 
-            // Decode and collect each response
-            $data = json_decode($response->body(), false);
+                // Jika response berhasil, decode datanya, jika tidak, set $data sebagai array kosong
+                $data = $response->successful() ? json_decode($response->body(), false) : [];
+            } catch (\Exception $e) {
+                // Jika terjadi error (seperti masalah koneksi), set $data sebagai array kosong
+                $data = [];
+            }
+
+            // Tambahkan hasil $data ke $allData
             $allData = $allData->concat(collect($data));
         }
 

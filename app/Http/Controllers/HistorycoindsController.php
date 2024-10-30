@@ -87,18 +87,24 @@ class HistorycoindsController extends Controller
         $allData = collect();
 
         foreach ($dates as $date) {
-            $response = Http::withHeaders([
-                'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
-                'Accept' => 'application/json'
-            ])->get(env('OLDDOMAIN') . 'api/olddata/historycoins', [
-                'tgldari' => $date['tgldari'],
-                'tglsampai' => $date['tglsampai'],
-                'bulan' => $date['bulan'],
-                'tahun' => $date['tahun']
-            ]);
+            try {
+                $response = Http::withHeaders([
+                    'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
+                    'Accept' => 'application/json'
+                ])->get(env('OLDDOMAIN') . 'api/olddata/historycoins', [
+                    'tgldari' => $date['tgldari'],
+                    'tglsampai' => $date['tglsampai'],
+                    'bulan' => $date['bulan'],
+                    'tahun' => $date['tahun']
+                ]);
 
-            // Decode and collect each response
-            $data = json_decode($response->body(), false);
+                // Decode and collect each response if successful
+                $data = $response->successful() ? json_decode($response->body(), false) : [];
+            } catch (\Exception $e) {
+                // Jika terjadi error, kembalikan array kosong untuk data ini
+                $data = [];
+            }
+
             $allData = $allData->concat(collect($data));
         }
 

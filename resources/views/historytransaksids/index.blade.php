@@ -76,8 +76,7 @@
                                         {{ request('checktransdari') == 'on' ? 'checked' : '' }}>
                                 </div>
                             </label>
-                            <input type="datetime-local" id="transdari" name="transdari"
-                                value="{{ $transdari . 'T00:00' }}">
+                            <input type="datetime-local" id="transdari" name="transdari" value="{{ $transdari }}">
                         </div>
 
                         <div class="listinputmember">
@@ -88,8 +87,7 @@
                                         {{ request('checktranshingga') == 'on' ? 'checked' : '' }}>
                                 </div>
                             </label>
-                            <input type="datetime-local" id="transhingga" name="transhingga"
-                                value="{{ $transhingga . 'T23:59' }}">
+                            <input type="datetime-local" id="transhingga" name="transhingga" value="{{ $transhingga }}">
                         </div>
 
                         <!-- Check All Checkbox -->

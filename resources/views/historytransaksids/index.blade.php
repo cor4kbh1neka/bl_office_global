@@ -3,9 +3,10 @@
 @section('container')
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
+
     <div class="sec_table">
         <div class="secgrouptitle">
-            <h2>{{ $title }} </h2>
+            <h2>{{ $title }}</h2>
             <div class="fullscreen">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
                     <path fill="currentColor"
@@ -13,20 +14,24 @@
                 </svg>
             </div>
         </div>
+
         <div class="sechistoryds">
             <div class="grouphistoryds">
                 <div class="groupheadhistoryds">
                     <form id="searchForm" method="GET"
-                        action="{{ $is_old == true ? '/historytransaksidsold' : '/historytransaksids' }}"
+                        action="{{ $is_old ? '/historytransaksidsold' : '/historytransaksids' }}"
                         class="listmembergroup historytransds">
+                        <!-- Username Input -->
                         <div class="listinputmember">
-                            <label for="username">username<span class="required">*</span></label>
+                            <label for="username">Username<span class="required">*</span></label>
                             <input type="text" id="username" name="username" placeholder="username"
                                 value="{{ request('username') }}" required>
                         </div>
+
+                        <!-- Invoice Input -->
                         <div class="listinputmember">
                             <label for="invoice">
-                                periode/invoice
+                                Periode/Invoice
                                 <div class="check_box">
                                     <input type="checkbox" id="checkinvoice" name="checkinvoice"
                                         {{ request('checkinvoice') == 'on' ? 'checked' : '' }}>
@@ -35,55 +40,61 @@
                             <input type="text" id="invoice" name="invoice" placeholder="invoice"
                                 value="{{ request('invoice') }}">
                         </div>
+
+                        <!-- Status Select -->
                         <div class="listinputmember">
                             <label for="status">
-                                status
+                                Status
                                 <div class="check_box">
                                     <input type="checkbox" id="checkstatus" name="checkstatus"
                                         {{ request('checkstatus') == 'on' ? 'checked' : '' }}>
                                 </div>
                             </label>
                             <select name="status" id="status">
-                                <option value="" selected="" place=""
-                                    style="color: #838383; font-style: italic;" disabled="">Status</option>
-                                <option value="deposit" {{ request('status') == 'deposit' ? 'selected' : '' }}>deposit
+                                <option value="" disabled selected style="color: #838383; font-style: italic;">Status
                                 </option>
-                                <option value="withdraw" {{ request('status') == 'withdraw' ? 'selected' : '' }}>withdraw
+                                <option value="deposit" {{ request('status') == 'deposit' ? 'selected' : '' }}>Deposit
                                 </option>
-                                <option value="manual" {{ request('status') == 'manual' ? 'selected' : '' }}>manual</option>
+                                <option value="withdraw" {{ request('status') == 'withdraw' ? 'selected' : '' }}>Withdraw
+                                </option>
+                                <option value="manual" {{ request('status') == 'manual' ? 'selected' : '' }}>Manual</option>
                                 <option value="pemasangan" {{ request('status') == 'pemasangan' ? 'selected' : '' }}>
-                                    pemasangan
+                                    Pemasangan</option>
+                                <option value="menang" {{ request('status') == 'menang' ? 'selected' : '' }}>Menang
                                 </option>
-                                <option value="menang" {{ request('status') == 'menang' ? 'selected' : '' }}>menang
-                                </option>
-                                <option value="referral" {{ request('status') == 'referral' ? 'selected' : '' }}>referral
+                                <option value="referral" {{ request('status') == 'referral' ? 'selected' : '' }}>Referral
                                 </option>
                             </select>
                         </div>
+
+                        <!-- Date Inputs -->
                         <div class="listinputmember">
                             <label for="transdari">
-                                transaksi dari
+                                Transaksi Dari
                                 <div class="check_box">
                                     <input type="checkbox" id="checktransdari" name="checktransdari"
                                         {{ request('checktransdari') == 'on' ? 'checked' : '' }}>
                                 </div>
                             </label>
                             <input type="datetime-local" id="transdari" name="transdari"
-                                value="{{ request('transdari') ?? date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))) . 'T00:00' }}">
+                                value="{{ $transdari . 'T00:00' }}">
                         </div>
+
                         <div class="listinputmember">
                             <label for="transhingga">
-                                transaksi hingga
+                                Transaksi Hingga
                                 <div class="check_box">
                                     <input type="checkbox" id="checktranshingga" name="checktranshingga"
                                         {{ request('checktranshingga') == 'on' ? 'checked' : '' }}>
                                 </div>
                             </label>
                             <input type="datetime-local" id="transhingga" name="transhingga"
-                                value="{{ request('transhingga') ?? date('Y-m-d') . 'T23:59' }}">
+                                value="{{ $transhingga . 'T23:59' }}">
                         </div>
+
+                        <!-- Check All Checkbox -->
                         <div class="listinputmember">
-                            <label for="transdari">
+                            <label for="checkall">
                                 Check All
                                 <div class="check_box">
                                     <input type="checkbox" id="checkall" name="checkall"
@@ -94,21 +105,22 @@
                                 <span class="texttombol">SUBMIT</span>
                             </button>
                         </div>
+
+                        <!-- Export Data Button -->
                         <div class="exportdata">
-                            <span class="textdownload">download</span>
+                            <span class="textdownload">Download</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="m12 16l-5-5l1.4-1.45l2.6 2.6V4h2v8.15l2.6-2.6L17 11zm-6 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z" />
                             </svg>
                         </div>
                     </form>
-                    @php
-                        /*
+
+                    <!-- Group Maksimal Data -->
                     <div class="groupmaksimaldata">
                         <span class="textmaksimaldata">Data yang di tampilkan adalah data <span
-                                class="dataterakhir">{{ $is_old ? 'lebih dari 2 bulan terakhir' : '2 bulan terakhir' }}</span>,
-                        </span>
-                        <a href="{{ $is_old ? '/historytransaksids' : '/historytransaksidsold' }}" {{-- <a href="/historytransaksids/transaksilama{{ $query != '' ? '?' . $query : '' }}" --}}
+                                class="dataterakhir">{{ $is_old ? 'lebih dari 2 bulan terakhir' : '2 bulan terakhir' }}</span>,</span>
+                        <a href="{{ $is_old ? '/historytransaksids' : '/historytransaksidsold' }}"
                             class="transaksilama tombol primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                 <path fill="currentColor"
@@ -117,21 +129,21 @@
                             {{ $is_old ? 'Lihat Transaksi Baru' : 'Lihat Transaksi Lama' }}
                         </a>
                     </div>
-                    */
-                    @endphp
                 </div>
+
+                <!-- Table -->
                 <div class="tabelproses">
                     <table>
                         <tbody>
                             <tr class="hdtable">
                                 <th class="bagno">#</th>
-                                <th class="bagperiode">periode / invoice</th>
-                                <th class="bagtanggal">tanggal</th>
-                                <th class="bagketdetail">keterangan</th>
-                                <th class="statustrans">status</th>
-                                <th class="bagnominalhs">debit (IDR)</th>
-                                <th class="bagnominalhs">credit (IDR)</th>
-                                <th class="bagnominalhs">balance (IDR)</th>
+                                <th class="bagperiode">Periode / Invoice</th>
+                                <th class="bagtanggal">Tanggal</th>
+                                <th class="bagketdetail">Keterangan</th>
+                                <th class="statustrans">Status</th>
+                                <th class="bagnominalhs">Debit (IDR)</th>
+                                <th class="bagnominalhs">Credit (IDR)</th>
+                                <th class="bagnominalhs">Balance (IDR)</th>
                             </tr>
                             @php
                                 if ($data != null) {
@@ -148,12 +160,7 @@
                                     <td class="refnodetail">{{ $d->refno == '' ? $d->invoice : $d->refno }}</td>
                                     <td>{{ $d->created_at }}</td>
                                     <td>
-                                        @if (
-                                            $d->status == 'menang' ||
-                                                $d->status == 'pemasangan' ||
-                                                $d->status == 'cashout' ||
-                                                $d->status == 'rollback' ||
-                                                $d->status == 'cancel')
+                                        @if (in_array($d->status, ['menang', 'pemasangan', 'cashout', 'rollback', 'cancel']))
                                             <a href="/historygameds/detail/{{ $d->refno }}/{{ $d->portfolio }}"
                                                 target="_blank" class="detailbetingan">
                                                 <span class="texttypebet sportsType">{{ $d->keterangan }}</span>
@@ -169,78 +176,34 @@
                                     <td class="ttlbalance nominal" data-value="{{ $d->balance }}"></td>
                                 </tr>
                             @endforeach
-
                         </tbody>
                     </table>
 
+                    <!-- Pagination -->
                     <div class="grouppagination" style="padding: 25px;">
                         @if ($data !== [])
                             {{ $data->links('vendor.pagination.customdashboard') }}
                         @endif
                     </div>
-
-                    {{-- <div class="grouppagination">
-                        <div class="grouppaginationcc">
-                            <div class="trigger left">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
-                                    viewBox="0 0 24 24">
-                                    <g fill="none" fill-rule="evenodd">
-                                        <path
-                                            d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-                                        <path fill="currentColor"
-                                            d="M7.94 13.06a1.5 1.5 0 0 1 0-2.12l5.656-5.658a1.5 1.5 0 1 1 2.121 2.122L11.122 12l4.596 4.596a1.5 1.5 0 1 1-2.12 2.122l-5.66-5.658Z" />
-                                    </g>
-                                </svg>
-                            </div>
-                            <div class="trigger right">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
-                                    viewBox="0 0 24 24">
-                                    <g fill="none" fill-rule="evenodd">
-                                        <path
-                                            d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-                                        <path fill="currentColor"
-                                            d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z" />
-                                    </g>
-                                </svg>
-                            </div>
-                            <span class="numberpage active">1</span>
-                            <span class="numberpage">2</span>
-                            <span class="numberpage">3</span>
-                            <span class="numberpage">4</span>
-                            <span class="numberpage">5</span>
-                            <span class="numberpage">...</span>
-                            <span class="numberpage">12</span>
-                        </div>
-                    </div> --}}
                 </div>
             </div>
         </div>
     </div>
 
-
+    <!-- Scripts -->
     <script>
         $(document).ready(function() {
             $('#myCheckbox').change(function() {
                 var isChecked = $(this).is(':checked');
-
                 $('tbody tr:not([style="display: none;"]) [id^="myCheckbox-"]').prop('checked', isChecked);
             });
-        });
 
-        $(document).ready(function() {
             $('#myCheckbox, [id^="myCheckbox-"]').change(function() {
                 var isChecked = $('#myCheckbox:checked, [id^="myCheckbox-"]:checked').length > 0;
-                if (isChecked) {
-                    $('.all_act_butt').css('display', 'flex');
-                } else {
-                    $('.all_act_butt').hide();
-                }
+                $('.all_act_butt').css('display', isChecked ? 'flex' : 'none');
             });
 
-        });
-
-        //format nominal
-        $(document).ready(function() {
+            // Format nominal
             $(".nominal").each(function() {
                 var nominal = $(this).attr("data-value");
                 var formattedNominal = parseFloat(nominal).toLocaleString('en', {
@@ -248,53 +211,104 @@
                 });
                 $(this).text(formattedNominal);
             });
-        });
 
-        //open jendela detail
-        $(document).ready(function() {
+            // Open betting details in a new window
             $(".detailbetingan").click(function(event) {
                 event.preventDefault();
-
                 var url = $(this).attr("href");
                 var windowWidth = 400;
                 var windowHeight = $(window).height() * 0.8;
                 var windowLeft = ($(window).width() - windowWidth) / 2;
                 var windowTop = ($(window).height() - windowHeight) / 2;
-
                 window.open(url, "_blank", "width=" + windowWidth + ", height=" + windowHeight + ", left=" +
                     windowLeft + ", top=" + windowTop);
             });
-        });
 
-        // print data status
-        $(document).ready(function() {
+            // Print status in the table
             $('.statusketerangan').each(function() {
                 var status = $(this).data('status');
                 $(this).find('.statustransaksi').text(status);
             });
+
+            // Export data functionality
+            $('.exportdata').click(function() {
+                Swal.fire({
+                    icon: 'question',
+                    title: 'Konfirmasi',
+                    text: 'Apakah ingin mendownload data ini?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal',
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        var url = '/historytransaksids/export?';
+                        // Append necessary query parameters here...
+                        window.location.href = url;
+                    }
+                });
+            });
+
+            var isOld = @json($is_old);
+            var today = new Date();
+            var boundaryDate;
+
+            if (isOld) {
+                boundaryDate = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of the previous month
+            } else {
+                boundaryDate = new Date(today);
+                boundaryDate.setDate(boundaryDate.getDate() - 60); // 60 days before today
+            }
+
+            var boundaryDateString = boundaryDate.toISOString().split('T')[0];
+
+            if (isOld) {
+                $('#transdari, #transhingga').attr('max', boundaryDateString);
+            } else {
+                $('#transdari').attr('min', boundaryDateString);
+            }
+
+            $('#transdari').change(function() {
+                var selectedDate = new Date($(this).val());
+                if (!isOld && selectedDate < boundaryDate) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Tanggal awal tidak boleh kurang dari ' + boundaryDate
+                            .toLocaleDateString('en-GB'),
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    $(this).val(boundaryDateString);
+                }
+            });
+
+            $('#transhingga').change(function() {
+                var transdari = new Date($('#transdari').val());
+                var transhingga = new Date($(this).val());
+
+                if (transhingga < transdari) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Tanggal akhir harus lebih besar atau sama dengan tanggal awal',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    $(this).val('');
+                }
+
+                if (isOld && transhingga > boundaryDate) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Tanggal akhir tidak boleh lebih dari ' + boundaryDate
+                            .toLocaleDateString('en-GB'),
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    $(this).val(boundaryDateString);
+                }
+            });
         });
 
-        // document.getElementById('searchForm').addEventListener('submit', function(event) {
-        //     const inputs = [
-        //         'username',
-        //         'invoice',
-        //         'status',
-        //         'transdari',
-        //         'transhingga',
-        //         'checkinvoice',
-        //         'checkstatus',
-        //         'checktransdari',
-        //         'checktranshingga',
-        //         'checkall',
-        //     ];
-        //     inputs.forEach(id => {
-        //         const inputElement = document.getElementById(id);
-        //         if (!inputElement.value) {
-        //             inputElement.disabled = true; // Untuk disabled input kalau tidak ada filter :D
-        //         }
-        //     });
-        // });
-
+        // Check all checkboxes
         document.addEventListener('DOMContentLoaded', (event) => {
             const checkAll = document.getElementById('checkall');
             const checkboxes = document.querySelectorAll('input[type="checkbox"]:not(#checkall)');
@@ -305,77 +319,6 @@
                     checkbox.checked = isChecked;
                 });
             });
-        });
-
-        $('.exportdata').click(function() {
-            Swal.fire({
-                icon: 'question',
-                title: 'Konfirmasi',
-                text: 'Apakah ingin mendownload data ini?',
-                showCancelButton: true,
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Batal',
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    var username = $('#username').val();
-                    var checkinvoice = $('#checkinvoice').val();
-                    var invoice = $('#invoice').val();
-                    var checkstatus = $('#checkstatus').val();
-                    var status = $('#status').val();
-                    var checktransdari = $('#checktransdari').val();
-                    var transdari = $('#transdari').val();
-                    var checktranshingga = $('#checktranshingga').val();
-                    var transhingga = $('#transhingga').val();
-                    var checkall = $('#checkall').val();
-                    var is_old = @json($is_old);
-
-                    // Membuat URL dengan parameter dinamis
-                    var url = '/historytransaksids/export?';
-
-                    if (username) url += 'username=' + encodeURIComponent(username) + '&';
-                    if (checkinvoice && invoice) url += 'checkinvoice=' + encodeURIComponent(checkinvoice) +
-                        '&invoice=' + encodeURIComponent(invoice) + '&';
-                    if (checkstatus && status) url += 'checkstatus=' + encodeURIComponent(checkstatus) +
-                        '&status=' + encodeURIComponent(status) + '&';
-                    if (checktransdari && transdari) url += 'checktransdari=' + encodeURIComponent(
-                        checktransdari) + '&transdari=' + encodeURIComponent(transdari) + '&';
-                    if (checktranshingga && transhingga) url += 'checktranshingga=' + encodeURIComponent(
-                        checktranshingga) + '&transhingga=' + encodeURIComponent(transhingga) + '&';
-                    if (checkall) url += 'checkall=' + encodeURIComponent(checkall) + '&';
-                    if (is_old) url += 'is_old=' + encodeURIComponent(is_old);
-
-                    // Menghapus karakter '&' terakhir jika ada
-                    url = url.replace(/&$/, '');
-
-                    window.location.href = url;
-                }
-            });
-        });
-
-        var oldData = @json($is_old);
-        $(document).ready(function() {
-            // Mendapatkan tanggal hari ini
-            var today = new Date();
-
-            // Menghitung tanggal pertama bulan sebelumnya
-            var lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-            var boundaryDate = lastMonth.toISOString().split('T')[0] + 'T00:00';
-
-            // Mengatur atribut min dan max pada input transdari dan transhingga
-            if (!oldData) {
-                $('#transdari').attr('min', boundaryDate);
-            }
-            // Validasi input transdari jika diubah
-            $('#transdari').on('change', function() {
-                var selectedDate = $(this).val();
-                if (!oldData) {
-                    if (selectedDate < boundaryDate) {
-                        alert('Tanggal tidak boleh kurang dari ' + boundaryDate);
-                        $(this).val(boundaryDate); // Reset tanggal ke batas minimal
-                    }
-                }
-            });
-
         });
     </script>
 @endsection

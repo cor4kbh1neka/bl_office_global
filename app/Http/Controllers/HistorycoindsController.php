@@ -113,8 +113,12 @@ class HistorycoindsController extends Controller
 
     public function filterAndPaginateOld($page, $request)
     {
-        $tgldari = Carbon::parse($request->tgldari);
-        $tglsampai = Carbon::parse($request->tglsampai);
+        // Ambil current date jika belum didefinisikan
+        $currentDate = Carbon::now();
+
+        // Ambil `tgldari` dan `tglsampai` dari request atau tetapkan nilai default jika tidak ada
+        $tgldari = $request->has('tgldari') ? Carbon::parse($request->tgldari) : $currentDate->copy()->subMonth()->startOfMonth();
+        $tglsampai = $request->has('tglsampai') ? Carbon::parse($request->tglsampai) : $currentDate->copy()->subMonth()->endOfMonth();
 
         $data = $this->getOldData($tgldari, $tglsampai);
 

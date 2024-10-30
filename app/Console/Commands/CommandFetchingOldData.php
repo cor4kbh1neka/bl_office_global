@@ -37,10 +37,10 @@ class CommandFetchingOldData extends Command
         $endpoints = [
             '/historycoins',
             '/historytransaksi',
-            '/refaktif',
-            '/refdepo',
-            '/winlossbet',
-            '/winloss'
+            //     '/refaktif',
+            //     '/refdepo',
+            //     '/winlossbet',
+            //     '/winloss'
         ];
 
         foreach ($endpoints as $endpoint) {

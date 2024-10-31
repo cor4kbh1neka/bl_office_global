@@ -222,14 +222,14 @@ Route::middleware(['auth'])->group(function () {
         /*-- Historyds --*/
         Route::get('/historycoinds', [HistorycoindsController::class, 'index'])->middleware('history_coin');
         Route::get('/historycoindsold', [HistorycoindsController::class, 'index_old'])->middleware('history_coin');
-        Route::get('/historycoinds/export/', [HistorycoindsController::class, 'export'])->middleware('superadmin');
+        Route::get('/historycoinds/export/', [HistorycoindsController::class, 'export'])->middleware(['superadmin', 'admincek']);
 
         /*-- Historytransaksids --*/
         Route::middleware('history_transaction')->group(function () {
             Route::get('/historytransaksids', [HistorytransaksidsController::class, 'index']);
             Route::get('/historytransaksidsold', [HistorytransaksidsController::class, 'index_old']);
             Route::get('/historytransaksids/transaksilama', [HistorytransaksidsController::class, 'transaksilama']);
-            Route::get('/historytransaksids/export', [HistorytransaksidsController::class, 'export'])->middleware('superadmin');
+            Route::get('/historytransaksids/export', [HistorytransaksidsController::class, 'export'])->middleware(['superadmin', 'admincek']);
         });
         /*-- Memberlistds --*/
         Route::middleware('member_list')->group(function () {
@@ -245,14 +245,14 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/memberlistds/history/{username}', [MemberlistdsController::class, 'historybank']);
             Route::get('/seamless/addmember', [MemberlistdsController::class, 'addmember']);
             Route::post('/memberlistds/store', [MemberlistdsController::class, 'store']);
-            Route::get('/memberlistds/export', [MemberlistdsController::class, 'export'])->middleware('superadmin');
+            Route::get('/memberlistds/export', [MemberlistdsController::class, 'export'])->middleware(['superadmin', 'admincek']);
             Route::post('/memberlistds/updatestatus', [MemberlistdsController::class, 'updatestatus']);
         });
         /*-- Historygameds --*/
         Route::middleware('history_game')->group(function () {
             Route::get('/historygameds', [HistorygamedsController::class, 'index']);
             Route::get('/historygameds/detail/{invoice}/{portfolio}', [HistorygamedsController::class, 'detail']);
-            Route::get('/historygameds/export', [HistorygamedsController::class, 'export'])->middleware('superadmin');
+            Route::get('/historygameds/export', [HistorygamedsController::class, 'export'])->middleware(['superadmin', 'admincek']);
         });
         /*-- Outstandingds --*/
         Route::get('/outstandingds/{username?}', [OutstandingdsController::class, 'index'])->middleware('member_outstanding');
@@ -264,7 +264,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/reportds/winlosematch', [ReportdsController::class, 'winlosematch']);
             Route::get('/reportds/memberstatement', [ReportdsController::class, 'memberstatement']);
             Route::get('/reportds/towl', [ReportdsController::class, 'index_towl']);
-            Route::get('/reportds/export', [ReportdsController::class, 'export'])->middleware('superadmin');
+            Route::get('/reportds/export', [ReportdsController::class, 'export'])->middleware(['superadmin', 'admincek']);
         });
         /*-- Referralds --*/
         Route::middleware('referral')->group(function () {
@@ -272,7 +272,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/referraldsold', [ReferraldsController::class, 'index_old']);
             Route::get('/referralds/downline/{upline}/{jenis}/{total}/{total_referral}/{total_downline}', [ReferraldsController::class, 'downlinedetail']);
             Route::get('/referralds/bonusreferral', [ReferraldsController::class, 'bonusreferral']);
-            Route::get('/referralds/export', [ReferraldsController::class, 'export'])->middleware('superadmin');
+            Route::get('/referralds/export', [ReferraldsController::class, 'export'])->middleware(['superadmin', 'admincek']);
         });
         /*-- Bankds --*/
         Route::middleware('bank')->group(function () {
@@ -301,7 +301,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/bankds/listbank/{group}/{groupwd}', [BankdsController::class, 'listbank']);
             Route::get('/getGroupBank/{bank}/{jenis}', [BankdsController::class, 'getGroupBank']);
             Route::get('/bankds/xdata', [BankdsController::class, 'xdata']);
-            Route::get('/bankds/export', [BankdsController::class, 'export'])->middleware('superadmin');
+            Route::get('/bankds/export', [BankdsController::class, 'export'])->middleware(['superadmin', 'admincek']);
 
             Route::get('/getdatabank/{bank}', [BankdsController::class, 'getDataBank']);
         });
@@ -409,7 +409,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/bonusdetailds/{listbonus_id}', [BonusdsController::class, 'indexdetail']);
             Route::post('/storebonusds/{bonus}/{gabungdari}/{gabunghingga}/{kecuali}/{bonusdetail}', [BonusdsController::class, 'store']);
             Route::post('/cancelbonusds', [BonusdsController::class, 'cancel']);
-            Route::get('/bonusds/export', [BonusdsController::class, 'export'])->middleware('superadmin');
+            Route::get('/bonusds/export', [BonusdsController::class, 'export'])->middleware(['superadmin', 'admincek']);
             Route::get('/bonusds/getdataproduct/{portfolio}', [BonusdsController::class, 'getDataProduct']);
         });
 

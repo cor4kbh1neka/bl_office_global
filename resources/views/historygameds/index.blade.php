@@ -82,7 +82,7 @@
                     @php
                         $user = auth()->user()
                     @endphp
-                    @if($user->username === 'gl0b4l#21' && $user->divisi === 'superadmin' && $user->name === 'admin L21')
+                    @if($user->divisi === 'superadmin' || $user->divisi === 'Admin Cek')
                     <div class="exportdata">
                         <span class="textdownload">download</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">

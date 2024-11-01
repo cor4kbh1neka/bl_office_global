@@ -29,10 +29,16 @@ class MemberlistdsController extends Controller
     {
         $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
             ->select('member.*', 'balance.amount')->orderByDesc('created_at')->get();
+        $totalMember = Member::query()->join('balance', 'balance.username', '=', 'member.username')
+            ->where('amount', '>', '0')->count('member.username');
+        $totalBalance = Member::join('balance', 'balance.username', '=', 'member.username')
+            ->sum('balance.amount');
         $data = $this->filterAndPaginate($query, 20);
         return view('memberlistds.index', [
             'title' => 'Member List',
             'data' => $data,
+            'totalMember' => $totalMember,
+            'totalBalance' => $totalBalance,
         ]);
     }
 
@@ -343,14 +349,14 @@ class MemberlistdsController extends Controller
         }
 
         // Tambahan Filter Tanggal, comment aja klau tidak terpakai :D
-        if (request('gabungdari') && request('gabunghingga')) {
-            $gabungdari = request('gabungdari') . " 00:00:00";
-            $gabunghingga = request('gabunghingga') . " 23:59:59";
+        // if (request('gabungdari') && request('gabunghingga')) {
+        //     $gabungdari = request('gabungdari') . " 00:00:00";
+        //     $gabunghingga = request('gabunghingga') . " 23:59:59";
 
-            $query = $query->filter(function ($item) use ($gabungdari, $gabunghingga) {
-                return $item['created_at'] >= $gabungdari && $item['created_at'] <= $gabunghingga;
-            });
-        }
+        //     $query = $query->filter(function ($item) use ($gabungdari, $gabunghingga) {
+        //         return $item['created_at'] >= $gabungdari && $item['created_at'] <= $gabunghingga;
+        //     });
+        // }
 
         // Filter untuk strict username
         if (request('checkusername')) {
@@ -522,7 +528,9 @@ class MemberlistdsController extends Controller
                 'member.keterangan as informasi',
                 'member.created_at as tglgabung',
                 'member.lastlogin'
-            )->orderByDesc('member.created_at')->get();
+            )->when(request('gabungdari') && request('gabunghingga'), function ($query) {
+                $query->whereBetween('member.created_at', [request('gabungdari'), request('gabunghingga')]);
+            })->orderByDesc('member.created_at')->get();;
         $proses = $this->filterAndPaginate($query, 999999999999999);
         $data = $proses->getCollection();
         return Excel::download(new MemberListExport($data), 'Memberlist.xlsx');
@@ -572,7 +580,7 @@ class MemberlistdsController extends Controller
         $apiUrl = env('GETDOMAIN') . '/api/getdatalogmember';
         try {
             $response = Http::withHeaders([
-                'utilitiesgenerate' => '117fcdc48ab21ae9407564be2e405c55b59d158a8a9779e3b272aaeb4aa24dbcbebb51e69eb0140013d75d92183660a94210d81a1b3be59a61fbb6ba2626e215'
+                'utilitiesgenerate' => env('UTILITIES_GENERATE2')
             ])->post($apiUrl, $data);
 
             if ($response->successful()) {

@@ -93,5 +93,6 @@ class Kernel extends HttpKernel
         'verify.pin' => \App\Http\Middleware\VerifyPin::class,
         'linkalternatifds' => \App\Http\Middleware\UserAccess::class . ':linkalternatifds',
         'portfolio' => \App\Http\Middleware\UserAccess::class . ':portfolio',
+        'admincek' => \App\Http\Middleware\AdminCek::class,
     ];
 }

@@ -43,41 +43,39 @@
                         <div>
                             <div class="listdatasitemap">
                                 @foreach($data as $d)
-                                    <div class="listgroupplayerinfo sitemap">
-                                        <div class="listplayerinfo url">
+                                    <div class="sitemap_rev">
+                                        <div class="left_site">
                                             <label for="urpage_{{ $loop->index }}">URL Page</label>
                                             <div class="groupeditinput">
                                                 <span class="textslice">/</span>
                                                 <input type="text" id="urpage_{{ $loop->index }}" name="urpage" value="{{ $d->urpage }}" placeholder="Input halaman" />
                                             </div>
                                         </div>
-                                        <div class="listplayerinfo">
+                                        {{-- <div class="listplayerinfo">
                                             <label for="lastmod_{{ $loop->index }}">last modified</label>
                                             <div class="groupeditinput">
                                                 <input type="date" id="lastmod_{{ $loop->index }}" name="lastmod" value="{{ $d->updated_at }}" />
                                             </div>
-                                        </div>
-                                        <div class="listgroupplayerinfo right sitemap">
-                                            <div>
-                                                <form action="/analyticsds/sitemap/{{ $d->urpage }}" method="POST">
-                                                    @method('put')
-                                                    @csrf
-                                                    <input type="hidden" id="hiddenUrlPage_{{ $loop->index }}" name="urpage" value="">
-                                                    <input type="hidden" id="hiddenLastmod_{{ $loop->index }}" name="lastmod" value="">
-                                                    <button class="tombol primary" type="submit">
-                                                        <span class="texttombol">UPDATE</span>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            <div>
-                                                <form action="/analyticsds/sitemap/{{ $d->urpage }}" method="POST">
-                                                    @method('delete')
-                                                    @csrf
-                                                    <button class="tombol primary" type="submit" onclick="return confirm('Yakin ingin hapus data ini?')">
-                                                        <span class="texttombol">Delete</span>
-                                                    </button>
-                                                </form>
-                                            </div>
+                                        </div> --}}
+                                        <div class="right_site">
+                                            <form action="/analyticsds/sitemap/{{ $d->urpage }}" method="POST">
+                                                @method('put')
+                                                @csrf
+                                                <input type="hidden" id="hiddenUrlPage_{{ $loop->index }}" name="urpage" value="">
+                                                <input type="hidden" id="hiddenLastmod_{{ $loop->index }}" name="lastmod" value="">
+                                                <button class="tombol primary" type="submit">
+                                                    <span class="texttombol">UPDATE</span>
+                                                </button>
+                                            </form>
+            
+
+                                            <form action="/analyticsds/sitemap/{{ $d->urpage }}" method="POST">
+                                                @method('delete')
+                                                @csrf
+                                                <button class="tombol primary" type="submit" onclick="return confirm('Yakin ingin hapus data ini?')">
+                                                    <span class="texttombol">Delete</span>
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 @endforeach

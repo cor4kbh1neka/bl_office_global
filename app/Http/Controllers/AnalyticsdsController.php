@@ -94,49 +94,53 @@ class AnalyticsdsController extends Controller
     }
     public function updateSitemap(Request $request, $urpage)
     {
-        $url = env('DOMAIN') . '/content/stmp/' . $urpage;
-        $waktuUpdate = Carbon::now()->format('Y-m-d');
-        if ($request->urpage == $urpage && $request->lastmod == $waktuUpdate) {
-            return redirect('analyticsds/sitemap/')->with('warning', 'Data ' . $urpage . ' tidak berubah');
-        } elseif ($request->urpage == $urpage && $request->lastmod != $waktuUpdate) {
-            $urpageSementara = '1asdaf856as1d';
-            if ($urpage === '1asdaf856as1d') {
-                $urpageSementara = '1fg45ds6g14sad';
+        try {
+            $url = env('DOMAIN') . '/content/stmp/' . $urpage;
+            $waktuUpdate = Carbon::now();
+            if ($request->urpage == $urpage && $request->lastmod == $waktuUpdate) {
+                return redirect('analyticsds/sitemap/')->with('warning', 'Data ' . $urpage . ' tidak berubah');
+            } elseif ($request->urpage == $urpage && $request->lastmod != $waktuUpdate) {
+                $urpageSementara = '1asdaf856as1d';
+                if ($urpage === '1asdaf856as1d') {
+                    $urpageSementara = '1fg45ds6g14sad';
+                }
+                $mauDiubah = [
+                    'urpage' => $urpageSementara,
+                    'updated_at' => $request->lastmod
+                ];
+                $validatedData = [
+                    'urpage' => $urpage,
+                    'updated_at' => $request->lastmod
+                ];
+                $urlbalik = env('DOMAIN') . '/content/stmp/' . $urpageSementara;
+                $responsesementara = Http::withHeaders([
+                    'x-customblhdrs' => env('XCUSTOMBLHDRS')
+                ])->post($url, $mauDiubah);
+                $response = Http::withHeaders([
+                    'x-customblhdrs' => env('XCUSTOMBLHDRS')
+                ])->post($urlbalik, $validatedData);
+                if ($response && $responsesementara->successful()) {
+                    return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Ubah Tanggal ');
+                }
             }
-            $mauDiubah = [
-                'urpage' => $urpageSementara,
-                'updated_at' => $waktuUpdate
-            ];
+            $validatedData = $request->validate([
+                'urpage' => 'required'
+            ]);
             $validatedData = [
-                'urpage' => $urpage,
+                'urpage' => $validatedData['urpage'],
                 'updated_at' => $waktuUpdate
             ];
-            $urlbalik = env('DOMAIN') . '/content/stmp/' . $urpageSementara;
-            $responsesementara = Http::withHeaders([
-                'x-customblhdrs' => env('XCUSTOMBLHDRS')
-            ])->post($url, $mauDiubah);
             $response = Http::withHeaders([
                 'x-customblhdrs' => env('XCUSTOMBLHDRS')
-            ])->post($urlbalik, $validatedData);
-            if ($response && $responsesementara->successful()) {
-                return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Ubah Tanggal ');
+            ])->post($url, $validatedData);
+    
+            if ($response->successful()) {
+                return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Edit Page ');
+            } else {
+                return redirect('analyticsds/sitemap/')->with('error', 'Gagal Edit Page ');
             }
-        }
-        $validatedData = $request->validate([
-            'urpage' => 'required'
-        ]);
-        $validatedData = [
-            'urpage' => $validatedData['urpage'],
-            'updated_at' => $waktuUpdate
-        ];
-        $response = Http::withHeaders([
-            'x-customblhdrs' => env('XCUSTOMBLHDRS')
-        ])->post($url, $validatedData);
-
-        if ($response->successful()) {
-            return redirect('analyticsds/sitemap/')->with('success', 'Berhasil Edit Page ');
-        } else {
-            return redirect('analyticsds/sitemap/')->with('error', 'Gagal Edit Page ');
+        } catch (\Exception $e){
+            return response()->json($e->getMessage());
         }
     }
     public function deleteSitemap($urpage)

@@ -3,17 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Balance;
-use App\Models\Settings;
-use App\Models\Companys;
-use App\Models\Currencys;
 use App\Models\DepoWd;
-use App\Models\Member;
-use App\Models\Transactions;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
@@ -24,6 +18,62 @@ class DashboardController extends Controller
         if ($currentHour >= 0 && $currentHour < 1) {
             $is_maintenance = true;
         } else {
+            // $startOfYesterday = Carbon::yesterday()->startOfDay()->toDateTimeString(); // 2024-11-07 00:00:00
+            // $endOfYesterday = Carbon::yesterday()->endOfDay()->toDateTimeString(); // 2024-11-07 23:59:59
+            
+            // $sum_cash_balance = Balance::sum('amount' );
+            // $count_total_depo = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['DP', 'DPM'])->where('status', 1)->count();
+            // $count_total_wd = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD', 'WDM'])->where('status', 1)->count();
+            
+            // $sum_total_depo = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['DP'])->where('status', 1)->sum('amount');
+            // $sum_total_wd = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD'])->where('status', 1)->sum('amount');
+
+            // $sum_total_depo_manual = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['DPM'])->where('status', 1)->sum('amount');
+            // $sum_total_wd_manual = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WDM'])->where('status', 1)->sum('amount');
+
+            // $count_total_allreq_depo = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD', 'WDM'])->count();
+
+            // $count_total_allreq_wd = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD', 'WDM'])->count();
+            
+
+
+
+
+
+
+            
+
+           
+
+            // RekapDashboardDay::create([
+            //     'sum_cash_balance' => $sum_cash_balance,
+            //     'sum_member_balance' => $sum_cash_balance,
+            //     'sum_total_balance' => $sum_cash_balance,
+            //     'count_total_depo' => $count_total_depo,
+            //     'count_total_wd' => $count_total_wd,
+            //     'sum_all_total_depo' => $sum_total_depo + $sum_total_depo_manual,
+            //     'sum_all_total_wd' => $sum_total_wd + $sum_total_wd_manual,
+            //     'sum_total_depo' => $sum_total_depo,
+            //     'sum_total_depo_manual' => $sum_total_depo_manual,
+            //     'sum_total_wd' => $sum_total_wd,
+            //     'sum_total_wd_manual' => $sum_total_wd_manual,
+            //     'count_total_req_depo' => $count_total_allreq_depo,
+            //     'count_total_req_wd' => $count_total_allreq_wd,
+
+            //     'count_bet_settled' => $count_bet_settled,
+            //     'sum_bet_settled' => $sum_bet_settled,
+            //     'member_online' => $member_online,
+            //     'new_member_regis'=> $new_member_regis,
+            //     'new_member_deposit' => $new_member_deposit,
+            //     'new_total_member' => $new_total_member
+
+                    
+                
+
+                
+                
+            // ]);
+
 
             $getdate = $request->query('getdate');
             $fromdate = $request->query('fromdate');

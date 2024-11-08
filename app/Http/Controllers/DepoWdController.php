@@ -20,11 +20,14 @@ use App\Models\ReferralDepo2;
 use App\Models\ReferralDepo3;
 use App\Models\ReferralDepo4;
 use App\Models\ReferralDepo5;
+use App\Models\TransactionSaldo;
+use App\Models\TransactionStatus;
 use App\Models\WinlossbetDay;
 use App\Models\winlossDay;
 use App\Models\winlossMonth;
 use App\Models\winlossYear;
 use App\Models\Xreferral;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -902,5 +905,18 @@ class DepoWdController extends Controller
         $results = $query->get();
 
         return $results;
+    }
+
+    public function clearData()
+    {
+        ListError::where('created_at', '<', Carbon::now()->subDays(30))->delete();
+        TransactionSaldo::where('created_at', '<', Carbon::now()->subDays(40))->delete();
+        TransactionStatus::where('created_at', '<', Carbon::now()->subDays(40))->delete();
+        Transactions::where('created_at', '<', Carbon::now()->subDays(40))->delete();
+    
+        return [
+            'status' => 'Success',
+            'message' => 'Delete Successfully!'
+        ];
     }
 }

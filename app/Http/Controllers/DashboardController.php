@@ -18,10 +18,11 @@ class DashboardController extends Controller
         if ($currentHour >= 0 && $currentHour < 1) {
             $is_maintenance = true;
         } else {
-            // $startOfYesterday = Carbon::yesterday()->startOfDay()->toDateTimeString(); // 2024-11-07 00:00:00
-            // $endOfYesterday = Carbon::yesterday()->endOfDay()->toDateTimeString(); // 2024-11-07 23:59:59
+            $startOfYesterday = Carbon::yesterday()->startOfDay()->toDateTimeString(); 
+            $endOfYesterday = Carbon::yesterday()->endOfDay()->toDateTimeString(); 
             
-            // $sum_cash_balance = Balance::sum('amount' );
+            $sum_cash_balance = Balance::sum('amount' );
+            
             // $count_total_depo = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['DP', 'DPM'])->where('status', 1)->count();
             // $count_total_wd = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD', 'WDM'])->where('status', 1)->count();
             

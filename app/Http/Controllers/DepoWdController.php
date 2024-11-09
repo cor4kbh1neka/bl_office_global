@@ -20,6 +20,7 @@ use App\Models\ReferralDepo2;
 use App\Models\ReferralDepo3;
 use App\Models\ReferralDepo4;
 use App\Models\ReferralDepo5;
+use App\Models\RekapDashboardDay;
 use App\Models\TransactionSaldo;
 use App\Models\TransactionStatus;
 use App\Models\WinlossbetDay;
@@ -185,6 +186,9 @@ class DepoWdController extends Controller
                         ], 400);
                     } else if ($req["error"]["id"] === 0) {
                         $processBalance = $this->processBalance($result->username, $jenis, $result->amount);
+                        
+                        /* Create Rekap Dashboard */
+                        $this->updateRekapDashboard($result->amount, $jenis);
 
                         /* Create History */
                         $keterangan = $result->jenis == 'DPM' ? 'deposit' : 'withdraw';
@@ -194,7 +198,7 @@ class DepoWdController extends Controller
 
                         /* Win Loss WD */
                         $this->addDataWinLoss($result->username, $result->amount, $keterangan);
-
+                        
                         return response()->json([
                             'status' => 'success',
                             'message' => 'Transaksi berhasil!'
@@ -257,7 +261,7 @@ class DepoWdController extends Controller
                         } else {
                             return back()->withInput()->with('error', 'Transkasi tidak valid');
                         }
-
+                        $this->updateRekapDashboard($dataDepo->amount, $jenis);
                         $this->updateMemberData($dataDepo);
                     }
                 }
@@ -281,6 +285,37 @@ class DepoWdController extends Controller
         } catch (\Exception $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
+    }
+
+    private function updateRekapDashboard($amount, $jenis)
+    {
+        DB::transaction(function () use ($amount, $jenis) {
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if ($jenis == 'DP') {
+                $existsToday->increment('sum_total_depo', $amount);
+            } else if ($jenis == 'DPM') {
+                $existsToday->increment('sum_total_depo_manual', $amount);
+            } else if ($jenis == 'WD') {
+                $existsToday->increment('sum_total_wd', $amount);
+            } else if ($jenis == 'WDM') {
+                $existsToday->increment('sum_total_wd_manual', $amount);
+            }
+
+            if ($jenis == 'DP' || $jenis == 'DPM') {
+                $existsToday->increment('count_total_depo', 1);
+                $existsToday->increment('sum_all_total_depo', $amount);
+            } else if ($jenis == 'WD' || $jenis == 'WDM') {
+                $existsToday->increment('count_total_wd', 1);
+                $existsToday->increment('sum_all_total_wd', $amount);
+            }
+        });
     }
 
     private function seamlessApiTransaction($jenis, $dataAPI)

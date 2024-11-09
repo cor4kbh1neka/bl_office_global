@@ -27,6 +27,7 @@ use App\Models\ReferralAktif2;
 use App\Models\ReferralAktif3;
 use App\Models\ReferralAktif4;
 use App\Models\ReferralAktif5;
+use App\Models\RekapDashboardDay;
 use App\Models\WinlossbetDay;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -444,6 +445,9 @@ class ApiController extends Controller
                 ], 500);
             }
 
+            // Create Rekap Dashboard
+            $this->updateRekapDashboard('DP');
+
             DB::commit();
             return response()->json([
                 'status' => 'Success',
@@ -456,6 +460,25 @@ class ApiController extends Controller
                 'message' => 'Gagal menyimpan data: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function updateRekapDashboard($jenis)
+    {
+        DB::transaction(function () use ($jenis) {
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if ($jenis == 'DP') {
+                $existsToday->increment('count_total_req_depo', 1);
+            } else if ($jenis == 'WD') {
+                $existsToday->increment('count_total_req_wd', 1);
+            } 
+        });
     }
 
     public function withdrawal(Request $request)
@@ -559,8 +582,9 @@ class ApiController extends Controller
                 }
             }
 
-            DB::commit();
+            $this->updateRekapDashboard('WD');
 
+            DB::commit();
             return response()->json([
                 'status' => 'Success',
                 'message' => 'Withdrawal sedang diproses'

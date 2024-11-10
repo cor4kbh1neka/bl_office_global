@@ -21,8 +21,11 @@ use App\Jobs\AddHistoryJob;
 use App\Jobs\AddOutstandingJob;
 use App\Jobs\AddWinlossStakeJob;
 use App\Jobs\DeleteOutstandingJob;
+use App\Jobs\ProcessRekapDashboardJob;
 use App\Models\ListError;
 use App\Models\Product;
+use App\Models\RekapDashboardDay;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class ApiBolaController extends Controller
@@ -488,6 +491,7 @@ class ApiBolaController extends Controller
                                 //     'balance' => $saldoMember
                                 // ]);
                                 $datenow = date('Y-m-d H:i:s');
+                                $this->updateRekapDashboard($dataTransaction->id, 'Cancel', $dataTransactions->amount);
                                 $this->addHistoryTranskasi($request->Username, $txnid, $request->TransferCode, $portfolio, $portfolio, 'cancel', $dataTransactions->amount, 0, $saldoMember, $datenow);
                                 $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, $dataTransactions->amount, 'cancel', $datenow);
                             }
@@ -762,6 +766,8 @@ class ApiBolaController extends Controller
                     //     'balance' => $saldoMember
                     // ]);
                     $datenow = date('Y-m-d H:i:s');
+
+                    $this->updateRekapDashboard($dataTransaction->id, 'Rollback', $dataTransactions->amount);
                     $this->addHistoryTranskasi($request->Username, '', $request->TransferCode, $portfolio, $portfolio, 'cancel', $dataTransactions->amount, 0, $saldoMember, $datenow);
                     $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, ($dataTransactions->amount * -1), 'rollback', $datenow);
                 }
@@ -839,6 +845,18 @@ class ApiBolaController extends Controller
         }
     }
 
+    private function updateRekapDashboard($trans_id, $jenis, $amount)
+    {
+        $data = [
+            'trans_id' => $trans_id,
+            'jenis' => $jenis,
+             'amount' => $amount
+        ];
+        
+        ProcessRekapDashboardJob::dispatch($data);
+        return;
+    }
+
     /* ====================== Settle ======================= */
     private function setSettle(Request $request, $dataTransaction, $index, $saldoMember)
     {
@@ -897,6 +915,10 @@ class ApiBolaController extends Controller
                             //     'balance' => $saldoMember
                             // ]);
                             $datenow = date('Y-m-d H:i:s');
+
+
+                            
+                            $this->updateRekapDashboard($dataTransaction->id, 'Settle', $WinLoss);
                             $this->addHistoryTranskasi($request->Username, $txnid, $request->TransferCode, $portfolio, $portfolio, $request->IsCashOut === true ? 'cashout' : 'menang', 0, $WinLoss, $saldoMember, $datenow);
                             $this->addWinlossStake($request->Username, $dataTransaction->id, $request->TransferCode, $portfolio, $WinLoss, 'settle', $datenow);
                         }

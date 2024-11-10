@@ -25,44 +25,34 @@ class DashboardController extends Controller
             $fromdate = $request->has('fromdate') ? $request->fromdate : Carbon::yesterday()->format('Y-m-d');
             $todate = $request->has('todate') ? $request->todate : Carbon::yesterday()->format('Y-m-d');
             
-            $this->getDataDashboard($getdate, $fromdate, $todate);
+            $data = $this->getDataDashboard($fromdate, $todate);
 
+            $cash_balance = $data['sum_cash_balance'];
+            $member_balance = $data['sum_member_balance'];
+            $total_balance = $data['sum_total_balance'];
 
+            $count_depo = $data['count_total_depo'];
+            $count_wd = $data['count_total_wd'];
 
+            $sum_depo = $data['sum_all_total_depo'];
+            $sum_wd = $data['sum_all_total_wd'];
 
-            $getdate = $request->query('getdate');
-            $fromdate = $request->query('fromdate');
-            $todate = $request->query('todate');
+            $sum_depo_real = $data['sum_total_depo'];
+            $sum_depo_manual = $data['sum_total_depo_manual'];
+            $sum_wd_real = $data['sum_total_depo_manual'];
+            $sum_wd_manual = $data['sum_total_wd_manual'];
 
-            $response = Http::get(env('OLDDOMAIN') . 'api/olddata/' . $getdate);
-            $data_old = $response->json();
+            $count_all_status_depo = $data['count_total_req_depo'];
+            $count_all_status_wd = $data['count_total_req_wd'];
 
-            $cash_balance = isset($data_old["cash_balance"]) ? $data_old["cash_balance"] : 0;
-            $member_balance = isset($data_old["member_balance"]) ? $data_old["member_balance"] : 0;
-            $total_balance = isset($data_old["total_balance"]) ? $data_old["total_balance"] : 0;
+            $count_settled = $data['count_bet_settled'];
+            $total_settled = $data['sum_bet_settled'];
 
-            $count_depo = isset($data_old["count_depo"]) ? $data_old["count_depo"] : 0;
-            $count_wd = isset($data_old["count_wd"]) ? $data_old["count_wd"] : 0;
+            $totalmember = $data['member_online'];
+            $total_new_member_regis = $data['new_member_regis'];
+            $total_new_member_deposit = $data['new_member_deposit'];
 
-            $sum_depo = isset($data_old["sum_depo"]) ? $data_old["sum_depo"] : 0;
-            $sum_wd = isset($data_old["sum_wd"]) ? $data_old["sum_wd"] : 0;
-
-            $sum_depo_real = isset($data_old["sum_depo_real"]) ? $data_old["sum_depo_real"] : 0;
-            $sum_depo_manual = isset($data_old["sum_depo_manual"]) ? $data_old["sum_depo_manual"] : 0;
-            $sum_wd_real = isset($data_old["sum_wd_real"]) ? $data_old["sum_wd_real"] : 0;
-            $sum_wd_manual = isset($data_old["sum_wd_manual"]) ? $data_old["sum_wd_manual"] : 0;
-
-            $count_all_status_depo = isset($data_old["count_all_status_depo"]) ? $data_old["count_all_status_depo"] : 0;
-            $count_all_status_wd = isset($data_old["count_all_status_wd"]) ? $data_old["count_all_status_wd"] : 0;
-
-            $count_settled = isset($data_old["count_settled"]) ? $data_old["count_settled"] : 0;
-            $total_settled = isset($data_old["total_settled"]) ? $data_old["total_settled"] : 0;
-
-            $totalmember = isset($data_old["totalmember"]) ? $data_old["totalmember"] : 0;
-            $total_new_member_regis = isset($data_old["total_new_member_regis"]) ? $data_old["total_new_member_regis"] : 0;
-            $total_new_member_deposit = isset($data_old["total_new_member_deposit"]) ? $data_old["total_new_member_deposit"] : 0;
-
-            $total_member_online = isset($data_old["total_member_online"]) ? $data_old["total_member_online"] : 0;
+            $total_member_online = $data['new_total_member'];
         }
 
         return view('dashboard.index', [
@@ -94,7 +84,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    private function getDataDashboard($getdate, $fromdate, $todate) {
+    private function getDataDashboard($fromdate, $todate) {
         $cacheKey = "data_dashboard_{$fromdate}_to_{$todate}";
     
         $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($fromdate, $todate) {

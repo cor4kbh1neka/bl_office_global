@@ -30,6 +30,9 @@ class RekapDailyData extends Command
      */
     public function handle()
     {
+        $fortyDaysAgo = Carbon::now()->subDays(40)->format('Y-m-d');
+        RekapDashboardDay::whereDate('created_at', '<', $fortyDaysAgo)->delete();
+
         $dataDashboard = $this->updateRekapDashboard();
     }
 

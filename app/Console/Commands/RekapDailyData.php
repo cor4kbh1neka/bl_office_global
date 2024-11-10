@@ -40,17 +40,18 @@ class RekapDailyData extends Command
 {
     DB::transaction(function () {
         $existsYesterday = RekapDashboardDay::whereDate('created_at', Carbon::yesterday())->first();
+        $threeDaysAgo = Carbon::now()->subDays(3)->format('Y-m-d');
 
         if (!$existsYesterday) {
             $existsYesterday = RekapDashboardDay::create([
                 'sum_member_balance' => Balance::sum('amount'),
-                'new_total_member' => Member::count('id'),
+                'new_total_member' => RekapDashboardDay::whereDate('created_at', $threeDaysAgo)->first()->new_total_member,
                 'created_at' => Carbon::yesterday() 
             ]);
         }
 
         $existsYesterday->increment('sum_member_balance', Balance::sum('amount'));
-        $existsYesterday->increment('new_total_member', Member::count('id'));
+        $existsYesterday->increment('new_total_member', RekapDashboardDay::whereDate('created_at', $threeDaysAgo)->first()->new_total_member);
     });
 }
 }

@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Balance;
 use App\Models\DepoWd;
+use App\Models\Member;
+use App\Models\RekapDashboardDay;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -18,62 +21,13 @@ class DashboardController extends Controller
         if ($currentHour >= 0 && $currentHour < 1) {
             $is_maintenance = true;
         } else {
-            $startOfYesterday = Carbon::yesterday()->startOfDay()->toDateTimeString(); 
-            $endOfYesterday = Carbon::yesterday()->endOfDay()->toDateTimeString(); 
+            $getdate = $request->has('getdate') ? $request->getdate : 'yesterday';
+            $fromdate = $request->has('fromdate') ? $request->fromdate : Carbon::yesterday()->format('Y-m-d');
+            $todate = $request->has('todate') ? $request->todate : Carbon::yesterday()->format('Y-m-d');
             
-            $sum_cash_balance = Balance::sum('amount' );
-            
-            // $count_total_depo = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['DP', 'DPM'])->where('status', 1)->count();
-            // $count_total_wd = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD', 'WDM'])->where('status', 1)->count();
-            
-            // $sum_total_depo = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['DP'])->where('status', 1)->sum('amount');
-            // $sum_total_wd = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD'])->where('status', 1)->sum('amount');
-
-            // $sum_total_depo_manual = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['DPM'])->where('status', 1)->sum('amount');
-            // $sum_total_wd_manual = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WDM'])->where('status', 1)->sum('amount');
-
-            // $count_total_allreq_depo = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD', 'WDM'])->count();
-
-            // $count_total_allreq_wd = DepoWd::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])->whereIn('jenis', ['WD', 'WDM'])->count();
-            
+            $this->getDataDashboard($getdate, $fromdate, $todate);
 
 
-
-
-
-
-            
-
-           
-
-            // RekapDashboardDay::create([
-            //     'sum_cash_balance' => $sum_cash_balance,
-            //     'sum_member_balance' => $sum_cash_balance,
-            //     'sum_total_balance' => $sum_cash_balance,
-            //     'count_total_depo' => $count_total_depo,
-            //     'count_total_wd' => $count_total_wd,
-            //     'sum_all_total_depo' => $sum_total_depo + $sum_total_depo_manual,
-            //     'sum_all_total_wd' => $sum_total_wd + $sum_total_wd_manual,
-            //     'sum_total_depo' => $sum_total_depo,
-            //     'sum_total_depo_manual' => $sum_total_depo_manual,
-            //     'sum_total_wd' => $sum_total_wd,
-            //     'sum_total_wd_manual' => $sum_total_wd_manual,
-            //     'count_total_req_depo' => $count_total_allreq_depo,
-            //     'count_total_req_wd' => $count_total_allreq_wd,
-
-            //     'count_bet_settled' => $count_bet_settled,
-            //     'sum_bet_settled' => $sum_bet_settled,
-            //     'member_online' => $member_online,
-            //     'new_member_regis'=> $new_member_regis,
-            //     'new_member_deposit' => $new_member_deposit,
-            //     'new_total_member' => $new_total_member
-
-                    
-                
-
-                
-                
-            // ]);
 
 
             $getdate = $request->query('getdate');
@@ -138,6 +92,40 @@ class DashboardController extends Controller
             'total_new_member_deposit' => $total_new_member_deposit ?? null,
             'total_member_online' => $total_member_online ?? null
         ]);
+    }
+
+    private function getDataDashboard($getdate, $fromdate, $todate) {
+        $cacheKey = "data_dashboard_{$fromdate}_to_{$todate}";
+    
+        $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($fromdate, $todate) {
+            $dataRange = RekapDashboardDay::whereBetween('created_at', [$fromdate, $todate])->get();
+    
+            $summary = [
+                'sum_cash_balance' => $dataRange->sum('sum_cash_balance'),
+                'sum_member_balance' => $dataRange->sum('sum_member_balance'),
+                'sum_total_balance' => $dataRange->sum('sum_total_balance'),
+                'count_total_depo' => $dataRange->sum('count_total_depo'),
+                'count_total_wd' => $dataRange->sum('count_total_wd'),
+                'sum_all_total_depo' => $dataRange->sum('sum_all_total_depo'),
+                'sum_all_total_wd' => $dataRange->sum('sum_all_total_wd'),
+                'sum_total_depo' => $dataRange->sum('sum_total_depo'),
+                'sum_total_depo_manual' => $dataRange->sum('sum_total_depo_manual'),
+                'sum_total_wd' => $dataRange->sum('sum_total_wd'),
+                'sum_total_wd_manual' => $dataRange->sum('sum_total_wd_manual'),
+                'count_total_req_depo' => $dataRange->sum('count_total_req_depo'),
+                'count_total_req_wd' => $dataRange->sum('count_total_req_wd'),
+                'count_bet_settled' => $dataRange->sum('count_bet_settled'),
+                'sum_bet_settled' => $dataRange->sum('sum_bet_settled'),
+                'member_online' => $dataRange->sum('member_online'),
+                'new_member_regis' => $dataRange->sum('new_member_regis'),
+                'new_member_deposit' => $dataRange->sum('new_member_deposit'),
+                'new_total_member' => $dataRange->sum('new_total_member'),
+            ];
+    
+            return $summary;
+        });
+    
+        return $dataDashboard;
     }
 
     private function getDataSettled($fromdate, $todate)

@@ -44,7 +44,7 @@ class ProcessRekapDashboardJob implements ShouldQueue
             'trace' => $e->getTraceAsString()
         ]);
 
-        throw $e;
+        // throw $e;
     }
     }
 

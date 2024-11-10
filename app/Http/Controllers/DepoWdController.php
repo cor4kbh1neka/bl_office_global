@@ -371,6 +371,8 @@ class DepoWdController extends Controller
                 $dataMember->update([
                     'status' => 1
                 ]);
+
+                $this->updateRekapDashboard2();
             }
             return true;
         } else {
@@ -384,6 +386,21 @@ class DepoWdController extends Controller
             // }
             return false;
         }
+    }
+
+    private function updateRekapDashboard2()
+    {
+        DB::transaction(function () {
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            $existsToday->increment('new_member_deposit', 1);
+        });
     }
 
     private function deposit4404($dataAPI, $dataDepo, $txnid)

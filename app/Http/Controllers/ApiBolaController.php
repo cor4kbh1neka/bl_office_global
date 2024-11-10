@@ -22,6 +22,7 @@ use App\Jobs\AddOutstandingJob;
 use App\Jobs\AddWinlossStakeJob;
 use App\Jobs\DeleteOutstandingJob;
 use App\Jobs\ProcessRekapDashboardJob;
+use App\Jobs\ProcessRekapMemberOnline;
 use App\Models\ListError;
 use App\Models\Product;
 use App\Models\RekapDashboardDay;
@@ -857,6 +858,16 @@ class ApiBolaController extends Controller
         return;
     }
 
+    private function updateRekapMemberOnline($username)
+    {
+        $data = [
+            'username' => $username,
+        ];
+        
+        ProcessRekapMemberOnline::dispatch($data);
+        return;
+    }
+
     /* ====================== Settle ======================= */
     private function setSettle(Request $request, $dataTransaction, $index, $saldoMember)
     {
@@ -1180,6 +1191,9 @@ class ApiBolaController extends Controller
                         "status" => 'Running',
                         "amount" => $amount
                     ]);
+
+                    /* Create Rekap Member Online */
+                    $this->updateRekapMemberOnline($request->Username);
 
                     $saldo = $saldoMember;
                     return [

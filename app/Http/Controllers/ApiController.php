@@ -234,7 +234,7 @@ class ApiController extends Controller
             if ($responseData["error"]["id"] === 0) {
 
                 try {
-                    $createMember = Member::create([
+                    Member::create([
                         'username' => $request->Username,
                         'referral' => $request->Referral,
                         'bank' => $dataCore['xybanknamexyy'],
@@ -257,6 +257,8 @@ class ApiController extends Controller
                         'username' => $request->Username,
                         'balance' => 0
                     ]);
+
+                    $this->updateRekapDashboard2();
 
                     if ($request->Referral !== null && $request->Referral !== '') {
                         $dataReferral = [
@@ -303,6 +305,21 @@ class ApiController extends Controller
             ]);
             return $responseCore;
         }
+    }
+
+    private function updateRekapDashboard2()
+    {
+        DB::transaction(function () {
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            $existsToday->increment('new_member_regis', 1);
+        });
     }
 
     public function getRecomMatch(Request $request)

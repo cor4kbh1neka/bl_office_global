@@ -1315,45 +1315,18 @@ class ApiController extends Controller
 
 
     /* OLD DATA */
-    /* OLD DATA */
-
-    private function checkValidation($request)
-    {
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-
-        // Menggunakan strtotime dan date untuk parsing bulan dan tahun dari tanggal
-        $bulanfromdate = date('m', strtotime($request->fromdate));
-        $bulantodate = date('m', strtotime($request->todate));
-        $tahunfromdate = date('Y', strtotime($request->fromdate));
-        $tahuntodate = date('Y', strtotime($request->todate));
-
-        $fromdate = $request->fromdate;
-        $todate = $request->todate;
-
-        // Validasi untuk memeriksa apakah variabel ada atau tidak kosong
-        if (!$bulan || !$fromdate || !$todate || !$tahun) {
-            return false;
-        }
-
-        // Validasi untuk memeriksa kesesuaian bulan dan tahun
-        if (($bulan !== $bulanfromdate || $tahun !== $tahunfromdate) || ($bulan !== $bulantodate || $tahun !== $tahuntodate)) {
-            return false;
-        }
-
-        return true;
-    }
 
     public function old_datahistorycoin($request)
     {
-        $checkValidation = $this->checkValidation($request);
-        if (!$checkValidation) {
-            return [];
-        }
+        $username = $request->username;
+        $status = $request->status;
+        $approved_by = $request->approved_by;
+        $tgldari = $request->tgldari ?? Carbon::now()->subDays(30); 
+        $tglsampai = $request->tglsampai ?? Carbon::now(); 
 
-        $fromdate = $request->fromdate;
-        $todate = $request->todate;
-
+        $tgldari = $tgldari . " 00:00:00";
+        $tglsampai = $tglsampai . " 23:59:59";
+        
         $jenisraw = DB::raw("CASE jenis
                 WHEN 'DP' THEN 'deposit'
                 WHEN 'WD' THEN 'withdraw'
@@ -1361,17 +1334,25 @@ class ApiController extends Controller
                 WHEN 'WDM' THEN 'withdraw manual'
                 ELSE jenis
             END as jenis_temp");
-        $query = DepoWD::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->select('*', $jenisraw)
-            ->whereIn('status', [1, 2])
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        
+        $query = DepoWD::whereBetween('created_at', [$tgldari , $tglsampai])
+        ->select('*', $jenisraw)
+        ->whereIn('status', [1, 2]);
+        
+        if (!empty($username)) {
+            $query->where('username', $username);
+        }
 
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
 
-        // $result = $query->get();
+        if (!empty($approved_by)) {
+            $query->where('approved_by', $approved_by);
+        }
 
-        // Redis::setex('olddata:history_coin', 86400, json_encode($result));
-        return $query;
+       $results = $query->orderBy('created_at', 'DESC')->paginate(20);
+       return $results;
     }
 
     public function old_historycoin(Request $request)
@@ -1381,320 +1362,54 @@ class ApiController extends Controller
             return $validasiBearer;
         }
 
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-        $redis_name = 'olddatacoins-' . $bulan . '/' . $tahun;
-
-
-        if (Redis::exists($redis_name)) {
-            $data = json_decode(Redis::get($redis_name), true);
-            $source = 'cache';
-        } else {
-            $data = $this->old_datahistorycoin($request);
-            Redis::set($redis_name, json_encode($data));
-            $source = 'database';
-        }
-
-        // Menambahkan header count
-        $count = count($data);
-
-        return response()->json($data)
-            ->header('x-data-source', $source)
-            ->header('count', $count);
+        $data = $this->old_datahistorycoin($request);
+        return response()->json($data);
     }
 
 
     //history transaksi
     public function old_datahistorytrans(Request $request)
     {
-        $checkValidation = $this->checkValidation($request);
-        if (!$checkValidation) {
-            return [];
+        $username = $request->username;
+        $invoice = $request->invoice;
+        $status = $request->status;
+        $transdari = $request->transdari ?? Carbon::now()->subDays(30);
+        $transhingga = $request->transhingga ?? Carbon::now();
+
+        $transdari = $transdari . " 00:00:00";
+        $transhingga = $transhingga . " 23:59:59";
+        
+        $query = HistoryTransaksi::whereBetween('created_at', [$transdari, $transhingga])
+            ->orderByDesc('created_at')
+            ->orderByDesc('urutan');
+
+        if (!empty($username)) {
+            $query->where('username', $username);
         }
 
-        $fromdate = $request->fromdate;
-        $todate = $request->todate;
+        if (!empty($invoice)) {
+            $query->where('invoice', $invoice);
+        }
 
-        $data = HistoryTransaksi::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')
-            ->orderByDesc('urutan')
-            // ->limit(100)
-            ->get();
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
+
+        $data = $query->orderBy('created_at', 'DESC')->paginate(20);
 
         return $data;
     }
 
     public function old_history_transaksi(Request $request)
     {
-        ini_set('memory_limit', '512M');
         $validasiBearer = $this->validasiBearer($request);
         if ($validasiBearer !== true) {
             return $validasiBearer;
         }
 
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-        $redis_name = 'olddatahistorytrans-' . $bulan . '/' . $tahun;
+        $data = $this->old_datahistorytrans($request);
 
-        if (Redis::exists($redis_name)) {
-            $data = json_decode(Redis::get($redis_name), true);
-            $source = 'cache';
-        } else {
-            $data = $this->old_datahistorytrans($request);
-            Redis::set($redis_name, json_encode($data));
-            $source = 'database';
-        }
-
-        // Menambahkan header count
-        $count = count($data);
-
-        return response()->json($data)
-            ->header('x-data-source', $source)
-            ->header('count', $count);
-    }
-
-    //history reff aktif
-    public function old_datahistoryreffAktif(Request $request)
-    {
-        $checkValidation = $this->checkValidation($request);
-        if (!$checkValidation) {
-            return [];
-        }
-
-        // $getdate = $request->query('getdate');
-        $fromdate = $request->fromdate ?? date('Y-m-d');
-        $todate = $request->todate ?? date('Y-m-d');
-
-        $ReferralAktif1 = ReferralAktif1::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-        $ReferralAktif2 = ReferralAktif2::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-        $ReferralAktif3 = ReferralAktif3::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-        $ReferralAktif4 = ReferralAktif4::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-        $ReferralAktif5 = ReferralAktif5::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-
-        $data = [
-            'ReferralAktif1' => $ReferralAktif1,
-            'ReferralAktif2' => $ReferralAktif2,
-            'ReferralAktif3' => $ReferralAktif3,
-            'ReferralAktif4' => $ReferralAktif4,
-            'ReferralAktif5' => $ReferralAktif5
-        ];
-
-        return $data;
-    }
-
-    public function old_ref_aktif(Request $request)
-    {
-        $validasiBearer = $this->validasiBearer($request);
-        if ($validasiBearer !== true) {
-            return $validasiBearer;
-        }
-
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-        $redis_name = 'olddatahistoryreffaktif-' . $bulan . '/' . $tahun;
-
-        if (Redis::exists($redis_name)) {
-            $data = json_decode(Redis::get($redis_name), true);
-            $source = 'cache';
-        } else {
-            $data = $this->old_datahistoryreffAktif($request);
-            Redis::set($redis_name, json_encode($data));
-            $source = 'database';
-        }
-
-        // Menambahkan header count
-        $count = count($data);
-
-        return response()->json($data)
-            ->header('x-data-source', $source)
-            ->header('count', $count);
-    }
-
-
-
-
-    //history reff depo
-    public function old_datahistoryreffdepo(Request $request)
-    {
-        $checkValidation = $this->checkValidation($request);
-        if (!$checkValidation) {
-            return [];
-        }
-
-        // $getdate = $request->query('getdate');
-        $fromdate = $request->fromdate ?? date('Y-m-d');
-        $todate = $request->todate ?? date('Y-m-d');
-
-        $ReferralDepo1 = ReferralDepo1::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-        $ReferralDepo2 = ReferralDepo2::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-        $ReferralDepo3 = ReferralDepo3::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-        $ReferralDepo4 = ReferralDepo4::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-        $ReferralDepo5 = ReferralDepo5::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderByDesc('created_at')->get();
-
-        $data = [
-            'ReferralDepo1' => $ReferralDepo1,
-            'ReferralDepo2' => $ReferralDepo2,
-            'ReferralDepo3' => $ReferralDepo3,
-            'ReferralDepo4' => $ReferralDepo4,
-            'ReferralDepo5' => $ReferralDepo5
-        ];
-
-
-        return $data;
-    }
-
-    public function old_history_reffdepo(Request $request)
-    {
-        $validasiBearer = $this->validasiBearer($request);
-        if ($validasiBearer !== true) {
-            return $validasiBearer;
-        }
-
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-        $redis_name = 'olddatahistoryreffdepo-' . $bulan . '/' . $tahun;
-
-        if (Redis::exists($redis_name)) {
-            $data = json_decode(Redis::get($redis_name), true);
-            $source = 'cache';
-        } else {
-            $data = $this->old_datahistoryreffdepo($request);
-            Redis::set($redis_name, json_encode($data));
-            $source = 'database';
-        }
-
-        // Menambahkan header count
-        $count = count($data);
-
-        return response()->json($data)
-            ->header('x-data-source', $source)
-            ->header('count', $count);
-    }
-
-
-    //history winlosbet
-    public function old_datahistorywinlosbet(Request $request)
-    {
-        $checkValidation = $this->checkValidation($request);
-        if (!$checkValidation) {
-            return [];
-        }
-
-        // $getdate = $request->query('getdate');
-        $fromdate = $request->fromdate ?? date('Y-m-d');
-        $todate = $request->todate ?? date('Y-m-d');
-
-        $WinlossbetDay = WinlossbetDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderBy('created_at', 'DESC')->get();
-        $WinlossbetMonth = WinlossbetMonth::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderBy('created_at', 'DESC')->get();
-        $WinlossbetYear = WinlossbetYear::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderBy('created_at', 'DESC')->get();
-
-        $data = [
-            'WinlossbetDay' => $WinlossbetDay,
-            'WinlossbetMonth' => $WinlossbetMonth,
-            'WinlossbetYear' => $WinlossbetYear
-        ];
-
-
-        return $data;
-    }
-
-    public function old_winlossbet(Request $request)
-    {
-        $validasiBearer = $this->validasiBearer($request);
-        if ($validasiBearer !== true) {
-            return $validasiBearer;
-        }
-
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-        $redis_name = 'olddatahistorywinlosbet-' . $bulan . '/' . $tahun;
-
-
-        if (Redis::exists($redis_name)) {
-            $data = json_decode(Redis::get($redis_name), true);
-            $source = 'cache';
-        } else {
-            $data = $this->old_datahistorywinlosbet($request);
-            Redis::set($redis_name, json_encode($data));
-            $source = 'database';
-        }
-
-        // Menambahkan header count
-        $count = count($data);
-
-        return response()->json($data)
-            ->header('x-data-source', $source)
-            ->header('count', $count);
-    }
-
-
-    //history winloss balance
-    public function old_datahistorywinlossbalance(Request $request)
-    {
-        $checkValidation = $this->checkValidation($request);
-        if (!$checkValidation) {
-            return [];
-        }
-
-        // $getdate = $request->query('getdate');
-        $fromdate = $request->fromdate ?? date('Y-m-d');
-        $todate = $request->todate ?? date('Y-m-d');
-
-        $winlossDay = winlossDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderBy('created_at', 'DESC')->get();
-        $winlossMonth = winlossMonth::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderBy('created_at', 'DESC')->get();
-        $winlossYear = winlossYear::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->orderBy('created_at', 'DESC')->get();
-
-        $data = [
-            'WinlossbetDay' => $winlossDay,
-            'WinlossbetMonth' => $winlossMonth,
-            'WinlossbetYear' => $winlossYear
-        ];
-
-        return $data;
-    }
-
-    public function old_winloss(Request $request)
-    {
-        $validasiBearer = $this->validasiBearer($request);
-        if ($validasiBearer !== true) {
-            return $validasiBearer;
-        }
-
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-        $redis_name = 'olddatahistorywinlosbal-' . $bulan . '/' . $tahun;
-
-        if (Redis::exists($redis_name)) {
-            $data = json_decode(Redis::get($redis_name), true);
-            $source = 'cache';
-        } else {
-            $data = $this->old_datahistorywinlossbalance($request);
-            Redis::set($redis_name, json_encode($data));
-            $source = 'database';
-        }
-
-        // Menambahkan header count
-        $count = count($data);
-
-        return response()->json($data)
-            ->header('x-data-source', $source)
-            ->header('count', $count);
+        return response()->json($data);
     }
 
     // public function getAllData(Request $request)

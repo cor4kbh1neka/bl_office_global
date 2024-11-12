@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\RekapDashboardDay;
+use App\Models\RekapDashboardMonth;
+use App\Models\RekapDashboardYear;
 use App\Models\RekapMemberOnline;
 use App\Models\TransactionSaldo;
 use App\Models\TransactionStatus;
@@ -66,7 +68,12 @@ class ProcessRekapMemberOnline implements ShouldQueue
     private function updateRekapDashboard()
     {
         DB::transaction(function () {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
             $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('year', $year)->where('month', $month)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
 
             if (!$existsToday) {
                 $existsToday = RekapDashboardDay::create([
@@ -74,7 +81,30 @@ class ProcessRekapMemberOnline implements ShouldQueue
                 ]);
             }
 
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+
             $existsToday->increment('member_online', 1);
+            $existsToday->increment('new_total_member', 1);
+
+            $existsMonthly->increment('member_online', 1);
+            $existsMonthly->increment('new_total_member', 1);
+
+            $existsYearly->increment('member_online', 1);
+            $existsYearly->increment('new_total_member', 1);
         });
     }
 }

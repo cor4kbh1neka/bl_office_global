@@ -21,6 +21,8 @@ use App\Models\ReferralDepo3;
 use App\Models\ReferralDepo4;
 use App\Models\ReferralDepo5;
 use App\Models\RekapDashboardDay;
+use App\Models\RekapDashboardMonth;
+use App\Models\RekapDashboardYear;
 use App\Models\TransactionSaldo;
 use App\Models\TransactionStatus;
 use App\Models\WinlossbetDay;
@@ -290,7 +292,12 @@ class DepoWdController extends Controller
     private function updateRekapDashboard($amount, $jenis)
     {
         DB::transaction(function () use ($amount, $jenis) {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
             $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
 
             if (!$existsToday) {
                 $existsToday = RekapDashboardDay::create([
@@ -298,22 +305,57 @@ class DepoWdController extends Controller
                 ]);
             }
 
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
             if ($jenis == 'DP') {
                 $existsToday->increment('sum_total_depo', $amount);
+                $existsMonthly->increment('sum_total_depo', $amount);
+                $existsYearly->increment('sum_total_depo', $amount);
             } else if ($jenis == 'DPM') {
                 $existsToday->increment('sum_total_depo_manual', $amount);
+                $existsMonthly->increment('sum_total_depo_manual', $amount);
+                $existsYearly->increment('sum_total_depo_manual', $amount);
             } else if ($jenis == 'WD') {
                 $existsToday->increment('sum_total_wd', $amount);
+                $existsMonthly->increment('sum_total_wd', $amount);
+                $existsYearly->increment('sum_total_wd', $amount);
             } else if ($jenis == 'WDM') {
                 $existsToday->increment('sum_total_wd_manual', $amount);
+                $existsMonthly->increment('sum_total_wd_manual', $amount);
+                $existsYearly->increment('sum_total_wd_manual', $amount);
             }
 
             if ($jenis == 'DP' || $jenis == 'DPM') {
                 $existsToday->increment('count_total_depo', 1);
                 $existsToday->increment('sum_all_total_depo', $amount);
+                
+                $existsMonthly->increment('count_total_depo', 1);
+                $existsMonthly->increment('sum_all_total_depo', $amount);
+
+                $existsYearly->increment('count_total_depo', 1);
+                $existsYearly->increment('sum_all_total_depo', $amount);
             } else if ($jenis == 'WD' || $jenis == 'WDM') {
                 $existsToday->increment('count_total_wd', 1);
                 $existsToday->increment('sum_all_total_wd', $amount);
+
+                $existsMonthly->increment('count_total_wd', 1);
+                $existsMonthly->increment('sum_all_total_wd', $amount);
+
+                $existsYearly->increment('count_total_wd', 1);
+                $existsYearly->increment('sum_all_total_wd', $amount);
             }
         });
     }
@@ -391,7 +433,12 @@ class DepoWdController extends Controller
     private function updateRekapDashboard2()
     {
         DB::transaction(function () {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
             $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
 
             if (!$existsToday) {
                 $existsToday = RekapDashboardDay::create([
@@ -399,7 +446,29 @@ class DepoWdController extends Controller
                 ]);
             }
 
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
             $existsToday->increment('new_member_deposit', 1);
+            $existsToday->increment('new_total_member', 1);
+
+            $existsMonthly->increment('new_member_deposit', 1);
+            $existsMonthly->increment('new_total_member', 1);
+
+            $existsYearly->increment('new_member_deposit', 1);
+            $existsYearly->increment('new_total_member', 1);
         });
     }
 

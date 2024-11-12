@@ -275,7 +275,7 @@
                     Swal.fire({
                         title: 'Error',
                         text: 'Tanggal awal tidak boleh kurang dari ' + boundaryDate
-                            .toLocaleDateString('en-GB'),
+                            .toLocaleDateString('en-GB') + ' , klik tombol "LIHAT TRANSAKSI LAMA" untuk melihat transkasi kurang',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('rekap_dashboard_years', function (Blueprint $table) {
             $table->id();
+            $table->string('year');
             $table->decimal('sum_cash_balance', 15, 2)->default(0);
             $table->decimal('sum_member_balance', 15, 2)->default(0);
             $table->decimal('sum_total_balance', 15, 2)->default(0);

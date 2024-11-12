@@ -56,6 +56,8 @@ Route::post('/getDataOutstanding', [ApiController::class, 'getDataOutstanding'])
 Route::post('/changePassword', [ApiController::class, 'changePassword']);
 Route::post('/getdatalogmember', [ApiController::class, 'getDataLogMember']);
 
+Route::get('/apiUser', [ApiController::class, 'apiUser']);
+
 // });
 
 

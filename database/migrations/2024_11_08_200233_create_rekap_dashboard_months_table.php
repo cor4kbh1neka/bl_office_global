@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('rekap_dashboard_months', function (Blueprint $table) {
             $table->id();
+            $table->integer('month');
+            $table->integer('year');
             $table->decimal('sum_cash_balance', 15, 2)->default(0);
             $table->decimal('sum_member_balance', 15, 2)->default(0);
             $table->decimal('sum_total_balance', 15, 2)->default(0);

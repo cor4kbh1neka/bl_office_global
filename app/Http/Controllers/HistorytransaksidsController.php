@@ -44,12 +44,15 @@ class HistorytransaksidsController extends Controller
 
     public function index_old(Request $request)
     {
-        $paginatedData = $this->filterAndPaginateOld(20, $request);
-        dd($paginatedData);
+        $paginatedData = [];
+
+        if ($request->getQueryString() && request('username')) {
+            $paginatedData = $this->filterAndPaginateOld(20, $request);
+        }
 
         $currentDate = now();
-        $transdari = $request->input('transdari', $currentDate->copy()->subMonth()->startOfMonth()->format('Y-m-d'));
-        $transhingga = $request->input('transhingga', $currentDate->copy()->subMonth()->endOfMonth()->format('Y-m-d'));
+        $transdari = $request->input('transdari', $currentDate->copy()->subMonth()->startOfMonth()->format('Y-m-d') . 'T00:00');
+        $transhingga = $request->input('transhingga', $currentDate->copy()->subMonth()->endOfMonth()->format('Y-m-d') . 'T23:59');
 
         return view('historytransaksids.index', [
             'title' => 'List History',

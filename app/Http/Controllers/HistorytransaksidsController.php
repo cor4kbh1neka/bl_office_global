@@ -44,179 +44,126 @@ class HistorytransaksidsController extends Controller
 
     public function index_old(Request $request)
     {
-        $data = [];
-        $username = request('username');
+        $paginatedData = [];
 
-        if ($request->getQueryString() && $username) {
-            $data = $this->filterAndPaginateOld(20, $request);
+        if ($request->getQueryString() && request('username')) {
+            $paginatedData = $this->filterAndPaginateOld(20, $request);
         }
 
         $currentDate = now();
-        $transdari = $request->input('transdari', $currentDate->copy()->subMonth()->startOfMonth()->format('Y-m-d') . ' 00:00');
-        $transhingga = $request->input('transhingga', $currentDate->copy()->subMonth()->endOfMonth()->format('Y-m-d') . ' 23:59');
-
+        $transdari = $request->input('transdari', $currentDate->copy()->subMonth()->startOfMonth()->format('Y-m-d') . 'T00:00');
+        $transhingga = $request->input('transhingga', $currentDate->copy()->subMonth()->endOfMonth()->format('Y-m-d') . 'T23:59');
 
         return view('historytransaksids.index', [
-            'title' => 'History Transaksi Baru',
-            'data' => $data,
+            'title' => 'List History',
+            'data' => $paginatedData,
             'transdari' => $transdari,
             'transhingga' => $transhingga,
             'is_old' => true
         ]);
     }
 
-    // private function getApiBetList()
-    // {
-    //     $data = [
-    //         "username" => "abangpoorgas",
-    //         "portfolio" => "SportsBook",
-    //         "startDate" => "2024-04-01T00:00:00.540Z",
-    //         "endDate" => "2024-05-30T23:59:59.540Z",
-    //         "companyKey" => "C441C721B2214E658A6D2A72C41D2063",
-    //         "language" => "en",
-    //         "serverId" => "YY-TEST"
-    //     ];
-    //     $response = Http::withTokenHeader()->post(env('BODOMAIN') . '/web-root/restricted/report/get-bet-list-by-modify-date.aspx', $data);
-
-    //     return $response->json();
-    // }
-
-    private function getOldData($tgldari, $tglsampai)
+    private function getOldData($username, $invoice, $status, $transdari, $transhingga)
     {
-        $dates = [];
-
-        // Loop untuk setiap bulan dalam rentang waktu
-        while ($tgldari->lessThanOrEqualTo($tglsampai)) {
-            // Tentukan bulan dan tahun
-            $bulan = $tgldari->format('m');
-            $tahun = $tgldari->format('Y');
-
-            // Tentukan tgldari dan tglsampai untuk bulan ini
-            $bulanTgldari = $tgldari->copy();
-            $bulanTglsampai = $tgldari->copy()->endOfMonth();
-
-            // Jika tglsampai melebihi tglsampai, batasi ke tglsampai
-            if ($bulanTglsampai->greaterThan($tglsampai)) {
-                $bulanTglsampai = $tglsampai;
-            }
-
-            // Tambahkan hasil ke array
-            $dates[] = [
-                'bulan' => $bulan,
-                'tahun' => $tahun,
-                'tgldari' => $bulanTgldari->toDateString(),
-                'tglsampai' => $bulanTglsampai->toDateString(),
+        try {
+            $parameters = [
+                'transdari' => $transdari,
+                'transhingga' => $transhingga
             ];
 
-            // Pindah ke bulan berikutnya
-            $tgldari->addMonth()->startOfMonth();
-        }
-
-        $allData = collect();
-
-        foreach ($dates as $date) {
-            try {
-                $response = Http::withHeaders([
-                    'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
-                    'Accept' => 'application/json'
-                ])->get(env('OLDDOMAIN') . 'api/olddata/historytransaksi', [
-                    'tgldari' => $date['tgldari'],
-                    'tglsampai' => $date['tglsampai'],
-                    'bulan' => $date['bulan'],
-                    'tahun' => $date['tahun']
-                ]);
-
-                // Jika response berhasil, decode datanya, jika tidak, set $data sebagai array kosong
-                $data = $response->successful() ? json_decode($response->body(), false) : [];
-            } catch (\Exception $e) {
-                // Jika terjadi error (seperti masalah koneksi), set $data sebagai array kosong
-                $data = [];
+            if (!empty($username)) {
+                $parameters['username'] = $username;
             }
 
-            // Tambahkan hasil $data ke $allData
-            $allData = $allData->concat(collect($data));
+            if (!empty($invoice)) {
+                $parameters['invoice'] = $invoice;
+            }
+            
+            if (!empty($status)) {
+                $parameters['status'] = $status;
+            }
+            
+            $response = Http::withHeaders([
+                'utilitiesgenerate' => env('UTILITIES_GENERATE_OLD'),
+                'Accept' => 'application/json'
+            ])->get(env('OLDDOMAIN') . 'api/olddata/historytransaksi', $parameters);
+
+            $data = $response->successful() ? json_decode($response->body(), true) : [];
+        } catch (\Exception $e) {
+            $data = [];
         }
 
-        return $allData;
+        return $data;
     }
 
     public function filterAndPaginateOld($page, $request)
     {
-        // Ambil current date jika belum didefinisikan
-        $currentDate = Carbon::now();
-
-        // Ambil `tgldari` dan `tglsampai` dari request atau tetapkan nilai default jika tidak ada
-        $tgldari = $request->has('tgldari') ? Carbon::parse($request->tgldari) : $currentDate->copy()->subMonth()->startOfMonth();
-        $tglsampai = $request->has('tglsampai') ? Carbon::parse($request->tglsampai) : $currentDate->copy()->subMonth()->endOfMonth();
-
-        $data = $this->getOldData($tgldari, $tglsampai);
-
-        $reqs = request()->all();
-        $username = $reqs['username'] ?? '';
-        $invoice = $reqs['invoice'] ?? '';
-        $checkinvoice = $reqs['checkinvoice'] ?? '';
-        $status = isset($reqs['status']) ? $reqs['status'] : '';
-        $checkstatus = $reqs['checkstatus'] ?? '';
-        $transdari = $reqs['transdari'] ?? '';
-        $checktransdari = $reqs['checktransdari'] ?? '';
-        $transhingga = $reqs['transhingga'] ?? '';
-        $checktranshingga = $reqs['checktranshingga'] ?? '';
-
+        $username = $request->username;
+        $invoice = $request->invoice ?? '';
+        $checkinvoice = $request->checkinvoice ?? '';
+        $status = isset($request->status) ? $request->status : '';
+        $checkstatus = $request->checkstatus ?? '';
+        $transdari = $request->has('transdari') ? $request->transdari : Carbon::now()->subDays(30)->toDateString();
+        $checktransdari = $request->checktransdari ?? '';
+        $transhingga = $request->has('transhingga') ? $request->transhingga : Carbon::now()->toDateString();
+        $checktranshingga = $request->checktranshingga ?? '';
 
         if ($username) {
-            $data = $data->filter(function ($item) use ($username) {
-                return stripos($item->username, $username) !== false;
-            });
+            $username = $username;
         }
 
-        if ($checkinvoice == 'on' && $invoice != '') {
-            $data = $data->filter(function ($item) use ($invoice) {
-                return stripos($item->invoice, $invoice) !== false || stripos($item->refno, $invoice) !== false;
-            });
+        if (!($checkinvoice == 'on' && $invoice != '')) {
+            $invoice = '';
+        } 
+
+        if (!($checkstatus == 'on' && $status != '')) {
+            $status = '';
         }
 
-        if ($checkstatus == 'on' && $status != '') {
-            $data = $data->filter(function ($item) use ($status) {
-                return stripos($item->status, $status) !== false;
-            });
+        if (!($checktransdari == 'on' && $transdari != '')) {
+            $transdari = '';
+        } else {
+            $transdari = Carbon::parse($transdari)->format('Y-m-d H:i') . ':00';
         }
 
-        $data = $data->map(function ($item) {
-            $item->created_at = Carbon::parse($item->created_at)->format('Y-m-d H:i:s');
-            $item->updated_at = Carbon::parse($item->updated_at)->format('Y-m-d H:i:s');
-            return $item;
-        });
-
-
-        if (($checktransdari == 'on' && $transdari != '') && ($checktranshingga == 'on' && $transhingga != '')) {
-            $tgldariDate = date('Y-m-d H:i:s', strtotime($transdari));
-            $tglsampaiDate = date('Y-m-d H:i:s', strtotime($transhingga));
-            $tglsampaiDate = substr($tglsampaiDate, 0, -2) . '59';
-
-            $data = $data->filter(function ($item) use ($tgldariDate, $tglsampaiDate) {
-                return $item->created_at >= $tgldariDate && $item->created_at <= $tglsampaiDate;
-            });
+        if (!($checktranshingga == 'on' && $transhingga != '')) {
+            $transhingga = '';
+        } else {
+            $transhingga = Carbon::parse($transhingga)->format('Y-m-d H:i') . ':59';
         }
 
+        $data = $this->getOldData($username, $invoice, $status, $transdari, $transhingga);
 
+        if (is_null($data) || !isset($data['data'])) {
+            return response()->json(['error' => 'Failed to fetch data from API'], 500);
+        }
 
-        $currentPage = Paginator::resolveCurrentPage() ?: 1;
-        $currentPageData = $data->slice(($currentPage - 1) * $page, $page)->values();
+        $dataItems = $this->arrayToObject(collect($data['data']));
+
+        $currentPage = $data['current_page'] ?? 1;
+        $total = $data['total'] ?? $dataItems->count();
+        $perPage = $data['per_page'] ?? $page;
+
         $paginatedData = new LengthAwarePaginator(
-            $currentPageData,
-            $data->count(),
-            $page,
+            $dataItems,
+            $total,
+            $perPage,
             $currentPage,
             ['path' => Paginator::resolveCurrentPath()]
         );
 
+        $reqs = request()->all();
         foreach ($reqs as $key => $value) {
             if (!is_null($value)) {
                 $paginatedData->appends($key, $value);
             }
         }
-
         return $paginatedData;
+    }
+
+    private function arrayToObject($data)
+    {
+        return json_decode(json_encode($data));
     }
 
 

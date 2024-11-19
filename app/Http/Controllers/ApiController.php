@@ -27,6 +27,10 @@ use App\Models\ReferralAktif2;
 use App\Models\ReferralAktif3;
 use App\Models\ReferralAktif4;
 use App\Models\ReferralAktif5;
+use App\Models\RekapDashboardDay;
+use App\Models\RekapDashboardMonth;
+use App\Models\RekapDashboardYear;
+use App\Models\User;
 use App\Models\WinlossbetDay;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -190,6 +194,15 @@ class ApiController extends Controller
         }
     }
 
+    public function apiUser() {
+        $data = User::get();
+        return [
+            'status' => 'Success',
+            'message' => 'Data user berhasil difetch',
+            'data' => $data
+        ];
+    }
+
     public function register(Request $request)
     {
         $validasiBearer = $this->validasiBearer($request);
@@ -233,7 +246,7 @@ class ApiController extends Controller
             if ($responseData["error"]["id"] === 0) {
 
                 try {
-                    $createMember = Member::create([
+                    Member::create([
                         'username' => $request->Username,
                         'referral' => $request->Referral,
                         'bank' => $dataCore['xybanknamexyy'],
@@ -256,6 +269,8 @@ class ApiController extends Controller
                         'username' => $request->Username,
                         'balance' => 0
                     ]);
+
+                    $this->updateRekapDashboard2();
 
                     if ($request->Referral !== null && $request->Referral !== '') {
                         $dataReferral = [
@@ -302,6 +317,48 @@ class ApiController extends Controller
             ]);
             return $responseCore;
         }
+    }
+
+    private function updateRekapDashboard2()
+    {
+        DB::transaction(function () {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            $existsToday->increment('new_member_regis', 1);
+            $existsToday->increment('new_total_member', 1);
+
+            $existsMonthly->increment('new_member_regis', 1);
+            $existsMonthly->increment('new_total_member', 1);
+
+            $existsYearly->increment('new_member_regis', 1);
+            $existsYearly->increment('new_total_member', 1);
+        });
     }
 
     public function getRecomMatch(Request $request)
@@ -444,6 +501,9 @@ class ApiController extends Controller
                 ], 500);
             }
 
+            // Create Rekap Dashboard
+            $this->updateRekapDashboard('DP');
+
             DB::commit();
             return response()->json([
                 'status' => 'Success',
@@ -456,6 +516,49 @@ class ApiController extends Controller
                 'message' => 'Gagal menyimpan data: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function updateRekapDashboard($jenis)
+    {
+        DB::transaction(function () use ($jenis) {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if ($jenis == 'DP') {
+                $existsToday->increment('count_total_req_depo', 1);
+                $existsMonthly->increment('count_total_req_depo', 1);
+                $existsYearly->increment('count_total_req_depo', 1);
+            } else if ($jenis == 'WD') {
+                $existsToday->increment('count_total_req_wd', 1);
+                $existsMonthly->increment('count_total_req_wd', 1);
+                $existsYearly->increment('count_total_req_wd', 1);
+            } 
+        });
     }
 
     public function withdrawal(Request $request)
@@ -559,8 +662,9 @@ class ApiController extends Controller
                 }
             }
 
-            DB::commit();
+            $this->updateRekapDashboard('WD');
 
+            DB::commit();
             return response()->json([
                 'status' => 'Success',
                 'message' => 'Withdrawal sedang diproses'

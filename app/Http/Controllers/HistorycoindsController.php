@@ -53,159 +53,82 @@ class HistorycoindsController extends Controller
         ]);
     }
 
-    private function getOldData($tgldari, $tglsampai)
+    private function getOldData($username, $status, $approved_by, $tgldari, $tglsampai)
     {
-        $dates = [];
-
-        // Loop untuk setiap bulan dalam rentang waktu
-        while ($tgldari->lessThanOrEqualTo($tglsampai)) {
-            // Tentukan bulan dan tahun
-            $bulan = $tgldari->format('m');
-            $tahun = $tgldari->format('Y');
-
-            // Tentukan tgldari dan tglsampai untuk bulan ini
-            $bulanTgldari = $tgldari->copy();
-            $bulanTglsampai = $tgldari->copy()->endOfMonth();
-
-            // Jika tglsampai melebihi tglsampai, batasi ke tglsampai
-            if ($bulanTglsampai->greaterThan($tglsampai)) {
-                $bulanTglsampai = $tglsampai;
-            }
-
-            // Tambahkan hasil ke array
-            $dates[] = [
-                'bulan' => $bulan,
-                'tahun' => $tahun,
-                'tgldari' => $bulanTgldari->toDateString(),
-                'tglsampai' => $bulanTglsampai->toDateString(),
+        try {
+            $parameters = [
+                'tgldari' => $tgldari,
+                'tglsampai' => $tglsampai
             ];
 
-            // Pindah ke bulan berikutnya
-            $tgldari->addMonth()->startOfMonth();
-        }
-
-        $allData = collect();
-
-        foreach ($dates as $date) {
-            try {
-                $response = Http::withHeaders([
-                    'utilitiesgenerate' => '2957984855aa91f9b11c2528bc389c97212348b9d211570911b621a285bba1aa417b0a98d78e42a2b764441795d403caf059b035ac0e2c58ba8099ff3bbac354',
-                    'Accept' => 'application/json'
-                ])->get(env('OLDDOMAIN') . 'api/olddata/historycoins', [
-                    'tgldari' => $date['tgldari'],
-                    'tglsampai' => $date['tglsampai'],
-                    'bulan' => $date['bulan'],
-                    'tahun' => $date['tahun']
-                ]);
-
-                // Decode and collect each response if successful
-                $data = $response->successful() ? json_decode($response->body(), false) : [];
-            } catch (\Exception $e) {
-                // Jika terjadi error, kembalikan array kosong untuk data ini
-                $data = [];
+            if (!empty($username)) {
+                $parameters['username'] = $username;
+            }
+            
+            if (!empty($status)) {
+                $parameters['status'] = $status=='accept' ? 1 : 2;
             }
 
-            $allData = $allData->concat(collect($data));
+            if (!empty($approved_by)) {
+                $parameters['approved_by'] = $approved_by;
+            }
+            
+            $response = Http::withHeaders([
+                'utilitiesgenerate' => env('UTILITIES_GENERATE_OLD'),
+                'Accept' => 'application/json'
+            ])->get(env('OLDDOMAIN') . 'api/olddata/historycoins', $parameters);
+
+            $data = $response->successful() ? json_decode($response->body(), true) : [];
+        } catch (\Exception $e) {
+            $data = [];
         }
 
-        return $allData;
+        return $data;
     }
 
     public function filterAndPaginateOld($page, $request)
     {
-        // Ambil current date jika belum didefinisikan
-        $currentDate = Carbon::now();
+        $username = $request->username;
+        $status = $request->status;
+        $approved_by = $request->approved_by;
+        $tgldari = $request->has('tgldari') ? $request->tgldari : Carbon::now()->subDays(30)->toDateString();
+        $tglsampai = $request->has('tglsampai') ? $request->tglsampai : Carbon::now()->toDateString();
 
-        // Ambil `tgldari` dan `tglsampai` dari request atau tetapkan nilai default jika tidak ada
-        $tgldari = $request->has('tgldari') ? Carbon::parse($request->tgldari) : $currentDate->copy()->subMonth()->startOfMonth();
-        $tglsampai = $request->has('tglsampai') ? Carbon::parse($request->tglsampai) : $currentDate->copy()->subMonth()->endOfMonth();
+        $data = $this->getOldData($username, $status, $approved_by, $tgldari, $tglsampai);
 
-        $data = $this->getOldData($tgldari, $tglsampai);
-
-        if (is_null($data)) {
+        if (is_null($data) || !isset($data['data'])) {
             return response()->json(['error' => 'Failed to fetch data from API'], 500);
         }
 
-        $reqs = request()->all();
-        $jenis = isset($reqs['jenis']) ? $reqs['jenis'] : '';
-        $username = isset($reqs['username']) ? $reqs['username'] : '';
-        $status = isset($reqs['status']) ? $reqs['status'] : '';
-        $approved_by = isset($reqs['approved_by']) ? $reqs['approved_by'] : '';
+        $dataItems = $this->arrayToObject(collect($data['data']));
 
-        if (request('tgldari') && request('tglsampai')) {
-            $tgldari = request('tgldari') . " 00:00:00";
-            $tglsampai = request('tglsampai') . " 23:59:59";
-        } else {
-            $tgldari = date('Y-m-d 00:00:00', strtotime('-30 days'));
-            $tglsampai = date('Y-m-d 00:00:00');
-        }
+        $currentPage = $data['current_page'] ?? 1;
+        $total = $data['total'] ?? $dataItems->count();
+        $perPage = $data['per_page'] ?? $page;
 
-        if ($jenis) {
-            $data = $data->filter(function ($item) use ($jenis) {
-                if ($jenis == 'M') {
-                    return in_array($item->jenis, ['DPM', 'WDM']);
-                } else {
-                    return $item->jenis == $jenis;
-                }
-            });
-        }
-
-        if ($username) {
-            $data = $data->filter(function ($item) use ($username) {
-                return stripos($item->username, $username) !== false;
-            });
-        }
-
-        if ($status == 'accept') {
-            $data = $data->filter(function ($item) use ($status) {
-                return $item->status == 1;
-            });
-        } else if ($status == 'cancel') {
-            $data = $data->filter(function ($item) use ($status) {
-                return $item->status == 2;
-            });
-        }
-
-        if ($approved_by) {
-            $data = $data->filter(function ($item) use ($approved_by) {
-                return $item->approved_by == $approved_by;
-            });
-        }
-
-        // dd($data->toArray());
-        if ($tgldari && $tglsampai) {
-            $data = $data->filter(function ($item) use ($tgldari, $tglsampai) {
-                $createdAt = Carbon::parse($item->created_at)->format('Y-m-d H:i:s');
-                return Carbon::createFromFormat('Y-m-d H:i:s', $createdAt)->between($tgldari, $tglsampai);
-            });
-        }
-
-        // Format ulang tanggal jika diperlukan
-        $data = $data->map(function ($item) {
-            $item->created_at = Carbon::parse($item->created_at)->format('Y-m-d H:i:s');
-            $item->updated_at = Carbon::parse($item->updated_at)->format('Y-m-d H:i:s');
-            return $item;
-        });
-
-
-        $currentPage = Paginator::resolveCurrentPage() ?: 1;
-        $currentPageData = $data->slice(($currentPage - 1) * $page, $page)->values();
         $paginatedData = new LengthAwarePaginator(
-            $currentPageData,
-            $data->count(),
-            $page,
+            $dataItems,
+            $total,
+            $perPage,
             $currentPage,
             ['path' => Paginator::resolveCurrentPath()]
         );
 
+        $reqs = request()->all();
         foreach ($reqs as $key => $value) {
             if (!is_null($value)) {
                 $paginatedData->appends($key, $value);
             }
         }
-
         return $paginatedData;
     }
+
+    private function arrayToObject($data)
+    {
+        return json_decode(json_encode($data));
+    }
+
+
 
     public function filterAndPaginate($page)
     {

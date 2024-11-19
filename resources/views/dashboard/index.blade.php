@@ -30,6 +30,13 @@
             color: #d9534f;
             font-weight: bold;
         }
+
+        #getmonth {
+            display: none;
+        }
+        #getyear {
+            display: none;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
@@ -45,8 +52,33 @@
                     <option value="yesterday" {{ $getdate == 'yesterday' ? 'selected' : '' }}>KEMARIN</option>
                     <option value="lastweek" {{ $getdate == 'lastweek' ? 'selected' : '' }}>1 MINGGU TERAKHIR</option>
                     <option value="lastmonth" {{ $getdate == 'lastmonth' ? 'selected' : '' }}>1 BULAN TERAKHIR</option>
+                    <option value="custom" {{ $getdate == 'custom' ? 'selected' : '' }}>CUSTOM</option>
                     {{-- <option value="today" {{ $getdate == 'today' ? 'selected' : '' }}>HARI INI</option> --}}
                     {{-- <option value="custom" {{ $getdate == 'custom' ? 'selected' : '' }}>CUSTOM</option> --}}
+                </select>
+                <select name="month" id="getmonth">
+                    <option value="nomonth" selected place="" style="color: #838383; font-style: italic;">
+                        Pilih
+                        Bulan</option>
+                    <option value="01" {{ $month == '01' ? 'selected' : '' }}>JAN</option>
+                    <option value="02" {{ $month == '02' ? 'selected' : '' }}>FEB</option>
+                    <option value="03" {{ $month == '03' ? 'selected' : '' }}>MAR</option>
+                    <option value="04" {{ $month == '04' ? 'selected' : '' }}>APR</option>
+                    <option value="05" {{ $month == '05' ? 'selected' : '' }}>MEI</option>
+                    <option value="06" {{ $month == '06' ? 'selected' : '' }}>JUN</option>
+                    <option value="07" {{ $month == '07' ? 'selected' : '' }}>JUL</option>
+                    <option value="08" {{ $month == '08' ? 'selected' : '' }}>AGS</option>
+                    <option value="09" {{ $month == '09' ? 'selected' : '' }}>SEP</option>
+                    <option value="10" {{ $month == '10' ? 'selected' : '' }}>OCT</option>
+                    <option value="11" {{ $month == '11' ? 'selected' : '' }}>NOV</option>
+                    <option value="12" {{ $month == '12' ? 'selected' : '' }}>DES</option>
+                </select>
+                <select name="year" id="getyear">
+                    <option value="" selected place="" style="color: #838383; font-style: italic;" disabled>
+                        Pilih
+                        Tahun</option>
+                    <option value="2024" {{ $year == '2024' ? 'selected' : '' }}>2024</option>
+                    <option value="2025" {{ $year == '2025' ? 'selected' : '' }}>2025</option>
                 </select>
                 <input type="date" id="fromdate" name="fromdate" value="{{ $fromdate }}">
                 <input type="date" id="todate" name="todate" value="{{ $todate }}">
@@ -273,7 +305,8 @@
 
     <script>
         $(document).ready(function() {
-            $('#getdate').change(function() {
+            // Fungsi untuk mengatur tampilan sesuai dengan pilihan di #getdate
+            function updateDateSelection() {
                 var fromDate = '';
                 var toDate = '';
 
@@ -287,7 +320,7 @@
                 var lastMonth = new Date(today);
                 lastMonth.setMonth(lastMonth.getMonth() - 1);
 
-                switch ($(this).val()) {
+                switch ($('#getdate').val()) {
                     case 'yesterday':
                         fromDate = formatDate(yesterday);
                         toDate = fromDate;
@@ -305,19 +338,40 @@
                         toDate = fromDate;
                         break;
                     case 'custom':
-                        $('#fromdate').val(fromDate);
-                        $('#todate').val(toDate);
-                        $('.getdata input[type="date"]').addClass('show');
+                        // Set input dates to empty
+                        $('#fromdate').val('');
+                        $('#todate').val('');
+
+                        // Show #getmonth and #getyear
+                        $('#getmonth').show();
+                        $('#getyear').show();
+
+                        // Adjust the grid layout for the custom date selection
                         $('.getdata').css('grid-template-columns', '0.6fr 1fr 1fr 1fr 0.5fr');
-                        return;
+                        return; // Exit the switch since "custom" is handled here
                     default:
+                        break;
                 }
 
+                // Hide #getmonth and #getyear if not custom
+                $('#getmonth').hide();
+                $('#getyear').hide();
+
+                // Set values for #fromdate and #todate inputs
                 $('#fromdate').val(fromDate);
                 $('#todate').val(toDate);
-                $('.getdata input[type="date"]').removeClass('show');
+
+                // Reset grid layout to default
                 $('.getdata').css('grid-template-columns', '');
-            });
+            }
+
+            // Panggil fungsi saat halaman dimuat
+            updateDateSelection();
+
+            // Panggil fungsi setiap kali ada perubahan pada #getdate
+            $('#getdate').change(updateDateSelection);
+
+                
 
             function formatDate(date) {
                 var day = date.getDate();

@@ -84,7 +84,7 @@ class HistorytransaksidsController extends Controller
             }
             
             $response = Http::withHeaders([
-                'utilitiesgenerate' => env('UTILITIES_GENERATE'),
+                'utilitiesgenerate' => env('UTILITIES_GENERATE_OLD'),
                 'Accept' => 'application/json'
             ])->get(env('OLDDOMAIN') . 'api/olddata/historytransaksi', $parameters);
 

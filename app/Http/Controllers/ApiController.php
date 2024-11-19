@@ -27,23 +27,16 @@ use App\Models\ReferralAktif2;
 use App\Models\ReferralAktif3;
 use App\Models\ReferralAktif4;
 use App\Models\ReferralAktif5;
-use App\Models\ReferralDepo1;
-use App\Models\ReferralDepo2;
-use App\Models\ReferralDepo3;
-use App\Models\ReferralDepo4;
-use App\Models\ReferralDepo5;
+use App\Models\RekapDashboardDay;
+use App\Models\RekapDashboardMonth;
+use App\Models\RekapDashboardYear;
+use App\Models\User;
 use App\Models\WinlossbetDay;
-use App\Models\WinlossbetMonth;
-use App\Models\WinlossbetYear;
-use App\Models\winlossDay;
-use App\Models\winlossMonth;
-use App\Models\winlossYear;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Redis;
 
 class ApiController extends Controller
 
@@ -201,6 +194,15 @@ class ApiController extends Controller
         }
     }
 
+    public function apiUser() {
+        $data = User::get();
+        return [
+            'status' => 'Success',
+            'message' => 'Data user berhasil difetch',
+            'data' => $data
+        ];
+    }
+
     public function register(Request $request)
     {
         $validasiBearer = $this->validasiBearer($request);
@@ -244,7 +246,7 @@ class ApiController extends Controller
             if ($responseData["error"]["id"] === 0) {
 
                 try {
-                    $createMember = Member::create([
+                    Member::create([
                         'username' => $request->Username,
                         'referral' => $request->Referral,
                         'bank' => $dataCore['xybanknamexyy'],
@@ -267,6 +269,8 @@ class ApiController extends Controller
                         'username' => $request->Username,
                         'balance' => 0
                     ]);
+
+                    $this->updateRekapDashboard2();
 
                     if ($request->Referral !== null && $request->Referral !== '') {
                         $dataReferral = [
@@ -313,6 +317,48 @@ class ApiController extends Controller
             ]);
             return $responseCore;
         }
+    }
+
+    private function updateRekapDashboard2()
+    {
+        DB::transaction(function () {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            $existsToday->increment('new_member_regis', 1);
+            $existsToday->increment('new_total_member', 1);
+
+            $existsMonthly->increment('new_member_regis', 1);
+            $existsMonthly->increment('new_total_member', 1);
+
+            $existsYearly->increment('new_member_regis', 1);
+            $existsYearly->increment('new_total_member', 1);
+        });
     }
 
     public function getRecomMatch(Request $request)
@@ -455,6 +501,9 @@ class ApiController extends Controller
                 ], 500);
             }
 
+            // Create Rekap Dashboard
+            $this->updateRekapDashboard('DP');
+
             DB::commit();
             return response()->json([
                 'status' => 'Success',
@@ -467,6 +516,49 @@ class ApiController extends Controller
                 'message' => 'Gagal menyimpan data: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function updateRekapDashboard($jenis)
+    {
+        DB::transaction(function () use ($jenis) {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if ($jenis == 'DP') {
+                $existsToday->increment('count_total_req_depo', 1);
+                $existsMonthly->increment('count_total_req_depo', 1);
+                $existsYearly->increment('count_total_req_depo', 1);
+            } else if ($jenis == 'WD') {
+                $existsToday->increment('count_total_req_wd', 1);
+                $existsMonthly->increment('count_total_req_wd', 1);
+                $existsYearly->increment('count_total_req_wd', 1);
+            } 
+        });
     }
 
     public function withdrawal(Request $request)
@@ -550,10 +642,10 @@ class ApiController extends Controller
                 ], 500);
             }
 
-            DB::commit();
             if ($dataWD) {
                 $prosesWD = $this->ApiProsesWithdraw($txnid, $dataWD);
                 if ($prosesWD["error"]["id"] !== 0) {
+                    DB::rollBack();
                     ListError::create([
                         'fungsi' => 'ApiWithdraw',
                         'pesan_error' => $prosesWD["error"]["id"],
@@ -570,6 +662,9 @@ class ApiController extends Controller
                 }
             }
 
+            $this->updateRekapDashboard('WD');
+
+            DB::commit();
             return response()->json([
                 'status' => 'Success',
                 'message' => 'Withdrawal sedang diproses'
@@ -1322,363 +1417,5 @@ class ApiController extends Controller
             $data = LogMember::orderBy('updated_at', 'DESC')->get();
         }
         return $data;
-    }
-
-
-
-    /* OLD DATA */
-    /* OLD DATA */
-    public function old_historycoin()
-    {
-        if (Redis::exists('olddata:history_coin')) {
-            $data = Redis::get('olddata:history_coin');
-            return json_decode($data, true);
-        } else {
-            $jenisraw = DB::raw("CASE jenis
-                WHEN 'DP' THEN 'deposit'
-                WHEN 'WD' THEN 'withdraw'
-                WHEN 'DPM' THEN 'deposit manual'
-                WHEN 'WDM' THEN 'withdraw manual'
-                ELSE jenis
-            END as jenis_temp");
-
-            $query = DepoWD::query()->select('*', $jenisraw)
-                ->whereIn('status', [1, 2])
-                ->orderBy('created_at', 'DESC');
-
-            $result = $query->get();
-
-            Redis::setex('olddata:history_coin', 86400, json_encode($result));
-            return $result;
-        }
-    }
-
-
-    public function old_history_transaksi()
-    {
-        if (Redis::exists('olddata:history_transaksi')) {
-            $data = Redis::get('olddata:history_transaksi');
-            return json_decode($data, true);
-        } else {
-            $data = HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->limit(100)->get();
-            Redis::setex('olddata:history_coin', 86400, json_encode($data));
-            return $data;
-        }
-    }
-
-    public function old_ref_aktif()
-    {
-        if (Redis::exists('olddata:ref_aktif')) {
-            $data = Redis::get('olddata:ref_aktif');
-            return json_decode($data, true);
-        } else {
-            $ReferralAktif1 = ReferralAktif1::orderByDesc('created_at')->get();
-            $ReferralAktif2 = ReferralAktif2::orderByDesc('created_at')->get();
-            $ReferralAktif3 = ReferralAktif3::orderByDesc('created_at')->get();
-            $ReferralAktif4 = ReferralAktif4::orderByDesc('created_at')->get();
-            $ReferralAktif5 = ReferralAktif5::orderByDesc('created_at')->get();
-
-            $data = [
-                'ReferralAktif1' => $ReferralAktif1,
-                'ReferralAktif2' => $ReferralAktif2,
-                'ReferralAktif3' => $ReferralAktif3,
-                'ReferralAktif4' => $ReferralAktif4,
-                'ReferralAktif5' => $ReferralAktif5
-            ];
-            Redis::setex('olddata:ref_aktif', 86400, json_encode($data));
-            return $data;
-        }
-    }
-
-    public function old_ref_depo()
-    {
-        if (Redis::exists('olddata:ref_depo')) {
-            $data = Redis::get('olddata:ref_depo');
-            return json_decode($data, true);
-        } else {
-            $ReferralDepo1 = ReferralDepo1::orderByDesc('created_at')->get();
-            $ReferralDepo2 = ReferralDepo2::orderByDesc('created_at')->get();
-            $ReferralDepo3 = ReferralDepo3::orderByDesc('created_at')->get();
-            $ReferralDepo4 = ReferralDepo4::orderByDesc('created_at')->get();
-            $ReferralDepo5 = ReferralDepo5::orderByDesc('created_at')->get();
-
-            $data = [
-                'ReferralDepo1' => $ReferralDepo1,
-                'ReferralDepo2' => $ReferralDepo2,
-                'ReferralDepo3' => $ReferralDepo3,
-                'ReferralDepo4' => $ReferralDepo4,
-                'ReferralDepo5' => $ReferralDepo5
-            ];
-            Redis::setex('olddata:ref_depo', 86400, json_encode($data));
-            return $data;
-        }
-    }
-
-    public function old_winlossbet()
-    {
-        if (Redis::exists('olddata:winloss_bet')) {
-            $data = Redis::get('olddata:winloss_bet');
-            return json_decode($data, true);
-        } else {
-            $WinlossbetDay = WinlossbetDay::orderBy('created_at', 'DESC')->get();
-            $WinlossbetMonth = WinlossbetMonth::orderBy('created_at', 'DESC')->get();
-            $WinlossbetYear = WinlossbetYear::orderBy('created_at', 'DESC')->get();
-
-            $data = [
-                'WinlossbetDay' => $WinlossbetDay,
-                'WinlossbetMonth' => $WinlossbetMonth,
-                'WinlossbetYear' => $WinlossbetYear
-            ];
-            Redis::setex('olddata:winloss_bet', 86400, json_encode($data));
-            return $data;
-        }
-    }
-
-    public function old_winloss()
-    {
-        if (Redis::exists('olddata:winloss')) {
-            $data = Redis::get('olddata:winloss');
-            return json_decode($data, true);
-        } else {
-            $winlossDay = winlossDay::orderBy('created_at', 'DESC')->get();
-            $winlossMonth = winlossMonth::orderBy('created_at', 'DESC')->get();
-            $winlossYear = winlossYear::orderBy('created_at', 'DESC')->get();
-
-            $data = [
-                'WinlossbetDay' => $winlossDay,
-                'WinlossbetMonth' => $winlossMonth,
-                'WinlossbetYear' => $winlossYear
-            ];
-            Redis::setex('olddata:winloss', 86400, json_encode($data));
-            return $data;
-        }
-    }
-    public function redis_key()
-    {
-        $keys = Redis::keys('*');
-        return response()->json($keys);
-    }
-    public function flushdb()
-    {
-        Redis::flushdb();
-        return redirect()->back()->with('success', 'Berhasil refresh cache');
-    }
-    public function deleteKey($key)
-    {
-        $key = str_replace(' ', '%20', $key);
-        if (Redis::exists($key)) {
-            Redis::del($key);
-        } else {
-            return redirect('dashboard')->with('error', 'Cache ' . $key . ' gagal direset');
-        }
-
-        return redirect()->back()->with('success', 'Cache ' . $key . ' berhasil direset');
-    }
-    public function deleteKeysWithSubstring($substring)
-    {
-        $substring = str_replace(' ', '%20', $substring);
-
-        $cursor = '0';
-        $keysToDelete = [];
-
-        do {
-            $result = Redis::scan($cursor, ['MATCH' => 'laravel_database_*']);
-            $cursor = $result[0];
-            $keys = $result[1];
-
-            foreach ($keys as $key) {
-                if (strpos($key, $substring) !== false) {
-                    $keysToDelete[] = $key;
-                }
-            }
-        } while ($cursor != 0);
-
-        foreach ($keysToDelete as $key) {
-            $keyToDelete = str_replace('laravel_database_', '', $key);
-            Redis::del($keyToDelete);
-        }
-
-        if (empty($keysToDelete)) {
-            return redirect()->back()->with('error', 'Tidak ada kunci yang cocok dengan substring ' . $substring . ' ditemukan.');
-        }
-
-        return redirect()->back()->with('success', 'Semua kunci yang cocok dengan substring ' . $substring . ' berhasil dihapus.');
-    }
-
-
-    private function getDataDashboard(Request $request)
-    {
-        $getdate = $request->query('getdate');
-        $fromdate = $request->query('fromdate') ?? date('Y-m-d', strtotime('-1 day'));
-        $todate = $request->query('todate') ?? date('Y-m-d', strtotime('-1 day'));
-
-        $cash_balance = 0;
-        $member_balance = Balance::sum('amount');
-        $total_balance = $member_balance;
-
-        $count_depo = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->where('status', 1)
-            ->whereIn('jenis', ['DP', 'DPM'])
-            ->count();
-
-        $count_wd = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->where('status', 1)
-            ->whereIn('jenis', ['WD', 'WDM'])
-            ->count();
-
-        $sum_depo = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->where('status', 1)
-            ->whereIn('jenis', ['DP', 'DPM'])
-            ->sum('amount');
-
-        $sum_wd = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->where('status', 1)
-            ->whereIn('jenis', ['WD', 'WDM'])
-            ->sum('amount');
-
-        $sum_depo_real = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->where('status', 1)
-            ->where('jenis', 'DP')
-            ->sum('amount');
-
-        $sum_depo_manual = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->where('status', 1)
-            ->where('jenis', 'DPM')
-            ->sum('amount');
-
-        $sum_wd_real = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->where('status', 1)
-            ->where('jenis', 'WD')
-            ->sum('amount');
-
-        $sum_wd_manual = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->where('status', 1)
-            ->where('jenis', 'WDM')
-            ->sum('amount');
-
-        $count_all_status_depo = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->whereIn('jenis', ['DP', 'DPM'])
-            ->count();
-
-        $count_all_status_wd = DepoWd::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])
-            ->whereIn('jenis', ['WD', 'WDM'])
-            ->count();
-
-        $count_settled = $this->getDataSettled($fromdate, $todate)->count_settled;
-        $total_settled = $this->getDataSettled($fromdate, $todate)->total_settled ?? 0;
-
-        $totalmember = Member::where('created_at', '<=', $todate . ' 23:59:59')->count();
-        $total_new_member_regis = Member::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->count();
-        $total_new_member_deposit = $this->getDataNewmemberDepo($fromdate, $todate);
-
-        $total_member_online = $this->getDataMemberOnline($fromdate, $todate);
-
-        return [
-            'getdate' => $getdate,
-            'fromdate' => $fromdate,
-            'todate' => $todate,
-            'cash_balance' => $cash_balance,
-            'member_balance' => $member_balance,
-            'total_balance' => $total_balance,
-            'count_depo' => $count_depo,
-            'count_wd' => $count_wd,
-            'sum_depo' => $sum_depo,
-            'sum_wd' => $sum_wd,
-            'sum_depo_real' => $sum_depo_real,
-            'sum_depo_manual' => $sum_depo_manual,
-            'sum_wd_real' => $sum_wd_real,
-            'sum_wd_manual' => $sum_wd_manual,
-            'count_all_status_depo' => $count_all_status_depo,
-            'count_all_status_wd' => $count_all_status_wd,
-            'count_settled' => $count_settled,
-            'total_settled' => $total_settled,
-            'totalmember' => $totalmember,
-            'total_new_member_regis' => $total_new_member_regis,
-            'total_new_member_deposit' => $total_new_member_deposit,
-            'total_member_online' => $total_member_online
-        ];
-    }
-
-    private function getDataSettled($fromdate, $todate)
-    {
-        $sql = "
-        SELECT count(A.id) as count_settled, sum(amount) as total_settled FROM(
-        SELECT t.id, ts.status, ts.amount FROM transactions t
-        JOIN (
-            SELECT ts1.trans_id, ts1.status, ts2.amount FROM transaction_status ts1
-            JOIN transaction_saldo ts2 ON ts1.id = ts2.transtatus_id
-            WHERE (ts1.trans_id, ts1.created_at, ts1.urutan) IN (
-                SELECT trans_id, MAX(created_at) AS max_created_at, MAX(urutan) AS max_urutan FROM transaction_status
-                GROUP BY trans_id)
-        ) ts ON t.id = ts.trans_id
-        WHERE t.created_at >= ? AND t.created_at <= ? AND ts.status = 'Settled') as A";
-
-        $results = DB::select($sql, ["$fromdate 00:00:00", "$todate 23:59:59"]);
-        return $results[0];
-    }
-
-    private function getDataNewmemberDepo($fromdate, $todate)
-    {
-        // $sql = "SELECT * FROM (
-        // SELECT username, MIN(created_at) as created_at FROM depo_wd
-        // where status = '1' and jenis IN ('DP', 'DPM')
-        // group by username, DATE(created_at)) A
-        // WHERE A.created_at >= ? AND A.created_at <= ?";
-
-        $sql = "SELECT A.username
-            FROM (
-            SELECT username, DATE(created_at) as created_at FROM depo_wd
-            where created_at >= ? AND created_at <= ? AND status = '1'
-            group by username, DATE(created_at)
-            ) A
-            LEFT JOIN (
-                SELECT username, DATE(MIN(created_at)) as created_at FROM depo_wd
-                where status = '1'
-                group by username
-            ) B ON A.username = B.username 
-            WHERE A.created_at = B.created_at;
-            ";
-
-        $results = DB::select($sql, ["$fromdate 00:00:00", "$todate 23:59:59"]);
-
-        return count($results);
-    }
-
-    private function getDataMemberOnline($fromdate, $todate)
-    {
-        $sql = "SELECT count(username) as totalmo FROM (
-            SELECT username FROM transactions
-            WHERE created_at >= ? AND created_at <= ?
-            group by username, DATE(created_at)) A";
-        $result = DB::select($sql, ["$fromdate 00:00:00", "$todate 23:59:59"]);
-
-        return $result[0]->totalmo;
-    }
-
-    public function getMaintenance(Request $request)
-    {
-        $validasiBearer = $this->validasiBearer($request);
-        if ($validasiBearer !== true) {
-            return $validasiBearer;
-        }
-
-        $portfolio = $request->input('portfolio');
-
-        if (empty($portfolio)) {
-            return response()->json(['error' => 'Portfolio is required'], 400);
-        }
-        $data = Product::where('portfolio', $portfolio)->first();
-
-        if ($data) {
-            if ($data->ismaintenance != 0) {
-                $data->message = "Saat ini sedang dalam Pemeliharaan. Silahkan bermain game lain.";
-            } else {
-                $data->message = "";
-            }
-
-            return response()->json($data);
-        } else {
-            return response()->json(['error' => 'No data found for the given portfolio'], 404);
-        }
     }
 }

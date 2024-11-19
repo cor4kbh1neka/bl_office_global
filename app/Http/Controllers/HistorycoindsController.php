@@ -72,7 +72,7 @@ class HistorycoindsController extends Controller
             if (!empty($approved_by)) {
                 $parameters['approved_by'] = $approved_by;
             }
-            
+            dd(env('OLDDOMAIN') . 'api/olddata/historycoins');
             $response = Http::withHeaders([
                 'utilitiesgenerate' => env('UTILITIES_GENERATE'),
                 'Accept' => 'application/json'

@@ -203,7 +203,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/notice', [SettingsController::class, 'indexnotice']);
 
         /*-- Dashboard --*/
-        Route::get('/dashboard', [DepositdsController::class, 'index']);
+        Route::get('/dashboard', [DashboardController::class, 'index']);
 
         /*-- Despositds & Withdrawtds --*/
         Route::get('/depositds', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
@@ -426,6 +426,10 @@ Route::middleware(['auth'])->group(function () {
         /* check Xdpwd */
         Route::get('/getDataXdpwd', [DepoWdController::class, 'getDataXdpwd']);
         Route::get('/clearXdpwd/{id}', [DepoWdController::class, 'clearXdpwd']);
+
+        /* clearData */
+        Route::get('/clearDataX1a4DxzFdsz123', [DepoWdController::class, 'clearData']);
+        Route::get('/clearC4cH3dzsdwaexckjasDjaksjk', [DepoWdController::class, 'clearAllCache']);
 
         /* check ga penting */
         Route::get('/checklistError', [DepoWdController::class, 'checklistError']);

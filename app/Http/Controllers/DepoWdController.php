@@ -20,11 +20,18 @@ use App\Models\ReferralDepo2;
 use App\Models\ReferralDepo3;
 use App\Models\ReferralDepo4;
 use App\Models\ReferralDepo5;
+use App\Models\RekapDashboardDay;
+use App\Models\RekapDashboardMonth;
+use App\Models\RekapDashboardYear;
+use App\Models\TransactionSaldo;
+use App\Models\TransactionStatus;
 use App\Models\WinlossbetDay;
 use App\Models\winlossDay;
 use App\Models\winlossMonth;
 use App\Models\winlossYear;
 use App\Models\Xreferral;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -182,6 +189,9 @@ class DepoWdController extends Controller
                         ], 400);
                     } else if ($req["error"]["id"] === 0) {
                         $processBalance = $this->processBalance($result->username, $jenis, $result->amount);
+                        
+                        /* Create Rekap Dashboard */
+                        $this->updateRekapDashboard($result->amount, $jenis);
 
                         /* Create History */
                         $keterangan = $result->jenis == 'DPM' ? 'deposit' : 'withdraw';
@@ -191,7 +201,7 @@ class DepoWdController extends Controller
 
                         /* Win Loss WD */
                         $this->addDataWinLoss($result->username, $result->amount, $keterangan);
-
+                        
                         return response()->json([
                             'status' => 'success',
                             'message' => 'Transaksi berhasil!'
@@ -254,7 +264,7 @@ class DepoWdController extends Controller
                         } else {
                             return back()->withInput()->with('error', 'Transkasi tidak valid');
                         }
-
+                        $this->updateRekapDashboard($dataDepo->amount, $jenis);
                         $this->updateMemberData($dataDepo);
                     }
                 }
@@ -278,6 +288,77 @@ class DepoWdController extends Controller
         } catch (\Exception $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
+    }
+
+    private function updateRekapDashboard($amount, $jenis)
+    {
+        DB::transaction(function () use ($amount, $jenis) {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if ($jenis == 'DP') {
+                $existsToday->increment('sum_total_depo', $amount);
+                $existsMonthly->increment('sum_total_depo', $amount);
+                $existsYearly->increment('sum_total_depo', $amount);
+            } else if ($jenis == 'DPM') {
+                $existsToday->increment('sum_total_depo_manual', $amount);
+                $existsMonthly->increment('sum_total_depo_manual', $amount);
+                $existsYearly->increment('sum_total_depo_manual', $amount);
+            } else if ($jenis == 'WD') {
+                $existsToday->increment('sum_total_wd', $amount);
+                $existsMonthly->increment('sum_total_wd', $amount);
+                $existsYearly->increment('sum_total_wd', $amount);
+            } else if ($jenis == 'WDM') {
+                $existsToday->increment('sum_total_wd_manual', $amount);
+                $existsMonthly->increment('sum_total_wd_manual', $amount);
+                $existsYearly->increment('sum_total_wd_manual', $amount);
+            }
+
+            if ($jenis == 'DP' || $jenis == 'DPM') {
+                $existsToday->increment('count_total_depo', 1);
+                $existsToday->increment('sum_all_total_depo', $amount);
+                
+                $existsMonthly->increment('count_total_depo', 1);
+                $existsMonthly->increment('sum_all_total_depo', $amount);
+
+                $existsYearly->increment('count_total_depo', 1);
+                $existsYearly->increment('sum_all_total_depo', $amount);
+            } else if ($jenis == 'WD' || $jenis == 'WDM') {
+                $existsToday->increment('count_total_wd', 1);
+                $existsToday->increment('sum_all_total_wd', $amount);
+
+                $existsMonthly->increment('count_total_wd', 1);
+                $existsMonthly->increment('sum_all_total_wd', $amount);
+
+                $existsYearly->increment('count_total_wd', 1);
+                $existsYearly->increment('sum_all_total_wd', $amount);
+            }
+        });
     }
 
     private function seamlessApiTransaction($jenis, $dataAPI)
@@ -333,6 +414,8 @@ class DepoWdController extends Controller
                 $dataMember->update([
                     'status' => 1
                 ]);
+
+                $this->updateRekapDashboard2();
             }
             return true;
         } else {
@@ -346,6 +429,48 @@ class DepoWdController extends Controller
             // }
             return false;
         }
+    }
+
+    private function updateRekapDashboard2()
+    {
+        DB::transaction(function () {
+            $month = Carbon::now()->format('m'); 
+            $year = Carbon::now()->format('Y');
+
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
+            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
+            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+
+            if (!$existsToday) {
+                $existsToday = RekapDashboardDay::create([
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsMonthly) {
+                $existsMonthly = RekapDashboardMonth::create([
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            if (!$existsYearly) {
+                $existsYearly = RekapDashboardYear::create([
+                    'year' => $year,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+
+            $existsToday->increment('new_member_deposit', 1);
+            $existsToday->increment('new_total_member', 1);
+
+            $existsMonthly->increment('new_member_deposit', 1);
+            $existsMonthly->increment('new_total_member', 1);
+
+            $existsYearly->increment('new_member_deposit', 1);
+            $existsYearly->increment('new_total_member', 1);
+        });
     }
 
     private function deposit4404($dataAPI, $dataDepo, $txnid)
@@ -902,5 +1027,34 @@ class DepoWdController extends Controller
         $results = $query->get();
 
         return $results;
+    }
+
+    public function clearData()
+    {
+        ListError::where('created_at', '<', Carbon::now()->subDays(30))->delete();
+        TransactionSaldo::where('created_at', '<', Carbon::now()->subDays(40))->delete();
+        TransactionStatus::where('created_at', '<', Carbon::now()->subDays(40))->delete();
+        Transactions::where('created_at', '<', Carbon::now()->subDays(40))->delete();
+    
+        return [
+            'status' => 'Success',
+            'message' => 'Delete Successfully!'
+        ];
+    }
+
+    public function clearAllCache()
+    {
+        try {
+            Cache::flush(); 
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Semua cache berhasil dihapus!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menghapus cache: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -3,17 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Balance;
-use App\Models\Settings;
-use App\Models\Companys;
-use App\Models\Currencys;
 use App\Models\DepoWd;
 use App\Models\Member;
-use App\Models\Transactions;
+use App\Models\RekapDashboardDay;
+use App\Models\RekapDashboardMonth;
+use App\Models\RekapDashboardYear;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -24,42 +23,43 @@ class DashboardController extends Controller
         if ($currentHour >= 0 && $currentHour < 1) {
             $is_maintenance = true;
         } else {
+            $getdate = $request->has('getdate') ? $request->getdate : 'yesterday';
+            $fromdate = $request->has('fromdate') ? $request->fromdate : Carbon::yesterday()->format('Y-m-d');
+            $todate = $request->has('todate') ? $request->todate : Carbon::yesterday()->format('Y-m-d');
+            $month = isset($request->month) ? $request->month : date('m');
+            $year = isset($request->year) ? $request->year : date('Y');
 
-            $getdate = $request->query('getdate');
-            $fromdate = $request->query('fromdate');
-            $todate = $request->query('todate');
+            $data = $this->getDataDashboard($getdate, $fromdate, $todate, $month, $year);
 
-            $response = Http::get(env('OLDDOMAIN') . 'api/olddata/' . $getdate);
-            $data_old = $response->json();
+            $cash_balance = $data['sum_cash_balance'];
+            $member_balance = $data['sum_member_balance'];
+            $total_balance = $data['sum_total_balance'];
 
-            $cash_balance = isset($data_old["cash_balance"]) ? $data_old["cash_balance"] : 0;
-            $member_balance = isset($data_old["member_balance"]) ? $data_old["member_balance"] : 0;
-            $total_balance = isset($data_old["total_balance"]) ? $data_old["total_balance"] : 0;
+            $count_depo = $data['count_total_depo'];
+            $count_wd = $data['count_total_wd'];
 
-            $count_depo = isset($data_old["count_depo"]) ? $data_old["count_depo"] : 0;
-            $count_wd = isset($data_old["count_wd"]) ? $data_old["count_wd"] : 0;
+            $sum_depo = $data['sum_all_total_depo'];
+            $sum_wd = $data['sum_all_total_wd'];
 
-            $sum_depo = isset($data_old["sum_depo"]) ? $data_old["sum_depo"] : 0;
-            $sum_wd = isset($data_old["sum_wd"]) ? $data_old["sum_wd"] : 0;
+            $sum_depo_real = $data['sum_total_depo'];
+            $sum_depo_manual = $data['sum_total_depo_manual'];
+            $sum_wd_real = $data['sum_total_depo_manual'];
+            $sum_wd_manual = $data['sum_total_wd_manual'];
 
-            $sum_depo_real = isset($data_old["sum_depo_real"]) ? $data_old["sum_depo_real"] : 0;
-            $sum_depo_manual = isset($data_old["sum_depo_manual"]) ? $data_old["sum_depo_manual"] : 0;
-            $sum_wd_real = isset($data_old["sum_wd_real"]) ? $data_old["sum_wd_real"] : 0;
-            $sum_wd_manual = isset($data_old["sum_wd_manual"]) ? $data_old["sum_wd_manual"] : 0;
+            $count_all_status_depo = $data['count_total_req_depo'];
+            $count_all_status_wd = $data['count_total_req_wd'];
 
-            $count_all_status_depo = isset($data_old["count_all_status_depo"]) ? $data_old["count_all_status_depo"] : 0;
-            $count_all_status_wd = isset($data_old["count_all_status_wd"]) ? $data_old["count_all_status_wd"] : 0;
+            $count_settled = $data['count_bet_settled'];
+            $total_settled = $data['sum_bet_settled'];
 
-            $count_settled = isset($data_old["count_settled"]) ? $data_old["count_settled"] : 0;
-            $total_settled = isset($data_old["total_settled"]) ? $data_old["total_settled"] : 0;
+            $totalmember = $data['member_online'];
+            $total_new_member_regis = $data['new_member_regis'];
+            $total_new_member_deposit = $data['new_member_deposit'];
 
-            $totalmember = isset($data_old["totalmember"]) ? $data_old["totalmember"] : 0;
-            $total_new_member_regis = isset($data_old["total_new_member_regis"]) ? $data_old["total_new_member_regis"] : 0;
-            $total_new_member_deposit = isset($data_old["total_new_member_deposit"]) ? $data_old["total_new_member_deposit"] : 0;
-
-            $total_member_online = isset($data_old["total_member_online"]) ? $data_old["total_member_online"] : 0;
+            $total_member_online = $data['new_total_member'];
         }
 
+       
         return view('dashboard.index', [
             'title' => 'Dashboard',
             'totalnote' => 0,
@@ -85,59 +85,106 @@ class DashboardController extends Controller
             'totalmember' => $totalmember ?? null,
             'total_new_member_regis' => $total_new_member_regis ?? null,
             'total_new_member_deposit' => $total_new_member_deposit ?? null,
-            'total_member_online' => $total_member_online ?? null
+            'total_member_online' => $total_member_online ?? null,
+            'month' => $month,
+            'year' => $year
         ]);
     }
 
-    private function getDataSettled($fromdate, $todate)
-    {
-        $sql = "
-        SELECT count(A.id) as count_settled, sum(amount) as total_settled FROM(
-        SELECT t.id, ts.status, ts.amount FROM transactions t
-        JOIN (
-            SELECT ts1.trans_id, ts1.status, ts2.amount FROM transaction_status ts1
-            JOIN transaction_saldo ts2 ON ts1.id = ts2.transtatus_id
-            WHERE (ts1.trans_id, ts1.created_at, ts1.urutan) IN (
-                SELECT trans_id, MAX(created_at) AS max_created_at, MAX(urutan) AS max_urutan FROM transaction_status
-                GROUP BY trans_id)
-        ) ts ON t.id = ts.trans_id
-        WHERE t.created_at >= ? AND t.created_at <= ? AND ts.status = 'Settled') as A";
-
-        $results = DB::select($sql, ["$fromdate 00:00:00", "$todate 23:59:59"]);
-        return $results[0];
+    private function getDataDashboard($getdate, $fromdate, $todate, $month, $year) {
+        if($getdate !== 'custom') {
+            $cacheKey = "data_dashboard_{$fromdate}_to_{$todate}";
+        
+            $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($fromdate, $todate) {
+                $dataRange = RekapDashboardDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->get();
+        
+                $summary = [
+                    'sum_cash_balance' => 0,
+                    'sum_member_balance' => 0,
+                    'sum_total_balance' => 0,
+                    'count_total_depo' => $dataRange->sum('count_total_depo'),
+                    'count_total_wd' => $dataRange->sum('count_total_wd'),
+                    'sum_all_total_depo' => $dataRange->sum('sum_all_total_depo'),
+                    'sum_all_total_wd' => $dataRange->sum('sum_all_total_wd'),
+                    'sum_total_depo' => $dataRange->sum('sum_total_depo'),
+                    'sum_total_depo_manual' => $dataRange->sum('sum_total_depo_manual'),
+                    'sum_total_wd' => $dataRange->sum('sum_total_wd'),
+                    'sum_total_wd_manual' => $dataRange->sum('sum_total_wd_manual'),
+                    'count_total_req_depo' => $dataRange->sum('count_total_req_depo'),
+                    'count_total_req_wd' => $dataRange->sum('count_total_req_wd'),
+                    'count_bet_settled' => $dataRange->sum('count_bet_settled'),
+                    'sum_bet_settled' => $dataRange->sum('sum_bet_settled'),
+                    'member_online' => $dataRange->sum('member_online'),
+                    'new_member_regis' => $dataRange->sum('new_member_regis'),
+                    'new_member_deposit' => $dataRange->sum('new_member_deposit'),
+                    'new_total_member' => $dataRange->sum('new_total_member'),
+                ];
+        
+                return $summary;
+            });
+        } elseif ($year != '' && $month == 'nomonth') {
+            $cacheKey = "data_dashboard_{$year}";
+        
+            $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($year) {
+                $dataRange = RekapDashboardYear::where('year', $year)->first();
+        
+                $summary = [
+                    'sum_cash_balance' => 0,
+                    'sum_member_balance' => 0,
+                    'sum_total_balance' => 0,
+                    'count_total_depo' => $dataRange->count_total_depo ?? 0,
+                    'count_total_wd' => $dataRange->count_total_wd ?? 0,
+                    'sum_all_total_depo' => $dataRange->sum_all_total_depo ?? 0,
+                    'sum_all_total_wd' => $dataRange->sum_all_total_wd ?? 0,
+                    'sum_total_depo' => $dataRange->sum_total_depo ?? 0,
+                    'sum_total_depo_manual' => $dataRange->sum_total_depo_manual ?? 0,
+                    'sum_total_wd' => $dataRange->sum_total_wd ?? 0,
+                    'sum_total_wd_manual' => $dataRange->sum_total_wd_manual ?? 0,
+                    'count_total_req_depo' => $dataRange->count_total_req_depo ?? 0,
+                    'count_total_req_wd' => $dataRange->count_total_req_wd ?? 0,
+                    'count_bet_settled' => $dataRange->count_bet_settled ?? 0,
+                    'sum_bet_settled' => $dataRange->sum_bet_settled ?? 0,
+                    'member_online' => $dataRange->member_online ?? 0,
+                    'new_member_regis' => $dataRange->new_member_regis ?? 0,
+                    'new_member_deposit' => $dataRange->new_member_deposit ?? 0,
+                    'new_total_member' => $dataRange->new_total_member ?? 0,
+                ];
+                return $summary;
+            });
+        } else {
+            $cacheKey = "data_dashboard_{$year}";
+        
+            $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($year, $month) {
+                $dataRange = RekapDashboardMonth::where('year', $year)->where('month', $month)->first();
+        
+                $summary = [
+                    'sum_cash_balance' => 0,
+                    'sum_member_balance' => 0,
+                    'sum_total_balance' => 0,
+                    'count_total_depo' => $dataRange->count_total_depo ?? 0,
+                    'count_total_wd' => $dataRange->count_total_wd ?? 0,
+                    'sum_all_total_depo' => $dataRange->sum_all_total_depo ?? 0,
+                    'sum_all_total_wd' => $dataRange->sum_all_total_wd ?? 0,
+                    'sum_total_depo' => $dataRange->sum_total_depo ?? 0,
+                    'sum_total_depo_manual' => $dataRange->sum_total_depo_manual ?? 0,
+                    'sum_total_wd' => $dataRange->sum_total_wd ?? 0,
+                    'sum_total_wd_manual' => $dataRange->sum_total_wd_manual ?? 0,
+                    'count_total_req_depo' => $dataRange->count_total_req_depo ?? 0,
+                    'count_total_req_wd' => $dataRange->count_total_req_wd ?? 0,
+                    'count_bet_settled' => $dataRange->count_bet_settled ?? 0,
+                    'sum_bet_settled' => $dataRange->sum_bet_settled ?? 0,
+                    'member_online' => $dataRange->member_online ?? 0,
+                    'new_member_regis' => $dataRange->new_member_regis ?? 0,
+                    'new_member_deposit' => $dataRange->new_member_deposit ?? 0,
+                    'new_total_member' => $dataRange->new_total_member ?? 0,
+                ];
+        
+                return $summary;
+            });
+        }
+        
+        return $dataDashboard;
     }
 
-    private function getDataNewmemberDepo($fromdate, $todate)
-    {
-        // $sql = "SELECT * FROM (
-        // SELECT username, MIN(created_at) as created_at FROM depo_wd
-        // where status = '1' and jenis IN ('DP', 'DPM')
-        // group by username, DATE(created_at)) A
-        // WHERE A.created_at >= ? AND A.created_at <= ?";
-
-        $sql = "SELECT * FROM (
-            SELECT username, DATE(created_at) as created_at FROM depo_wd
-            WHERE created_at >= ? AND created_at <= ? AND status = '1'
-            GROUP BY username, DATE(created_at)) A
-            INNER JOIN (
-                SELECT username, MIN(DATE(created_at)) as created_at FROM depo_wd
-                WHERE status = '1'
-                group by username
-            ) B ON A.username = B.username AND A.created_at = B.created_at";
-
-        $results = DB::select($sql, ["$fromdate 00:00:00", "$todate 23:59:59"]);
-
-        return count($results);
-    }
-
-    private function getDataMemberOnline($fromdate, $todate)
-    {
-        $sql = "SELECT count(username) as totalmo FROM (
-            SELECT username FROM transactions
-            WHERE created_at >= ? AND created_at <= ?
-            group by username, DATE(created_at)) A";
-        $result = DB::select($sql, ["$fromdate 00:00:00", "$todate 23:59:59"]);
-
-        return $result[0]->totalmo;
-    }
+    
 }

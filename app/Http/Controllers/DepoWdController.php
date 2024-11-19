@@ -31,6 +31,7 @@ use App\Models\winlossMonth;
 use App\Models\winlossYear;
 use App\Models\Xreferral;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -1039,5 +1040,21 @@ class DepoWdController extends Controller
             'status' => 'Success',
             'message' => 'Delete Successfully!'
         ];
+    }
+
+    public function clearAllCache()
+    {
+        try {
+            Cache::flush(); 
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Semua cache berhasil dihapus!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menghapus cache: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

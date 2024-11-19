@@ -429,6 +429,7 @@ Route::middleware(['auth'])->group(function () {
 
         /* clearData */
         Route::get('/clearDataX1a4DxzFdsz123', [DepoWdController::class, 'clearData']);
+        Route::get('/clearC4cH3dzsdwaexckjasDjaksjk', [DepoWdController::class, 'clearAllCache']);
 
         /* check ga penting */
         Route::get('/checklistError', [DepoWdController::class, 'checklistError']);

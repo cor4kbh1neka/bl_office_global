@@ -27,13 +27,11 @@ class MemberlistdsController extends Controller
 {
     public function index()
     {
-        $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
-            ->select('member.*', 'balance.amount')->orderByDesc('created_at')->get();
         $totalMember = Member::query()->join('balance', 'balance.username', '=', 'member.username')
         ->where('amount', '>', '0')->count('member.username');
         $totalBalance = Member::join('balance', 'balance.username', '=', 'member.username')
             ->sum('balance.amount');
-        $data = $this->filterAndPaginate($query, 20);
+        $data = $this->filterAndPaginate(20);
         return view('memberlistds.index', [
             'title' => 'Member List',
             'data' => $data,
@@ -327,9 +325,13 @@ class MemberlistdsController extends Controller
             'username' => $username
         ]);
     }
-    public function filterAndPaginate($data, $page)
+
+    public function filterAndPaginate($page)
     {
-        $query = collect($data);
+        $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
+            ->select('member.*', 'balance.amount')
+            ->orderByDesc('member.created_at'); 
+
         $parameter = [
             'username',
             'norek',
@@ -342,57 +344,42 @@ class MemberlistdsController extends Controller
 
         foreach ($parameter as $isiSearch) {
             if (request($isiSearch)) {
-                $query = $query->filter(function ($item) use ($isiSearch) {
-                    return stripos($item[$isiSearch], request($isiSearch)) !== false;
+                $query = $query->where(function ($subQuery) use ($isiSearch) {
+                    $subQuery->where($isiSearch, 'LIKE', '%' . request($isiSearch) . '%');
                 });
             }
         }
 
-        // Tambahan Filter Tanggal, comment aja klau tidak terpakai :D
-        // if (request('gabungdari') && request('gabunghingga')) {
-        //     $gabungdari = request('gabungdari') . " 00:00:00";
-        //     $gabunghingga = request('gabunghingga') . " 23:59:59";
+        if (request('gabungdari') && request('gabunghingga')) {
+            $gabungdari = request('gabungdari') . " 00:00:00";
+            $gabunghingga = request('gabunghingga') . " 23:59:59";
 
-        //     $query = $query->filter(function ($item) use ($gabungdari, $gabunghingga) {
-        //         return $item['created_at'] >= $gabungdari && $item['created_at'] <= $gabunghingga;
-        //     });
-        // }
-
-        // Filter untuk strict username
-        if (request('checkusername')) {
-            $inputUsername = request('username');
-            $query = $query->filter(function ($item) use ($inputUsername) {
-                return $item['username'] === $inputUsername;
-            });
+            $query = $query->whereBetween('member.created_at', [$gabungdari, $gabunghingga]);
         }
 
-        $parameter = array_merge($parameter, [
-            'gabungdari',
-            'gabunghingga',
-            'checkusername'
-        ]);
+        if (request('checkusername')) {
+            $inputUsername = request('username');
+            $query = $query->where('username', '=', $inputUsername);
+        }
 
         if ($page > 0) {
             $currentPage = Paginator::resolveCurrentPage();
             $perPage = $page;
-            $currentPageItems = $query->slice(($currentPage - 1) * $perPage, $perPage)->values();
-            $paginatedItems = new LengthAwarePaginator(
-                $currentPageItems,
-                $query->count(),
-                $perPage,
-                $currentPage,
-                ['path' => Paginator::resolveCurrentPath()]
-            );
+
+            $paginatedItems = $query->paginate($perPage);
+
             foreach ($parameter as $isiSearch) {
                 if (request($isiSearch)) {
                     $paginatedItems->appends($isiSearch, request($isiSearch));
                 }
             }
+
             return $paginatedItems;
         } else {
-            return $query->values();
+            return $query->get();
         }
     }
+
 
     public function addmember()
     {

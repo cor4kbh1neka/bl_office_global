@@ -25,18 +25,24 @@ use Illuminate\Support\Facades\DB;
 
 class MemberlistdsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $totalMember = Member::query()->join('balance', 'balance.username', '=', 'member.username')
         ->where('amount', '>', '0')->count('member.username');
         $totalBalance = Member::join('balance', 'balance.username', '=', 'member.username')
             ->sum('balance.amount');
         $data = $this->filterAndPaginate(20);
+
+        $gabungdari = isset($request->gabungdari) ? $request->gabungdari : date('Y-m-d', strtotime(date('Y-m-d') . ' -30 days'));
+        $gabunghingga = isset($request->gabunghingga) ? $request->gabunghingga : date('Y-m-d');
+
         return view('memberlistds.index', [
             'title' => 'Member List',
             'data' => $data,
             'totalMember' => $totalMember,
             'totalBalance' => $totalBalance,
+            'gabungdari' => $gabungdari,
+            'gabunghingga' => $gabunghingga
         ]);
     }
 
@@ -316,8 +322,8 @@ class MemberlistdsController extends Controller
 
     public function historybank($username)
     {
-        $raw = DepoWd::where('username', $username)->where('status', '>', 0)->orderByDesc('created_at')->get();
-        $data = $this->filterAndPaginate($raw, 20);
+        $raw = DepoWd::where('username', $username)->where('status', '>', 0)->orderByDesc('created_at');
+        $data = $this->filterAndPaginate(20, $raw);
         return view('memberlistds.history_bank', [
             'title' => 'History Bank',
             'totalnote' => 0,
@@ -325,41 +331,68 @@ class MemberlistdsController extends Controller
             'username' => $username
         ]);
     }
-
-    public function filterAndPaginate($page)
+    
+    public function filterAndPaginate($page, $query="", $jenis="")
     {
-        $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
-            ->select('member.*', 'balance.amount')
-            ->orderByDesc('member.created_at'); 
+        if($query == "") {
+            $query = Member::query()->join('balance', 'balance.username', '=', 'member.username');
 
-        $parameter = [
-            'username',
-            'norek',
-            'namarek',
-            'bank',
-            'nohp',
-            'referral',
-            'status',
-        ];
-
-        foreach ($parameter as $isiSearch) {
-            if (request($isiSearch)) {
-                $query = $query->where(function ($subQuery) use ($isiSearch) {
-                    $subQuery->where($isiSearch, 'LIKE', '%' . request($isiSearch) . '%');
-                });
+            if($jenis !== "export") {
+                $query->select('member.*', 'balance.amount');
+            } else {
+                $query->select(
+                    'member.username', 
+                    'member.referral',
+                    DB::raw("CONCAT(member.bank, ', ', member.namarek, ', ', member.norek) as bank"),
+                    'balance.amount as balance',
+                    DB::raw("
+                        CASE 
+                            WHEN member.status = 9 THEN 'NEW MEMBER'
+                            WHEN member.status = 1 THEN 'DEFAULT'
+                            WHEN member.status = 2 THEN 'VVIP'
+                            WHEN member.status = 3 THEN 'BANDAR'
+                            WHEN member.status = 4 THEN 'WARNING'
+                            WHEN member.status = 5 THEN 'SUSPEND'
+                            ELSE 'UNKNOWN'
+                        END as status_label
+                    "),
+                    'member.keterangan as informasi',
+                    'member.created_at as tglgabung',
+                    'member.lastlogin'
+                );
             }
-        }
+            
+            $query->orderByDesc('member.created_at');
 
-        if (request('gabungdari') && request('gabunghingga')) {
-            $gabungdari = request('gabungdari') . " 00:00:00";
-            $gabunghingga = request('gabunghingga') . " 23:59:59";
+            $parameter = [
+                'username',
+                'norek',
+                'namarek',
+                'bank',
+                'nohp',
+                'referral',
+                'status',
+            ];
 
-            $query = $query->whereBetween('member.created_at', [$gabungdari, $gabunghingga]);
-        }
+            foreach ($parameter as $isiSearch) {
+                if (request($isiSearch)) {
+                    $query = $query->where(function ($subQuery) use ($isiSearch) {
+                        $subQuery->where($isiSearch, 'LIKE', '%' . request($isiSearch) . '%');
+                    });
+                }
+            }
 
-        if (request('checkusername')) {
-            $inputUsername = request('username');
-            $query = $query->where('username', '=', $inputUsername);
+            if (request('gabungdari') && request('gabunghingga')) {
+                $gabungdari = request('gabungdari') . " 00:00:00";
+                $gabunghingga = request('gabunghingga') . " 23:59:59";
+
+                $query = $query->whereBetween('member.created_at', [$gabungdari, $gabunghingga]);
+            }
+
+            if (request('checkusername')) {
+                $inputUsername = request('username');
+                $query = $query->where('username', '=', $inputUsername);
+            }
         }
 
         if ($page > 0) {
@@ -368,6 +401,7 @@ class MemberlistdsController extends Controller
 
             $paginatedItems = $query->paginate($perPage);
 
+            if($query == "")
             foreach ($parameter as $isiSearch) {
                 if (request($isiSearch)) {
                     $paginatedItems->appends($isiSearch, request($isiSearch));
@@ -495,30 +529,30 @@ class MemberlistdsController extends Controller
         // $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
         //     ->select('member.*', 'balance.amount')->orderByDesc('created_at')->get();
 
-        $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
-            ->select(
-                'member.username',
-                'member.referral',
-                DB::raw("CONCAT(member.bank, ', ', member.namarek, ', ', member.norek) as bank"),
-                'balance.amount as balance',
-                DB::raw("
-                CASE 
-                    WHEN member.status = 9 THEN 'NEW MEMBER'
-                    WHEN member.status = 1 THEN 'DEFAULT'
-                    WHEN member.status = 2 THEN 'VVIP'
-                    WHEN member.status = 3 THEN 'BANDAR'
-                    WHEN member.status = 4 THEN 'WARNING'
-                    WHEN member.status = 5 THEN 'SUSPEND'
-                    ELSE 'UNKNOWN'
-                END as status_label
-            "),
-                'member.keterangan as informasi',
-                'member.created_at as tglgabung',
-                'member.lastlogin'
-            )->when(request('gabungdari') && request('gabunghingga'), function ($query) {
-                $query->whereBetween('member.created_at', [request('gabungdari'), request('gabunghingga')]);
-            })->orderByDesc('member.created_at')->get();;
-        $proses = $this->filterAndPaginate($query, 999999999999999);
+        // $query = Member::query()->join('balance', 'balance.username', '=', 'member.username')
+        //     ->select(
+        //         'member.username',
+        //         'member.referral',
+        //         DB::raw("CONCAT(member.bank, ', ', member.namarek, ', ', member.norek) as bank"),
+        //         'balance.amount as balance',
+        //         DB::raw("
+        //         CASE 
+        //             WHEN member.status = 9 THEN 'NEW MEMBER'
+        //             WHEN member.status = 1 THEN 'DEFAULT'
+        //             WHEN member.status = 2 THEN 'VVIP'
+        //             WHEN member.status = 3 THEN 'BANDAR'
+        //             WHEN member.status = 4 THEN 'WARNING'
+        //             WHEN member.status = 5 THEN 'SUSPEND'
+        //             ELSE 'UNKNOWN'
+        //         END as status_label
+        //         "),
+        //         'member.keterangan as informasi',
+        //         'member.created_at as tglgabung',
+        //         'member.lastlogin'
+        //     )->when(request('gabungdari') && request('gabunghingga'), function ($query) {
+        //         $query->whereBetween('member.created_at', [request('gabungdari'), request('gabunghingga')]);
+        //     })->orderByDesc('member.created_at')->get();
+        $proses = $this->filterAndPaginate(999999999999999, '', 'export' );
         $data = $proses->getCollection();
         return Excel::download(new MemberListExport($data), 'Memberlist.xlsx');
     }

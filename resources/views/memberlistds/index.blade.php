@@ -83,12 +83,12 @@
                         <div class="listinputmember">
                             <label for="gabungdari">tanggal gabung dari</label>
                             <input type="date" id="gabungdari" name="gabungdari" placeholder="tanggal gabung dari"
-                                value="{{ request('gabungdari') }}">
+                                value="{{ $gabungdari }}">
                         </div>
                         <div class="listinputmember">
                             <label for="gabunghingga">tanggal gabung hingga</label>
                             <input type="date" id="gabunghingga" name="gabunghingga" placeholder="tanggal gabung hingga"
-                                value="{{ request('gabunghingga') }}">
+                                value="{{ $gabunghingga }}">
                         </div>
                         <div class="listinputmember">
                             <label for="status">Status</label>

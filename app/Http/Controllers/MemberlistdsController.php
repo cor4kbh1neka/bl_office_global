@@ -377,7 +377,7 @@ class MemberlistdsController extends Controller
             foreach ($parameter as $isiSearch) {
                 if (request($isiSearch)) {
                     $query = $query->where(function ($subQuery) use ($isiSearch) {
-                        $subQuery->where($isiSearch, 'LIKE', '%' . request($isiSearch) . '%');
+                        $subQuery->where('member.' . $isiSearch, 'LIKE', '%' . request($isiSearch) . '%');
                     });
                 }
             }
@@ -391,9 +391,10 @@ class MemberlistdsController extends Controller
 
             if (request('checkusername')) {
                 $inputUsername = request('username');
-                $query = $query->where('username', '=', $inputUsername);
+                $query = $query->where('member.username', '=', $inputUsername);
             }
         }
+        
 
         if ($page > 0) {
             $currentPage = Paginator::resolveCurrentPage();

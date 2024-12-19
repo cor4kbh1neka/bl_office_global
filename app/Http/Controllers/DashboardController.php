@@ -43,7 +43,7 @@ class DashboardController extends Controller
 
             $sum_depo_real = $data['sum_total_depo'];
             $sum_depo_manual = $data['sum_total_depo_manual'];
-            $sum_wd_real = $data['sum_total_depo_manual'];
+            $sum_wd_real = $data['sum_total_wd'];
             $sum_wd_manual = $data['sum_total_wd_manual'];
 
             $count_all_status_depo = $data['count_total_req_depo'];
@@ -52,11 +52,11 @@ class DashboardController extends Controller
             $count_settled = $data['count_bet_settled'];
             $total_settled = $data['sum_bet_settled'];
 
-            $totalmember = $data['member_online'];
+            $totalmember = $data['new_total_member'];
             $total_new_member_regis = $data['new_member_regis'];
             $total_new_member_deposit = $data['new_member_deposit'];
 
-            $total_member_online = $data['new_total_member'];
+            $total_member_online = $data['member_online'];
         }
 
        
@@ -94,14 +94,14 @@ class DashboardController extends Controller
     private function getDataDashboard($getdate, $fromdate, $todate, $month, $year) {
         if($getdate !== 'custom') {
             $cacheKey = "data_dashboard_{$fromdate}_to_{$todate}";
-        
+            
             $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($fromdate, $todate) {
                 $dataRange = RekapDashboardDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->get();
-        
+                
                 $summary = [
-                    'sum_cash_balance' => 0,
-                    'sum_member_balance' => 0,
-                    'sum_total_balance' => 0,
+                    'sum_cash_balance' => $dataRange->sum('sum_cash_balance'),
+                    'sum_member_balance' => $dataRange->sum('sum_member_balance'),
+                    'sum_total_balance' => $dataRange->sum('sum_total_balance'),
                     'count_total_depo' => $dataRange->sum('count_total_depo'),
                     'count_total_wd' => $dataRange->sum('count_total_wd'),
                     'sum_all_total_depo' => $dataRange->sum('sum_all_total_depo'),

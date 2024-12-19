@@ -325,9 +325,18 @@ class ApiController extends Controller
             $month = Carbon::now()->format('m'); 
             $year = Carbon::now()->format('Y');
 
-            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
-            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
-            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())
+                ->lockForUpdate()
+                ->first();
+
+            $existsMonthly = RekapDashboardMonth::where('month', $month)
+                ->where('year', $year)
+                ->lockForUpdate()
+                ->first();
+
+            $existsYearly = RekapDashboardYear::where('year', $year)
+                ->lockForUpdate()
+                ->first();
 
             if (!$existsToday) {
                 $existsToday = RekapDashboardDay::create([
@@ -360,6 +369,7 @@ class ApiController extends Controller
             $existsYearly->increment('new_total_member', 1);
         });
     }
+
 
     public function getRecomMatch(Request $request)
     {
@@ -524,9 +534,18 @@ class ApiController extends Controller
             $month = Carbon::now()->format('m'); 
             $year = Carbon::now()->format('Y');
 
-            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
-            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
-            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())
+                ->lockForUpdate() 
+                ->first();
+
+            $existsMonthly = RekapDashboardMonth::where('month', $month)
+                ->where('year', $year)
+                ->lockForUpdate() 
+                ->first();
+
+            $existsYearly = RekapDashboardYear::where('year', $year)
+                ->lockForUpdate() 
+                ->first();
 
             if (!$existsToday) {
                 $existsToday = RekapDashboardDay::create([
@@ -557,9 +576,10 @@ class ApiController extends Controller
                 $existsToday->increment('count_total_req_wd', 1);
                 $existsMonthly->increment('count_total_req_wd', 1);
                 $existsYearly->increment('count_total_req_wd', 1);
-            } 
+            }
         });
     }
+
 
     public function withdrawal(Request $request)
     {

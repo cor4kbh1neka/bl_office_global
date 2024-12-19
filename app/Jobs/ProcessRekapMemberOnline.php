@@ -71,9 +71,18 @@ class ProcessRekapMemberOnline implements ShouldQueue
             $month = Carbon::now()->format('m'); 
             $year = Carbon::now()->format('Y');
 
-            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
-            $existsMonthly = RekapDashboardMonth::where('year', $year)->where('month', $month)->first();
-            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())
+                ->lockForUpdate() 
+                ->first();
+
+            $existsMonthly = RekapDashboardMonth::where('year', $year)
+                ->where('month', $month)
+                ->lockForUpdate() 
+                ->first();
+
+            $existsYearly = RekapDashboardYear::where('year', $year)
+                ->lockForUpdate() 
+                ->first();
 
             if (!$existsToday) {
                 $existsToday = RekapDashboardDay::create([
@@ -96,7 +105,6 @@ class ProcessRekapMemberOnline implements ShouldQueue
                 ]);
             }
 
-
             $existsToday->increment('member_online', 1);
             $existsToday->increment('new_total_member', 1);
 
@@ -107,4 +115,5 @@ class ProcessRekapMemberOnline implements ShouldQueue
             $existsYearly->increment('new_total_member', 1);
         });
     }
+
 }

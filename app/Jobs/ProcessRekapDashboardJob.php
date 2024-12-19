@@ -70,16 +70,25 @@ class ProcessRekapDashboardJob implements ShouldQueue
         if ($amount < $amountBetting) {
             return;
         }
-        
+
         $amountSettle = $amount - $amountBetting;
 
         DB::transaction(function () use ($amountSettle, $jenis) {
             $month = Carbon::now()->format('m'); 
             $year = Carbon::now()->format('Y');
 
-            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())->first();
-            $existsMonthly = RekapDashboardMonth::where('month', $month)->where('year', $year)->first();
-            $existsYearly = RekapDashboardYear::where('year', $year)->first();
+            $existsToday = RekapDashboardDay::whereDate('created_at', Carbon::today())
+                ->lockForUpdate() 
+                ->first();
+
+            $existsMonthly = RekapDashboardMonth::where('month', $month)
+                ->where('year', $year)
+                ->lockForUpdate() 
+                ->first();
+
+            $existsYearly = RekapDashboardYear::where('year', $year)
+                ->lockForUpdate() 
+                ->first();
 
             if (!$existsToday) {
                 $existsToday = RekapDashboardDay::create([
@@ -102,7 +111,7 @@ class ProcessRekapDashboardJob implements ShouldQueue
                 ]);
             }
 
-            if($jenis == 'Settle') {
+            if ($jenis == 'Settle') {
                 $existsToday->increment('count_bet_settled', 1);
                 $existsToday->increment('sum_bet_settled', $amountSettle);
 
@@ -111,16 +120,7 @@ class ProcessRekapDashboardJob implements ShouldQueue
 
                 $existsYearly->increment('count_bet_settled', 1);
                 $existsYearly->increment('sum_bet_settled', $amountSettle);
-            } else if ($jenis == 'Rollback') {
-                $existsToday->decrement('count_bet_settled', 1);
-                $existsToday->decrement('sum_bet_settled', $amountSettle);
-
-                $existsMonthly->decrement('count_bet_settled', 1);
-                $existsMonthly->decrement('sum_bet_settled', $amountSettle);
-
-                $existsYearly->decrement('count_bet_settled', 1);
-                $existsYearly->decrement('sum_bet_settled', $amountSettle);
-            } else if ($jenis == 'Cancel') {
+            } else if ($jenis == 'Rollback' || $jenis == 'Cancel') {
                 $existsToday->decrement('count_bet_settled', 1);
                 $existsToday->decrement('sum_bet_settled', $amountSettle);
 
@@ -132,4 +132,5 @@ class ProcessRekapDashboardJob implements ShouldQueue
             }
         });
     }
+
 }

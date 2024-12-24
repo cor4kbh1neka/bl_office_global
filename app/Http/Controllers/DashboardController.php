@@ -92,10 +92,11 @@ class DashboardController extends Controller
     }
 
     private function getDataDashboard($getdate, $fromdate, $todate, $month, $year) {
+        
         if($getdate !== 'custom') {
             $cacheKey = "data_dashboard_{$fromdate}_to_{$todate}";
             
-            $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($fromdate, $todate) {
+            $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($fromdate, $todate, $getdate) {
                 $dataRange = RekapDashboardDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->get();
                 
                 $summary = [
@@ -119,6 +120,11 @@ class DashboardController extends Controller
                     'new_member_deposit' => $dataRange->sum('new_member_deposit'),
                     'new_total_member' => $dataRange->sum('new_total_member'),
                 ];
+
+                if($getdate == 'yesterday') {
+                    $summary['new_total_member'] = Member::count('id');
+                    $summary['sum_member_balance'] = Balance::sum('amount');
+                }
         
                 return $summary;
             });

@@ -58,7 +58,6 @@ class DashboardController extends Controller
 
             $total_member_online = $data['member_online'];
         }
-
        
         return view('dashboard.index', [
             'title' => 'Dashboard',

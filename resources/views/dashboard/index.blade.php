@@ -124,12 +124,23 @@
                             </div>
                         </div>
                     @endif
+
+                    @php 
+                        $fromDate1 = date('j F Y', strtotime($fromdate));
+                        $toDate1 = date('j F Y', strtotime($todate));
+
+                        if ($fromdate === $todate) {
+                            $dateText = "on $fromDate1";
+                        } else {
+                            $dateText =  "from $fromDate1 to $toDate1";
+                        }
+                                            @endphp
                     <div class="grouplistsecdashboard">
                         <div class="listsecdashboard">
                             <div class="groupdatalistdashboard deposit">
                                 <div class="listdatagroupls">
                                     <span class="countdata">{{ $count_depo }}</span>
-                                    <span class="textdetail">total deposit accepted 15 April 2024</span>
+                                    <span class="textdetail">total deposit accepted {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512">
                                     <path fill="currentColor"
@@ -141,7 +152,7 @@
                             <div class="groupdatalistdashboard deposit">
                                 <div class="listdatagroupls">
                                     <span class="countdata nominal" data-value="{{ $sum_depo }}"></span>
-                                    <span class="textdetail">Jumlah coin Deposit accepted 15 April 2024</span>
+                                    <span class="textdetail">Jumlah coin Deposit accepted {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
                                     class="chart-custom">
@@ -162,7 +173,7 @@
                             <div class="groupdatalistdashboard">
                                 <div class="listdatagroupls">
                                     <span class="countdata">{{ $count_all_status_depo }}</span>
-                                    <span class="textdetail">total request form deposit 15 April 2024</span>
+                                    <span class="textdetail">total request form deposit {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                     <path fill="currentColor"
@@ -172,7 +183,7 @@
                             <div class="groupdatalistdashboard bet">
                                 <div class="listdatagroupls">
                                     <span class="countdata">{{ $count_settled }}</span>
-                                    <span class="textdetail">total user bets settled 15 April 2024</span>
+                                    <span class="textdetail">total user bets settled {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 36 36">
                                     <circle cx="17.99" cy="10.36" r="6.81" fill="currentColor"
@@ -193,7 +204,7 @@
                             <div class="groupdatalistdashboard withdraw">
                                 <div class="listdatagroupls">
                                     <span class="countdata">{{ $count_wd }}</span>
-                                    <span class="textdetail">total withdraw accepted 15 April 2024</span>
+                                    <span class="textdetail">total withdraw accepted {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                                     viewBox="0 0 24 24">
@@ -204,7 +215,7 @@
                             <div class="groupdatalistdashboard withdraw">
                                 <div class="listdatagroupls">
                                     <span class="countdata nominal" data-value="{{ $sum_wd }}"></span>
-                                    <span class="textdetail">Jumlah coin withdraw accepted 15 April 2024</span>
+                                    <span class="textdetail">Jumlah coin withdraw accepted {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                                     viewBox="0 0 24 24" class="chart-custom">
@@ -225,7 +236,7 @@
                             <div class="groupdatalistdashboard">
                                 <div class="listdatagroupls">
                                     <span class="countdata">{{ $count_all_status_wd }}</span>
-                                    <span class="textdetail">total request form withdraw 15 April 2024</span>
+                                    <span class="textdetail">total request form withdraw {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                                     viewBox="0 0 24 24">
@@ -236,7 +247,7 @@
                             <div class="groupdatalistdashboard bet">
                                 <div class="listdatagroupls">
                                     <span class="countdata nominal" data-value="{{ $total_settled }}"></span>
-                                    <span class="textdetail">total Coin bets settled 15 April 2024</span>
+                                    <span class="textdetail">total Coin bets settled {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                                     viewBox="0 0 24 24">
@@ -254,7 +265,7 @@
                         <div class="groupboxlist">
                             <div class="listdatagroupls">
                                 <span class="countdata">{{ $total_member_online }}</span>
-                                <span class="textdetail">total member online 15 April 2024</span>
+                                <span class="textdetail">total member online {{ $dateText }}</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                 <path fill="currentColor"
@@ -267,7 +278,7 @@
                         <div class="groupboxlist">
                             <div class="listdatagroupls">
                                 <span class="countdata">{{ $total_new_member_regis }}</span>
-                                <span class="textdetail">pemain yang sudah daftar 15 April 2024</span>
+                                <span class="textdetail">pemain yang sudah daftar {{ $dateText }}</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                 <path fill="currentColor"
@@ -280,7 +291,7 @@
                         <div class="groupboxlist">
                             <div class="listdatagroupls">
                                 <span class="countdata">{{ $total_new_member_deposit }}</span>
-                                <span class="textdetail">pemain baru yang sudah deposit 15 April 2024</span>
+                                <span class="textdetail">pemain baru yang sudah deposit {{ $dateText }}</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                 <path fill="currentColor"
@@ -294,7 +305,7 @@
                             <div class="groupboxlist">
                                 <div class="listdatagroupls">
                                     <span class="countdata">{{ $totalmember }}</span>
-                                    <span class="textdetail">total keseluruhan member 15 April 2024</span>
+                                    <span class="textdetail">total keseluruhan member {{ $dateText }}</span>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
                                     <path fill="currentColor"

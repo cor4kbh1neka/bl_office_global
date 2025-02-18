@@ -33,10 +33,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // $this->defineDynamicGates();
-        // Event::listen(Authenticated::class, function ($event) {
-        //     View::share('dataCount', $this->getDataCount());
-        // });
+        $this->defineDynamicGates();
+        Event::listen(Authenticated::class, function ($event) {
+            View::share('dataCount', $this->getDataCount());
+        });
     }
 
     private function getDataCount()

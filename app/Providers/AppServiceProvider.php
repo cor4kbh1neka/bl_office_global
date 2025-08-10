@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Events\Authenticated;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
@@ -54,21 +55,30 @@ class AppServiceProvider extends ServiceProvider
                 'count' => $count,
             ];
         })->count();
-        $responseMemo = Http::withHeaders([
-            'x-customblhdrs' => env('XCUSTOMBLHDRS')
-        ])->get(env('DOMAIN') . '/memo');
-        $resultMemo = $responseMemo->json();
 
-        if ($responseMemo->successful()) {
+        try {
+            $responseMemo = Http::withHeaders([
+            'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ])->get(env('DOMAIN') . '/memo');
             $resultMemo = $responseMemo->json();
-            if ($resultMemo['status'] == 'success') {
-                $countMemo = count($resultMemo['data']);
+                
+            if ($responseMemo->successful()) {
+                $resultMemo = $responseMemo->json();
+                if ($resultMemo['status'] == 'success') {
+                    $countMemo = count($resultMemo['data']);
+                } else {
+                    $countMemo = 0;
+                }
             } else {
                 $countMemo = 0;
             }
-        } else {
+        } catch (\Exception $e) {
             $countMemo = 0;
+            Log::channel('error-custom-logs')->error('error get memo API in AppServiceProvider : ' , [
+                'exception' => $e->getMessage()
+            ]);
         }
+        
 
         return [
             'countDP' => $countDataDP,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Balance;
 use App\Models\DepoWd;
 use App\Models\Member;
+use App\Models\Outstanding;
 use App\Models\RekapDashboardDay;
 use App\Models\RekapDashboardMonth;
 use App\Models\RekapDashboardYear;
@@ -31,9 +32,9 @@ class DashboardController extends Controller
 
             $data = $this->getDataDashboard($getdate, $fromdate, $todate, $month, $year);
 
-            $cash_balance = $data['sum_cash_balance'];
+            $total_coin_outstanding = Outstanding::sum('amount');
             $member_balance = $data['sum_member_balance'];
-            $total_balance = $data['sum_total_balance'];
+            $total_outstanding = Outstanding::count('id');
 
             $count_depo = $data['count_total_depo'];
             $count_wd = $data['count_total_wd'];
@@ -67,9 +68,9 @@ class DashboardController extends Controller
             'getdate' => $getdate ?? null,
             'fromdate' => $fromdate ?? null,
             'todate' => $todate ?? null,
-            'cash_balance' => $cash_balance ?? null,
+            'total_coin_outstanding' => $total_coin_outstanding ?? null,
             'member_balance' => $member_balance ?? null,
-            'total_balance' => $total_balance ?? null,
+            'total_outstanding' => $total_outstanding ?? null,
             'count_depo' => $count_depo ?? null,
             'count_wd' => $count_wd ?? null,
             'sum_depo' => $sum_depo ?? null,
@@ -92,11 +93,11 @@ class DashboardController extends Controller
     }
 
     private function getDataDashboard($getdate, $fromdate, $todate, $month, $year) {
-        
+       
         if($getdate !== 'custom') {
             $cacheKey = "data_dashboard_{$fromdate}_to_{$todate}";
             
-            $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($fromdate, $todate, $getdate) {
+            $dataDashboard = Cache::remember($cacheKey, now()->addMinutes(2), function () use ($fromdate, $todate, $getdate) {
                 $dataRange = RekapDashboardDay::whereBetween('created_at', [$fromdate . ' 00:00:00', $todate . ' 23:59:59'])->get();
                 
                 $summary = [
@@ -121,17 +122,17 @@ class DashboardController extends Controller
                     'new_total_member' => $dataRange->sum('new_total_member'),
                 ];
 
-                if($getdate == 'yesterday') {
+                // if($getdate == 'yesterday') {
                     $summary['new_total_member'] = Member::count('id');
                     $summary['sum_member_balance'] = Balance::sum('amount');
-                }
+                // }
         
                 return $summary;
             });
         } elseif ($year != '' && $month == 'nomonth') {
             $cacheKey = "data_dashboard_{$year}";
         
-            $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($year) {
+            $dataDashboard = Cache::remember($cacheKey, now()->addMinutes(2), function () use ($year) {
                 $dataRange = RekapDashboardYear::where('year', $year)->first();
         
                 $summary = [
@@ -155,12 +156,16 @@ class DashboardController extends Controller
                     'new_member_deposit' => $dataRange->new_member_deposit ?? 0,
                     'new_total_member' => $dataRange->new_total_member ?? 0,
                 ];
+
+                $summary['new_total_member'] = Member::count('id');
+                $summary['sum_member_balance'] = Balance::sum('amount');
+
                 return $summary;
             });
         } else {
             $cacheKey = "data_dashboard_{$year}";
         
-            $dataDashboard = Cache::remember($cacheKey, now()->addHours(4), function () use ($year, $month) {
+            $dataDashboard = Cache::remember($cacheKey, now()->addMinutes(2), function () use ($year, $month) {
                 $dataRange = RekapDashboardMonth::where('year', $year)->where('month', $month)->first();
         
                 $summary = [
@@ -185,6 +190,9 @@ class DashboardController extends Controller
                     'new_total_member' => $dataRange->new_total_member ?? 0,
                 ];
         
+                $summary['new_total_member'] = Member::count('id');
+                $summary['sum_member_balance'] = Balance::sum('amount');
+
                 return $summary;
             });
         }

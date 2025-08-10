@@ -23,7 +23,7 @@ class HistorycoindsController extends Controller
         $currentDate = now();
         $tgldari = $request->input('tgldari', $currentDate->copy()->subDays(30)->format('Y-m-d'));
         $tglsampai = $request->input('tglsampai', $currentDate->format('Y-m-d'));
-
+        
         return view('historycoinds.index', [
             'title' => 'List History',
             'data' => $data,
@@ -53,13 +53,17 @@ class HistorycoindsController extends Controller
         ]);
     }
 
-    private function getOldData($username, $status, $approved_by, $tgldari, $tglsampai)
+    private function getOldData($username, $status, $approved_by, $tgldari, $tglsampai, $page)
     {
         try {
             $parameters = [
                 'tgldari' => $tgldari,
                 'tglsampai' => $tglsampai
             ];
+            
+            if (!empty($page)) {
+                $parameters['page'] = $page;
+            }
 
             if (!empty($username)) {
                 $parameters['username'] = $username;
@@ -77,8 +81,9 @@ class HistorycoindsController extends Controller
                 'utilitiesgenerate' => env('UTILITIES_GENERATE_OLD'),
                 'Accept' => 'application/json'
             ])->get(env('OLDDOMAIN') . 'api/olddata/historycoins', $parameters);
-
-            $data = $response->successful() ? json_decode($response->body(), true) : [];
+            
+            $data =  $response->json();
+            // dd($data);
         } catch (\Exception $e) {
             $data = [];
         }
@@ -93,8 +98,9 @@ class HistorycoindsController extends Controller
         $approved_by = $request->approved_by;
         $tgldari = $request->has('tgldari') ? $request->tgldari : Carbon::now()->subDays(30)->toDateString();
         $tglsampai = $request->has('tglsampai') ? $request->tglsampai : Carbon::now()->toDateString();
+        $page = $request->has('page') ? $request->page : 1;
 
-        $data = $this->getOldData($username, $status, $approved_by, $tgldari, $tglsampai);
+        $data = $this->getOldData($username, $status, $approved_by, $tgldari, $tglsampai, $page);
 
         if (is_null($data) || !isset($data['data'])) {
             return response()->json(['error' => 'Failed to fetch data from API'], 500);

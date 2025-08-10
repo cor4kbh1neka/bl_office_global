@@ -75,10 +75,15 @@ class DepositdsController extends Controller
                     'count' => $count,
                 ];
             })->values()->toArray();
-
-            $dataBankApiMap = collect($dataBankApi)->mapWithKeys(function ($item) {
-                return [$item[1] => $item[0]];
-            })->toArray();
+            
+            if(is_array($dataBankApi)) {
+                $dataBankApiMap = collect($dataBankApi)->mapWithKeys(function ($item) {
+                    return [$item[1] => $item[0]];
+                })->toArray();
+            } else {
+                $dataBankApiMap = [];
+            }
+            
 
             $mbankCounts = collect($mbankCounts)->map(function ($mbC) use ($dataBankApiMap) {
                 $bnk = $mbC['bnkmstrxyxyx'];

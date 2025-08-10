@@ -27,14 +27,18 @@ class DepositdsController extends Controller
 
         /* Data master bank */
         $dataBankApi = $this->getApiMasterBank();
-        $dataBank['DP'] = array_map(function ($item) {
-            return $item[1];
-        }, $dataBankApi);
+        
+        if (is_array($dataBankApi)) {
+            $dataBank['DP'] = array_map(function ($item) {
+                return $item[1];
+            }, $dataBankApi);
 
-        $dataBank['WD'] = array_map(function ($item) {
-            return $item[0];
-        }, $dataBankApi);
-
+            $dataBank['WD'] = array_map(function ($item) {
+                return $item[0];
+            }, $dataBankApi);
+        } else {
+            $dataBank = ['DP' => [], 'WD' => []];
+        }
 
         sort($dataBank[$jenis]);
 
@@ -71,10 +75,15 @@ class DepositdsController extends Controller
                     'count' => $count,
                 ];
             })->values()->toArray();
-
-            $dataBankApiMap = collect($dataBankApi)->mapWithKeys(function ($item) {
-                return [$item[1] => $item[0]];
-            })->toArray();
+            
+            if(is_array($dataBankApi)) {
+                $dataBankApiMap = collect($dataBankApi)->mapWithKeys(function ($item) {
+                    return [$item[1] => $item[0]];
+                })->toArray();
+            } else {
+                $dataBankApiMap = [];
+            }
+            
 
             $mbankCounts = collect($mbankCounts)->map(function ($mbC) use ($dataBankApiMap) {
                 $bnk = $mbC['bnkmstrxyxyx'];
@@ -119,58 +128,66 @@ class DepositdsController extends Controller
 
     private function getApiMasterBank()
     {
-        // "status" => "success"
-        $ApiBank = $this->getApi(env('DOMAIN') . '/banks/v2/groupbank1');
-        unset($ApiBank['headers']);
-        $ApiBankExcept = $this->getApi(env('DOMAIN') . '/banks/exc/groupbank1');
-        unset($ApiBankExcept['headers']);
-        $data1 = [];
-        foreach ($ApiBank as $dts) {
-            foreach ($dts as $i => $dt) {
-                foreach ($dt["data_bank"] as $d) {
-                    $data1[] = [
-                        $i,
-                        $d['namebankxxyy']
-                    ];
+        try {
+            // "status" => "success"
+            $ApiBank = $this->getApi(env('DOMAIN') . '/banks/v2/groupbank1');
+            unset($ApiBank['headers']);
+            $ApiBankExcept = $this->getApi(env('DOMAIN') . '/banks/exc/groupbank1');
+            unset($ApiBankExcept['headers']);
+            $data1 = [];
+            foreach ($ApiBank as $dts) {
+                foreach ($dts as $i => $dt) {
+                    foreach ($dt["data_bank"] as $d) {
+                        $data1[] = [
+                            $i,
+                            $d['namebankxxyy']
+                        ];
+                    }
                 }
             }
-        }
 
-        $data2 = [];
-        foreach ($ApiBankExcept as $dts) {
-            foreach ($dts as $i => $dt) {
-                foreach ($dt["data_bank"] as $d) {
-                    $data2[] = [
-                        $i,
-                        $d['namebankxxyy']
-                    ];
+            $data2 = [];
+            foreach ($ApiBankExcept as $dts) {
+                foreach ($dts as $i => $dt) {
+                    foreach ($dt["data_bank"] as $d) {
+                        $data2[] = [
+                            $i,
+                            $d['namebankxxyy']
+                        ];
+                    }
                 }
             }
-        }
 
-        $allDataBank = array_merge($data1, $data2);
-        // $allDataBank = [];
-        return $allDataBank;
+            $allDataBank = array_merge($data1, $data2);
+            // $allDataBank = [];
+            return $allDataBank;
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal melakukan fetch : ' . $e->getMessage()], 400);
+        }
     }
 
     private function getApi($url)
     {
-        // Define the headers you want to add
-        $headers = [
-            'Accept' => 'application/json',
-            'x-customblhdrs' => env('XCUSTOMBLHDRS')
-        ];
+        try {
+            // Define the headers you want to add
+            $headers = [
+                'Accept' => 'application/json',
+                'x-customblhdrs' => env('XCUSTOMBLHDRS')
+            ];
 
-        $response = Http::withHeaders($headers)->get($url);
+            $response = Http::withHeaders($headers)->get($url);
 
-        $response = $response->json();
-        if ($response['status'] == 'success') {
-            $response = $response['data'];
-        } else {
-            $response = [];
+            $response = $response->json();
+            if ($response['status'] == 'success') {
+                $response = $response['data'];
+            } else {
+                $response = [];
+            }
+
+            return $response;
+        } catch (\Exception $e) {
+            return ['error' => 'Gagal melakukan fetch : ' . $e->getMessage()];
         }
-
-        return $response;
     }
 
     public function getDataHistory($username, $jenis)

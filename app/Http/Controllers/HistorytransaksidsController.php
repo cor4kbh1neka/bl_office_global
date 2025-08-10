@@ -88,7 +88,7 @@ class HistorytransaksidsController extends Controller
                 'Accept' => 'application/json'
             ])->get(env('OLDDOMAIN') . 'api/olddata/historytransaksi', $parameters);
 
-            $data = $response->successful() ? json_decode($response->body(), true) : [];
+            $data =  $response->json();
         } catch (\Exception $e) {
             $data = [];
         }

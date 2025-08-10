@@ -35,12 +35,10 @@ use App\Http\Controllers\MaintenancedsController;
 use App\Http\Controllers\BonussettingdsController;
 use App\Http\Controllers\LinkalternatifdsController;
 use App\Http\Controllers\DashboarddsController;
+use App\Http\Controllers\LogBackupController;
 use App\Http\Controllers\ProductdsController;
 use App\Models\Notes;
 
-
-
-// Route::group(['middleware' => ['allowedIP']], function () {
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -48,15 +46,6 @@ Route::get('/', function () {
     }
     abort(404);
 });
-
-/* Dashboard */
-// Route::get('/dashboard', function () {
-//     return view('layouts.index', [
-//         'title' => 'dashboard',
-//         'totalnote' => 0
-//     ]);
-// })->middleware('auth');
-// Route::get('/dashboard', [DepositdsController::class, 'index'])->name('depositds')->middleware(['deposit']);
 
 /* Login & Logout */
 Route::get('/x314cz9kc141DDX', [LoginController::class, 'index'])->name('login')->Middleware('guest');
@@ -86,6 +75,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/sidenav', function () {
             return view('layouts.side_nav');
         })->name('sidenav');
+
+        /* Log Backup, Job Monitoring, History Log */
+        Route::get('/logbackup', [LogBackupController::class, 'index']);
+        Route::get('/jobmonitoring/job', [LogBackupController::class, 'jobmonitoring']);
+        Route::get('/jobmonitoring/failjob', [LogBackupController::class, 'failjobmonitoring']);
+        Route::get('/historylog', [LogBackupController::class, 'historylog']);
+        Route::post('/historylog/clear', [LogBackupController::class, 'clear']);
 
         /* Notes */
         Route::get('/notes', [NotesController::class, 'index']);
@@ -170,15 +166,6 @@ Route::middleware(['auth'])->group(function () {
         /*-- Transactions --*/
         Route::get('/transactions', [TransactionsController::class, 'index']);
 
-        /*-- Settings --*/
-        // Route::get('/settings', [SettingsController::class, 'index']);
-        // Route::get('/settings/add', [SettingsController::class, 'create']);
-        // Route::get('/settings/edit/{id}', [SettingsController::class, 'edit']);
-        // Route::post('/settings/store', [SettingsController::class, 'store']);
-        // Route::post('/settings/update', [SettingsController::class, 'update']);
-        // Route::delete('/settings/delete', [SettingsController::class, 'destroy']);
-        // Route::get('/settings/view/{id}', [SettingsController::class, 'views']);
-
         /*-- Deposit --*/
         Route::get('/deposit', [DepoWdController::class, 'indexdeposit']);
         Route::get('/history/{jenis?}', [DepoWdController::class, 'indexhistory'])->name('history');
@@ -211,10 +198,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getDataHistory/{username}/{jenis}', [DepositdsController::class, 'getDataHistory'])->middleware(['deposit', 'withdraw']);
         Route::get('/getbalance/{username}', [DepoWdController::class, 'getBalancePlayer'])->middleware(['deposit', 'withdraw']);
         Route::get('/datacountwdp', [DepoWdController::class, 'getCountDataDPW'])->middleware(['deposit', 'withdraw']);
-
-
-        // /*-- Withdrawds --*/
-        // Route::get('/withdrawds', [WithdrawdsController::class, 'index']);
 
         /*-- Manualds --*/
         Route::get('/manualds', [ManualdsController::class, 'index'])->name('manualds')->middleware('manual_transaction');
@@ -339,8 +322,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/agentds/storesetting', [AgentdsController::class, 'storesetting']);
             Route::post('/agentds/changestatus', [AgentdsController::class, 'changestatus']);
         });
-        /*-- Eventds --*/
-        // Route::get('/eventds', [EventdsController::class, 'index']);
 
         /*-- Apksettingds --*/
         Route::middleware('apk_setting')->group(function () {
@@ -392,12 +373,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/notifikasids', [NotifikasidsController::class, 'index']);
         Route::get('/notifikasids/read', [NotifikasidsController::class, 'readinformasi']);
 
-
-        /*-- MENU 2 --*/
-        // Route::get('/menu2', [Menu2Controller::class, 'index']);
-        // Route::get('/menu2/add', [Menu2Controller::class, 'create']);
-
-
         /*-- GET NOTIFICATION --*/
         Route::get('/getNotifikasi', [DepoWdController::class, 'getNotifikasi']);
         Route::get('/updateNotifikasi/{id}', [DepoWdController::class, 'updateNotifikasi']);
@@ -418,11 +393,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/test', [AgentdsController::class, 'userAndUserAccess']);
 
 
-
-
-
-
-
         /* check Xdpwd */
         Route::get('/getDataXdpwd', [DepoWdController::class, 'getDataXdpwd']);
         Route::get('/clearXdpwd/{id}', [DepoWdController::class, 'clearXdpwd']);
@@ -438,4 +408,3 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getdatareferralfail', [ApiController::class, 'getDataReferralFail']);
     });
 });
-// });

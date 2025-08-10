@@ -1326,43 +1326,74 @@ class ApiController extends Controller
 
 
     /* OLD DATA */
-    /* OLD DATA */
-    public function old_historycoin()
+    public function old_historycoin(Request $request)
     {
-        if (Redis::exists('olddata:history_coin')) {
-            $data = Redis::get('olddata:history_coin');
-            return json_decode($data, true);
-        } else {
-            $jenisraw = DB::raw("CASE jenis
-                WHEN 'DP' THEN 'deposit'
-                WHEN 'WD' THEN 'withdraw'
-                WHEN 'DPM' THEN 'deposit manual'
-                WHEN 'WDM' THEN 'withdraw manual'
-                ELSE jenis
-            END as jenis_temp");
+        $tgldari = $request->tgldari ?? date('Y-m-d');
+        $tglsampai = $request->tglsampai ?? date('Y-m-d');
+        $username = $request->username ?? '';
+        $status = $request->status ?? '';
+        $approved_by = $request->approved_by ?? '';
+        $perPage = $request->per_page ?? 20;
 
-            $query = DepoWD::query()->select('*', $jenisraw)
-                ->whereIn('status', [1, 2])
-                ->orderBy('created_at', 'DESC');
+        $jenisraw = DB::raw("CASE jenis
+            WHEN 'DP' THEN 'deposit'
+            WHEN 'WD' THEN 'withdraw'
+            WHEN 'DPM' THEN 'deposit manual'
+            WHEN 'WDM' THEN 'withdraw manual'
+            ELSE jenis
+        END as jenis_temp");
 
-            $result = $query->get();
-
-            Redis::setex('olddata:history_coin', 86400, json_encode($result));
-            return $result;
+        $query = DepoWD::query()->select('*', $jenisraw);
+        
+        if ($username) {
+            $query->where('username', $username);
         }
+        
+        if ($approved_by) {
+            $query->where('approved_by', $approved_by);
+        }
+        
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        if ($tgldari && $tglsampai) {
+            $query->whereBetween('created_at', [$tgldari, $tglsampai]);
+        }
+        
+        return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
 
 
-    public function old_history_transaksi()
+    public function old_history_transaksi(Request $request)
     {
-        if (Redis::exists('olddata:history_transaksi')) {
-            $data = Redis::get('olddata:history_transaksi');
-            return json_decode($data, true);
-        } else {
-            $data = HistoryTransaksi::orderByDesc('created_at')->orderByDesc('urutan')->limit(100)->get();
-            Redis::setex('olddata:history_coin', 86400, json_encode($data));
-            return $data;
+        $username = $request->username ?? '';
+        $invoice = $request->invoice ?? '';
+        $status = $request->status ?? '';
+        $transdari = $request->transdari ?? '';
+        $transhingga = $request->transhingga ?? '';
+        $perPage = $request->per_page ?? 20;
+
+        $query = HistoryTransaksi::query();
+
+        if ($username) {
+            $query->where('username', $username);
         }
+
+        if ($invoice) {
+            $query->where('invoice', $invoice);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($transdari && $transhingga) {
+            $query->whereBetween('created_at', [$transdari, $transhingga]);
+        }
+        
+        
+        return $query->orderBy('created_at', 'desc')->orderBy('urutan', 'desc')->paginate($perPage);
     }
 
     public function old_ref_aktif()

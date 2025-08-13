@@ -3,7 +3,7 @@ cara menjalanakan backup di cli contoh :
 php artisan transactionmonth:migrate --month=2025-05 //jangan gunakan ini
 php artisan transaction:migrate --date=2025-05-01 //backup harian gunakan ini
 
-note: sesuaikan dengan bulan dan tahun yang inin di backup contoh diatas backup untuk bulan 05 2025
+note: sesuaikan dengan bulan dan tahun yang inin di backup contoh diatas backup untuk backup bulanan : 05 2025 , untuk harian sesuaikan
 
 tambahkan env untuk database old data
 DB_OLD_HOST=127.0.0.1

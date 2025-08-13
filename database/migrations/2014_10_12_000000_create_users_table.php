@@ -16,11 +16,6 @@ return new class extends Migration
             $table->string('divisi', 20)->required();
             $table->string('password')->required();
             $table->string('image')->nullable();
-            // $table->boolean('isapk')->default(false);
-            // $table->boolean('isdata')->default(false);
-            // $table->boolean('istransaction')->default(false);
-            // $table->boolean('isconfig')->default(false);
-            // $table->boolean('isconfigadmin')->default(false);
             $table->integer('status')->default(1);
             $table->timestamp('last_login')->nullable();
             $table->string('ip_login')->nullable();

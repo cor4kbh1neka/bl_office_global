@@ -51,8 +51,14 @@ class MigrateTransaction extends Command
             DB::beginTransaction();
             DB::connection('mysql_old')->beginTransaction();
 
+
             foreach ($tables as $table) {
                 $this->info("➡️ Migrating table `$table`...");
+
+                
+                DB::connection('mysql_old')->table($table)
+                    ->whereBetween('created_at', [$date . ' 00:00:00', $date . ' 23:59:59'])
+                    ->delete();
 
                 $rows = DB::connection('mysql')->table($table)
                     ->whereDate('created_at', $date)

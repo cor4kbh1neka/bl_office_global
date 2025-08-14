@@ -76,9 +76,11 @@ Route::get('/getDataDepoWd', [DepoWdController::class, 'getDataDepoWd']);
 Route::get('/getDataXdpwd', [DepoWdController::class, 'getDataXdpwd']);
 
 
-
+Route::post('/getDataBackupLog', [ApiController::class, 'getDataBackupLog']);
 /*gapenting*/
 Route::get('/getwinlossbet', [ApiController::class, 'getWinLossBet']);
 
 /* Get Data Log Bank */
 Route::get('/getDataLogBank', [ApiController::class, 'getDataLogBank']);
+
+Route::post('/getDataBackupLog', [ApiController::class, 'getDataBackupLog']);

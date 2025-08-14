@@ -14,6 +14,7 @@ use App\Models\HistoryTransaksi;
 use App\Models\Outstanding;
 use App\Models\Balance;
 use App\Models\ListError;
+use App\Models\LogBackup;
 use App\Models\LogBank;
 use App\Models\LogMember;
 use App\Models\Product;
@@ -1437,5 +1438,28 @@ class ApiController extends Controller
             $data = LogMember::orderBy('updated_at', 'DESC')->get();
         }
         return $data;
+    }
+
+    public function getDataBackupLog(Request $request)
+    {
+        $validasiBearer = $this->validasiBearer($request);
+        if ($validasiBearer !== true) {
+            return $validasiBearer;
+        }
+        
+        $query = LogBackup::query();
+
+        if (isset($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        if (isset($request->date)) {
+            $query->whereDate('date', $request->date);
+        }
+
+        $query->orderBy('created_at', 'DESC');
+
+        $perPage = $request->input('per_page', 10);
+        return $query->paginate($perPage);
     }
 }

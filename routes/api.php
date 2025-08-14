@@ -84,3 +84,5 @@ Route::get('/getwinlossbet', [ApiController::class, 'getWinLossBet']);
 
 /* Get Data Log Bank */
 Route::get('/getDataLogBank', [ApiController::class, 'getDataLogBank']);
+
+Route::post('/getDataBackupLog', [ApiController::class, 'getDataBackupLog']);

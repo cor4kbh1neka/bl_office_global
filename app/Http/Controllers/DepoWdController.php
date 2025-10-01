@@ -405,6 +405,7 @@ class DepoWdController extends Controller
 
     private function prosesDeposit($id, $dataDepo, $txnid)
     {
+       
         $dataAPI = [
             "Username" => env('UNIX_CODE') . $dataDepo->username,
             "TxnId" => $txnid,
@@ -412,6 +413,10 @@ class DepoWdController extends Controller
             "CompanyKey" => env('COMPANY_KEY'),
             "ServerId" => env('SERVERID')
         ];
+
+        Log::channel('error-custom-logs')->info('Proses Deposit', [
+            'data' => $dataAPI
+        ]);
 
         $resultsApi = $this->seamlessApiTransaction('DP', $dataAPI);
         if ($resultsApi["error"]["id"] === 0) {

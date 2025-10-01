@@ -414,10 +414,6 @@ class DepoWdController extends Controller
             "ServerId" => env('SERVERID')
         ];
 
-        Log::channel('error-custom-logs')->info('Proses Deposit', [
-            'data' => $dataAPI
-        ]);
-
         $resultsApi = $this->seamlessApiTransaction('DP', $dataAPI);
         if ($resultsApi["error"]["id"] === 0) {
             $prosesBalance = $this->processBalance($dataDepo->username, 'DP', $dataDepo->amount);

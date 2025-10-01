@@ -242,6 +242,7 @@ class DepoWdController extends Controller
             }
 
             if (empty($ids)) {
+                Log::channel('error-custom-logs')->error('Error 1 : tidak ada data yang dipilih');
                 return back()->withInput()->with('error', 'tidak ada data yang dipilih');
             }
 
@@ -286,6 +287,9 @@ class DepoWdController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
+            Log::channel('error-custom-logs')->error('Error 99 : ', [
+                'error' => $e->getMessage()
+            ]);
             return back()->withInput()->with('error', $e->getMessage());
         }
     }
@@ -448,6 +452,10 @@ class DepoWdController extends Controller
             // } else {
             //     return $resultsApi;
             // }
+
+            Log::channel('error-custom-logs')->error('Error 98 : ', [
+                'dataResult' => $resultsApi
+            ]);
             return false;
         }
     }
@@ -786,21 +794,22 @@ class DepoWdController extends Controller
 
     private function requestApi($endpoint, $data)
     {
-        $url = env('BODOMAIN') . '/web-root/restricted/player/' . $endpoint . '.aspx';
+        try {
+            $url = env('BODOMAIN') . '/web-root/restricted/player/' . $endpoint . '.aspx';
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json; charset=UTF-8',
-        ])->post($url, $data);
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json; charset=UTF-8',
+            ])->post($url, $data);
 
-        // if ($response->successful()) {
-        $responseData = $response->json();
-        // } else {
-        //     $statusCode = $response->status();
-        //     $errorMessage = $response->body();
-        //     $responseData = "Error: $statusCode - $errorMessage";
-        // }
+            $responseData = $response->json();
+        } catch (\Exception $e) {
+            Log::channel('error-custom-logs')->error('Error 98 : ', [
+                'error' => $e->getMessage()
+            ]);
+        }
+       
 
-        return $responseData;
+        return $responseData ?? $responseData["error"]["id"] = 98;
     }
 
 
@@ -855,6 +864,9 @@ class DepoWdController extends Controller
             ];
         } catch (\Exception $e) {
             DB::rollback();
+            Log::channel('error-custom-logs')->error('Error 97 : ', [
+                'error' => $e->getMessage()
+            ]);
             return [
                 "status" => 'fail',
                 "balance" => 0

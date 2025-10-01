@@ -65,7 +65,8 @@ class HistorygamedsController extends Controller
             $data = $this->requestApi('get-bet-list-by-refnos', [
                 'refNos' => $refNo,
                 'portfolio' => $portfolio,
-                'companyKey' => env('COMPANY_KEY'),
+                // 'companyKey' => env('COMPANY_KEY'),
+                'companyKey' => env('OPR_COMPANY_KEY'),
                 'language' => 'en',
                 'serverId' => env('SERVERID')
             ]);
@@ -83,7 +84,7 @@ class HistorygamedsController extends Controller
                 'portfolio' => $portfolio,
                 'startDate' => $startDate . 'T00:00:00.540Z',
                 'endDate' => $endDate . 'T23:59:59.540Z',
-                'companyKey' => env('COMPANY_KEY'),
+                'companyKey' => env('OPR_COMPANY_KEY'),
                 'language' => 'en',
                 'serverId' => env('SERVERID')
             ]);
@@ -141,7 +142,7 @@ class HistorygamedsController extends Controller
         $data = $this->requestApi('get-bet-list-by-refnos', [
             'refNos' => $refNo,
             'portfolio' => $portfolio,
-            'companyKey' => env('COMPANY_KEY'),
+            'companyKey' => env('OPR_COMPANY_KEY'),
             'language' => 'en',
             'serverId' => env('SERVERID')
         ]);

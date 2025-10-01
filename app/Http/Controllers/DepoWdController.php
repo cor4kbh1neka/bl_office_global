@@ -163,7 +163,7 @@ class DepoWdController extends Controller
                         "Username" => env('UNIX_CODE') . $result->username,
                         "TxnId" => $result->txnid,
                         "Amount" => $result->amount,
-                        "CompanyKey" => env('COMPANY_KEY'),
+                        "CompanyKey" => env('OPR_COMPANY_KEY'),
                         "ServerId" => env('SERVERID')
                     ];
 
@@ -410,7 +410,7 @@ class DepoWdController extends Controller
             "Username" => env('UNIX_CODE') . $dataDepo->username,
             "TxnId" => $txnid,
             "Amount" => $dataDepo->amount,
-            "CompanyKey" => env('COMPANY_KEY'),
+            "CompanyKey" => env('OPR_COMPANY_KEY'),
             "ServerId" => env('SERVERID')
         ];
 
@@ -706,7 +706,8 @@ class DepoWdController extends Controller
                         "TxnId" => $txnid,
                         // "TxnId" => 'W3AIQBE32TA',
                         "Amount" => $updateStatusTransaction->amount,
-                        "CompanyKey" => env('COMPANY_KEY'),
+                        // "CompanyKey" => env('COMPANY_KEY'),
+                        "CompanyKey" => env('OPR_COMPANY_KEY'),
                         "ServerId" => env('SERVERID')
                     ];
                     $resultsApi = $this->requestApi('deposit', $dataAPI);

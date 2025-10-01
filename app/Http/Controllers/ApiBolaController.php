@@ -352,7 +352,7 @@ class ApiBolaController extends Controller
             }
         }
 
-        if ($request->CompanyKey != env('COMPANY_KEY')) {
+        if ($request->CompanyKey != env('SMS_COMPANY_KEY')) {
             return $this->errorResponse($request->Username, 4);
         }
 
@@ -984,55 +984,55 @@ class ApiBolaController extends Controller
             if ($referralAmount >= 0.01) {
                 $referralAmount =  round($referralAmount, 2);
                 $txnid = $this->generateTxnid('D');
+                $this->execBalance($request, $portfolio, $dataAktif, $referralAmount);
+                // $dataDepo = [
+                //     "Username" => env('UNIX_CODE') . $dataAktif->referral,
+                //     "TxnId" => $txnid,
+                //     "Amount" => $referralAmount,
+                //     "CompanyKey" => env('SMS_COMPANY_KEY'),
+                //     "ServerId" => env('SERVERID')
+                // ];
 
-                $dataDepo = [
-                    "Username" => env('UNIX_CODE') . $dataAktif->referral,
-                    "TxnId" => $txnid,
-                    "Amount" => $referralAmount,
-                    "CompanyKey" => env('COMPANY_KEY'),
-                    "ServerId" => env('SERVERID')
-                ];
+                // $responseDepoRef = $this->requestApi('deposit', $dataDepo);
 
-                $responseDepoRef = $this->requestApi('deposit', $dataDepo);
+                // if ($responseDepoRef["error"]["id"] === 0) {
+                //     $this->execBalance($request, $portfolio, $dataAktif, $referralAmount);
+                // } else {
+                //     // Handle error 4404 with retry logic and generating new txnId
+                //     $maxAttempts4404 = 10;
+                //     $attempt4404 = 0;
+                //     while ($responseDepoRef["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
+                //         $txnid = $this->generateTxnid('D');
+                //         $dataDepo["TxnId"] = $txnid;
+                //         $responseDepoRef = $this->requestApi('deposit', $dataDepo);
 
-                if ($responseDepoRef["error"]["id"] === 0) {
-                    $this->execBalance($request, $portfolio, $dataAktif, $referralAmount);
-                } else {
-                    // Handle error 4404 with retry logic and generating new txnId
-                    $maxAttempts4404 = 10;
-                    $attempt4404 = 0;
-                    while ($responseDepoRef["error"]["id"] === 4404 && $attempt4404 < $maxAttempts4404) {
-                        $txnid = $this->generateTxnid('D');
-                        $dataDepo["TxnId"] = $txnid;
-                        $responseDepoRef = $this->requestApi('deposit', $dataDepo);
+                //         if ($responseDepoRef["error"]["id"] === 0) {
+                //             return $this->execBalance($request, $portfolio, $dataAktif, $referralAmount);
+                //             // break;
+                //         }
+                //         $attempt4404++;
+                //     }
 
-                        if ($responseDepoRef["error"]["id"] === 0) {
-                            return $this->execBalance($request, $portfolio, $dataAktif, $referralAmount);
-                            // break;
-                        }
-                        $attempt4404++;
-                    }
+                //     if ($responseDepoRef["error"]["id"] !== 0) {
+                //         ListError::create([
+                //             'fungsi' => 'execReferral',
+                //             'pesan_error' => $responseDepoRef["error"]["id"],
+                //             'keterangan' => '-'
+                //         ]);
+                //         return response()->json([
+                //             'status' => 'Error',
+                //             'message' => $responseDepoRef["error"]["msg"]
+                //         ], 500);
+                //     }
+                // }
 
-                    if ($responseDepoRef["error"]["id"] !== 0) {
-                        ListError::create([
-                            'fungsi' => 'execReferral',
-                            'pesan_error' => $responseDepoRef["error"]["id"],
-                            'keterangan' => '-'
-                        ]);
-                        return response()->json([
-                            'status' => 'Error',
-                            'message' => $responseDepoRef["error"]["msg"]
-                        ], 500);
-                    }
-                }
-
-                if ($responseDepoRef["error"]["id"] !== 0) {
-                    ListError::create([
-                        'fungsi' => 'execReferral',
-                        'pesan_error' => $responseDepoRef["error"]["id"],
-                        'keterangan' => '-'
-                    ]);
-                }
+                // if ($responseDepoRef["error"]["id"] !== 0) {
+                //     ListError::create([
+                //         'fungsi' => 'execReferral',
+                //         'pesan_error' => $responseDepoRef["error"]["id"],
+                //         'keterangan' => '-'
+                //     ]);
+                // }
             }
         }
     }

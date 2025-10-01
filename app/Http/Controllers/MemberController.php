@@ -70,7 +70,7 @@ class MemberController extends Controller
                 'Username' => env('UNIX_CODE') . $resultReqApi["data"]["addedUser"]["username"],
                 'UserGroup' => 'c',
                 "Agent" => env('AGENTID'),
-                'CompanyKey' => env('COMPANY_KEY'),
+                'CompanyKey' => env('OPR_COMPANY_KEY'),
                 'ServerId' => env('SERVERID'),
             ];
             $resultReqApiSeamless = $this->reqApiRegisterMemberSeamless($dataSeamless);
@@ -215,7 +215,8 @@ class MemberController extends Controller
             'Max' => $request->max_bet,
             "MaxPerMatch" => 2000,
             "CasinoTableLimit" => 4,
-            'CompanyKey' => env('COMPANY_KEY'),
+            // 'CompanyKey' => env('COMPANY_KEY'),
+            'CompanyKey' => env('OPR_COMPANY_KEY'),
             'ServerId' => env('SERVERID')
         ]);
 

@@ -88,7 +88,8 @@ class ReportdsController extends Controller
             'portfolio' => $portfolio,
             'startDate' => $this->convertDate($startDate . 'T00:00:00.540Z'),
             'endDate' => $this->convertDate($endDate . 'T23:59:59.540Z'),
-            "companyKey" => env('COMPANY_KEY'),
+            // "companyKey" => env('COMPANY_KEY'),
+            "companyKey" => env('OPR_COMPANY_KEY'),
             "serverId" =>  env('SERVERID')
         ];
 
@@ -183,7 +184,8 @@ class ReportdsController extends Controller
             $data = $this->requestApi('get-bet-list-by-refnos', [
                 'refNos' => $refNo,
                 'portfolio' => $portfolio,
-                'companyKey' => env('COMPANY_KEY'),
+                // 'companyKey' => env('COMPANY_KEY'),
+                'companyKey' => env('OPR_COMPANY_KEY'),
                 'language' => 'en',
                 'serverId' => env('SERVERID')
             ]);
@@ -201,7 +203,8 @@ class ReportdsController extends Controller
                 'portfolio' => $portfolio,
                 'startDate' =>  $this->convertDate($startDate . 'T00:00:00.540Z'),
                 'endDate' =>  $this->convertDate($endDate . 'T23:59:59.540Z'),
-                'companyKey' => env('COMPANY_KEY'),
+                // 'companyKey' => env('COMPANY_KEY'),
+                'companyKey' => env('OPR_COMPANY_KEY'),
                 'language' => 'en',
                 'serverId' => env('SERVERID')
             ]);

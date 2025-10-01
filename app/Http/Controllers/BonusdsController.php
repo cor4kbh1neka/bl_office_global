@@ -308,11 +308,13 @@ class BonusdsController extends Controller
 
     private function apiDepo($username, $amount, $txnid)
     {
+        
         $data = [
+            // 'companyKey' => env('COMPANY_KEY'),
             "Username" => env('UNIX_CODE') . $username,
             "TxnId" => $txnid,
             "Amount" => $amount,
-            'companyKey' => env('COMPANY_KEY'),
+            'companyKey' => env('OPR_COMPANY_KEY'),
             'serverId' => env('SERVERID')
         ];
 

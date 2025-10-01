@@ -435,7 +435,7 @@ class MemberlistdsController extends Controller
 
             $dataapi = [
                 "Username" => env('UNIX_CODE') . $username,
-                "CompanyKey" => env('COMPANY_KEY'),
+                "CompanyKey" => env('OPR_COMPANY_KEY'),
                 "ServerId" => env('SERVERID')
             ];
             $urlapi = env('BODOMAIN') . '/web-root/restricted/player/get-player-balance.aspx';
@@ -464,7 +464,7 @@ class MemberlistdsController extends Controller
             "Username" => env('UNIX_CODE') . $username,
             "UserGroup" => "c",
             "Agent" => env('AGENTID'),
-            "CompanyKey" => env('COMPANY_KEY'),
+            "CompanyKey" => env('OPR_COMPANY_KEY'),
             "ServerId" => "YY-TEST"
         ];
 
@@ -568,7 +568,7 @@ class MemberlistdsController extends Controller
             $data = [
                 "Username" => env('UNIX_CODE') . $username,
                 "Status" => "Active",
-                "CompanyKey" => env('COMPANY_KEY'),
+                "CompanyKey" => env('OPR_COMPANY_KEY'),
                 "ServerId" => env('SERVERID')
             ];
 

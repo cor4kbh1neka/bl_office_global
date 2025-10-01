@@ -39,7 +39,7 @@ class CommandMaintenance extends Command
             $data2 = [
                 "Username" => env('AGENTID'),
                 "Status" => "closed",
-                "CompanyKey" => env('COMPANY_KEY'),
+                "CompanyKey" => env('OPR_COMPANY_KEY'),
                 "ServerId" => env('SERVERID')
             ];
             $url = env('BODOMAIN') . '/web-root/restricted/agent/update-agent-status.aspx';

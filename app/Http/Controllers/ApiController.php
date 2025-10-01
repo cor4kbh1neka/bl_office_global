@@ -64,8 +64,9 @@ class ApiController extends Controller
 
 
         try {
+            // $dataLogin['CompanyKey'] = env('COMPANY_KEY');
             $dataLogin['Username'] = env('UNIX_CODE') . $username;
-            $dataLogin['CompanyKey'] = env('COMPANY_KEY');
+            $dataLogin['CompanyKey'] = env('OPR_COMPANY_KEY');
             $dataLogin['Portfolio'] = $portfolio;
             $dataLogin['IsWapSports'] = $iswap;
             $dataLogin['ServerId'] = "YY-TEST";
@@ -235,7 +236,7 @@ class ApiController extends Controller
                 "Username" => env('UNIX_CODE') . $request->Username,
                 "UserGroup" => "c",
                 "Agent" => env('AGENTID'),
-                "CompanyKey" => env('COMPANY_KEY'),
+                "CompanyKey" => env('OPR_COMPANY_KEY'),
                 "ServerId" => "XWZ-GLB"
             ];
             $url = env('BODOMAIN') . '/web-root/restricted/player/register-player.aspx';
@@ -387,7 +388,7 @@ class ApiController extends Controller
 
         $data = [
             "language" => 'en',
-            "companyKey" => env('COMPANY_KEY'),
+            "companyKey" => env('OPR_COMPANY_KEY'),
             "serverId" =>  env('SERVERID')
         ];
 
@@ -705,7 +706,7 @@ class ApiController extends Controller
             "Username" => env('UNIX_CODE') . $dataWD->username,
             "txnId" => $txnid,
             "Amount" => $dataWD->amount,
-            "CompanyKey" => env('COMPANY_KEY'),
+            "CompanyKey" => env('OPR_COMPANY_KEY'),
             "ServerId" => env('SERVERID'),
             "IsFullAmount" => false
         ];
@@ -1050,7 +1051,7 @@ class ApiController extends Controller
             'portfolio' => $portfolio,
             'startDate' => $startDate . 'T00:00:00.540Z',
             'endDate' => $endDate . 'T23:59:59.540Z',
-            'companyKey' => env('COMPANY_KEY'),
+            'companyKey' => env('OPR_COMPANY_KEY'),
             'language' => 'en',
             'serverId' => env('SERVERID')
 
@@ -1097,7 +1098,7 @@ class ApiController extends Controller
         $data = [
             'refNos' => $refNos,
             'portfolio' => $portfolio,
-            'companyKey' => env('COMPANY_KEY'),
+            'companyKey' => env('OPR_COMPANY_KEY'),
             'language' => 'en',
             'serverId' => env('SERVERID')
         ];

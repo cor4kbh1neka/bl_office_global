@@ -72,7 +72,8 @@ class BonussettingdsController extends Controller
             "Max" => $max,
             "MaxPerMatch" => 20000,
             "CasinoTableLimit" => 1,
-            "CompanyKey" => env('COMPANY_KEY'),
+            // "CompanyKey" => env('COMPANY_KEY'),
+            "CompanyKey" => env('OPR_COMPANY_KEY'),
             "ServerId" => env('SERVERID')
         ];
 
